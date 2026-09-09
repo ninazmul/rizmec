@@ -3,7 +3,12 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { FolderGit2, Plus, Trash2, ArrowUpRight } from "lucide-react";
-import { getProjects, createProject, deleteProject } from "@/lib/actions/project.actions";
+import {
+  getProjects,
+  createProject,
+  deleteProject,
+} from "@/lib/actions/project.actions";
+import ImageUploader from "@/components/shared/ImageUploader";
 
 export default function WorkCmsPage() {
   const [projects, setProjects] = useState<any[]>([]);
@@ -24,6 +29,7 @@ export default function WorkCmsPage() {
     metric2Val: "+150%",
     services: "Cloud Infrastructure, Distributed Systems",
     technologies: "Next.js, Go, Kubernetes, TypeScript",
+    thumbnail: "",
   });
 
   const fetchProjects = async () => {
@@ -41,8 +47,14 @@ export default function WorkCmsPage() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    const sArray = form.services.split(",").map((s) => s.trim()).filter(Boolean);
-    const tArray = form.technologies.split(",").map((t) => t.trim()).filter(Boolean);
+    const sArray = form.services
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const tArray = form.technologies
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
 
     const res = await createProject({
       title: form.title,
@@ -58,6 +70,7 @@ export default function WorkCmsPage() {
       ],
       services: sArray,
       technologies: tArray,
+      thumbnail: form.thumbnail || undefined,
       published: true,
       featured: true,
     } as any);
@@ -109,7 +122,9 @@ export default function WorkCmsPage() {
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs text-neutral-400">{p.clientName}</span>
+                  <span className="font-mono text-xs text-neutral-400">
+                    {p.clientName}
+                  </span>
                   <Link
                     href={`/work/${p.slug}`}
                     target="_blank"
@@ -119,7 +134,9 @@ export default function WorkCmsPage() {
                     <ArrowUpRight className="w-3 h-3" />
                   </Link>
                 </div>
-                <h3 className="text-xl font-bold text-white tracking-tight">{p.title}</h3>
+                <h3 className="text-xl font-bold text-white tracking-tight">
+                  {p.title}
+                </h3>
                 <p className="text-xs text-neutral-400 line-clamp-3 leading-relaxed">
                   {p.summary}
                 </p>
@@ -127,7 +144,9 @@ export default function WorkCmsPage() {
                   {(p.metrics || []).slice(0, 2).map((m: any) => (
                     <div key={m.label}>
                       <div className="font-bold text-white">{m.value}</div>
-                      <div className="text-[10px] text-neutral-500">{m.label}</div>
+                      <div className="text-[10px] text-neutral-500">
+                        {m.label}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -151,12 +170,21 @@ export default function WorkCmsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
           <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-lg w-full p-6 sm:p-8 space-y-4 my-8 font-sans text-xs">
             <div className="flex justify-between items-center border-b border-white/10 pb-4">
-              <h3 className="text-base font-bold text-white font-mono uppercase">Add Case Study</h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-neutral-400 hover:text-white">✕</button>
+              <h3 className="text-base font-bold text-white font-mono uppercase">
+                Add Case Study
+              </h3>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-neutral-400 hover:text-white"
+              >
+                ✕
+              </button>
             </div>
             <form onSubmit={handleCreate} className="space-y-4">
               <div className="space-y-1">
-                <label className="font-mono text-neutral-400 uppercase">Project Title *</label>
+                <label className="font-mono text-neutral-400 uppercase">
+                  Project Title *
+                </label>
                 <input
                   type="text"
                   required
@@ -167,76 +195,112 @@ export default function WorkCmsPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="font-mono text-neutral-400 uppercase">Client Name *</label>
+                  <label className="font-mono text-neutral-400 uppercase">
+                    Client Name *
+                  </label>
                   <input
                     type="text"
                     required
                     value={form.clientName}
-                    onChange={(e) => setForm({ ...form, clientName: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, clientName: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-mono text-neutral-400 uppercase">Industry</label>
+                  <label className="font-mono text-neutral-400 uppercase">
+                    Industry
+                  </label>
                   <input
                     type="text"
                     value={form.industry}
-                    onChange={(e) => setForm({ ...form, industry: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, industry: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                   />
                 </div>
               </div>
               <div className="space-y-1">
-                <label className="font-mono text-neutral-400 uppercase">Summary *</label>
+                <label className="font-mono text-neutral-400 uppercase">
+                  Summary *
+                </label>
                 <textarea
                   rows={2}
                   required
                   value={form.summary}
-                  onChange={(e) => setForm({ ...form, summary: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, summary: e.target.value })
+                  }
                   className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                 />
               </div>
               <div className="space-y-1">
-                <label className="font-mono text-neutral-400 uppercase">Challenge & Solution</label>
+                <label className="font-mono text-neutral-400 uppercase">
+                  Challenge & Solution
+                </label>
                 <textarea
                   rows={3}
                   value={form.solution}
-                  onChange={(e) => setForm({ ...form, solution: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, solution: e.target.value })
+                  }
                   className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="font-mono text-neutral-400 uppercase">Metric 1 (Value & Label)</label>
+                  <label className="font-mono text-neutral-400 uppercase">
+                    Metric 1 (Value & Label)
+                  </label>
                   <input
                     type="text"
                     value={form.metric1Val}
-                    onChange={(e) => setForm({ ...form, metric1Val: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, metric1Val: e.target.value })
+                    }
                     className="w-full px-3 py-1.5 bg-neutral-900 border border-white/10 rounded-lg text-white mb-1"
                   />
                   <input
                     type="text"
                     value={form.metric1Label}
-                    onChange={(e) => setForm({ ...form, metric1Label: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, metric1Label: e.target.value })
+                    }
                     className="w-full px-3 py-1.5 bg-neutral-900 border border-white/10 rounded-lg text-white"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-mono text-neutral-400 uppercase">Metric 2 (Value & Label)</label>
+                  <label className="font-mono text-neutral-400 uppercase">
+                    Metric 2 (Value & Label)
+                  </label>
                   <input
                     type="text"
                     value={form.metric2Val}
-                    onChange={(e) => setForm({ ...form, metric2Val: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, metric2Val: e.target.value })
+                    }
                     className="w-full px-3 py-1.5 bg-neutral-900 border border-white/10 rounded-lg text-white mb-1"
                   />
                   <input
                     type="text"
                     value={form.metric2Label}
-                    onChange={(e) => setForm({ ...form, metric2Label: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, metric2Label: e.target.value })
+                    }
                     className="w-full px-3 py-1.5 bg-neutral-900 border border-white/10 rounded-lg text-white"
                   />
                 </div>
               </div>
+              <ImageUploader
+                label="Case Study Thumbnail"
+                value={form.thumbnail}
+                onChange={(url) => setForm({ ...form, thumbnail: url })}
+                folder="CaseStudies"
+                aspect="video"
+                hint="16:9 hero image shown on homepage case study cards, work listing, and public case study page."
+              />
               <div className="pt-4 flex justify-end gap-3 border-t border-white/10 font-mono">
                 <button
                   type="button"

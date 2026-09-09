@@ -2,7 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { MessageSquareQuote, Plus, Trash2, Star } from "lucide-react";
-import { getTestimonials, createTestimonial, deleteTestimonial } from "@/lib/actions/testimonial.actions";
+import {
+  getTestimonials,
+  createTestimonial,
+  deleteTestimonial,
+} from "@/lib/actions/testimonial.actions";
+import ImageUploader from "@/components/shared/ImageUploader";
 
 export default function TestimonialsCmsPage() {
   const [testimonials, setTestimonials] = useState<any[]>([]);
@@ -14,7 +19,7 @@ export default function TestimonialsCmsPage() {
     company: "",
     position: "",
     content: "",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&auto=format&fit=crop&q=80",
+    avatar: "",
     rating: 5,
   });
 
@@ -33,7 +38,11 @@ export default function TestimonialsCmsPage() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await createTestimonial({ ...form, published: true, featured: true } as any);
+    const res = await createTestimonial({
+      ...form,
+      published: true,
+      featured: true,
+    } as any);
     if (res.success) {
       setIsModalOpen(false);
       fetchTestimonials();
@@ -89,9 +98,15 @@ export default function TestimonialsCmsPage() {
                   "{t.content}"
                 </p>
                 <div className="flex items-center gap-3 pt-3 border-t border-white/5">
-                  <img src={t.avatar} alt={t.clientName} className="w-9 h-9 rounded-full object-cover grayscale" />
+                  <img
+                    src={t.avatar}
+                    alt={t.clientName}
+                    className="w-9 h-9 rounded-full object-cover grayscale"
+                  />
                   <div>
-                    <div className="text-xs font-bold text-white">{t.clientName}</div>
+                    <div className="text-xs font-bold text-white">
+                      {t.clientName}
+                    </div>
                     <div className="text-[10px] text-neutral-400 font-mono">
                       {t.position}, {t.company}
                     </div>
@@ -117,52 +132,83 @@ export default function TestimonialsCmsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
           <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-lg w-full p-6 sm:p-8 space-y-4 my-8 font-sans text-xs">
             <div className="flex justify-between items-center border-b border-white/10 pb-4">
-              <h3 className="text-base font-bold text-white font-mono uppercase">Add Testimonial</h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-neutral-400 hover:text-white">✕</button>
+              <h3 className="text-base font-bold text-white font-mono uppercase">
+                Add Testimonial
+              </h3>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-neutral-400 hover:text-white"
+              >
+                ✕
+              </button>
             </div>
             <form onSubmit={handleCreate} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="font-mono text-neutral-400 uppercase">Client Name *</label>
+                  <label className="font-mono text-neutral-400 uppercase">
+                    Client Name *
+                  </label>
                   <input
                     type="text"
                     required
                     value={form.clientName}
-                    onChange={(e) => setForm({ ...form, clientName: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, clientName: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-mono text-neutral-400 uppercase">Company *</label>
+                  <label className="font-mono text-neutral-400 uppercase">
+                    Company *
+                  </label>
                   <input
                     type="text"
                     required
                     value={form.company}
-                    onChange={(e) => setForm({ ...form, company: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, company: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                   />
                 </div>
               </div>
               <div className="space-y-1">
-                <label className="font-mono text-neutral-400 uppercase">Position / Title</label>
+                <label className="font-mono text-neutral-400 uppercase">
+                  Position / Title
+                </label>
                 <input
                   type="text"
                   value={form.position}
-                  onChange={(e) => setForm({ ...form, position: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, position: e.target.value })
+                  }
                   placeholder="e.g. Chief Technology Officer"
                   className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                 />
               </div>
               <div className="space-y-1">
-                <label className="font-mono text-neutral-400 uppercase">Testimonial Quote *</label>
+                <label className="font-mono text-neutral-400 uppercase">
+                  Testimonial Quote *
+                </label>
                 <textarea
                   rows={4}
                   required
                   value={form.content}
-                  onChange={(e) => setForm({ ...form, content: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, content: e.target.value })
+                  }
                   className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white text-xs"
                 />
               </div>
+              <ImageUploader
+                label="Client Avatar"
+                value={form.avatar}
+                onChange={(url) => setForm({ ...form, avatar: url })}
+                folder="Testimonials"
+                aspect="square"
+                hint="Square headshot of the testimonial author. Shown next to quote on homepage."
+              />
               <div className="pt-4 flex justify-end gap-3 border-t border-white/10 font-mono">
                 <button
                   type="button"

@@ -3,7 +3,12 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Users, Plus, Trash2, ArrowUpRight, ShieldCheck } from "lucide-react";
-import { getTeamMembers, createTeamMember, deleteTeamMember } from "@/lib/actions/team.actions";
+import {
+  getTeamMembers,
+  createTeamMember,
+  deleteTeamMember,
+} from "@/lib/actions/team.actions";
+import ImageUploader from "@/components/shared/ImageUploader";
 
 export default function TeamManagementPage() {
   const [members, setMembers] = useState<any[]>([]);
@@ -20,6 +25,7 @@ export default function TeamManagementPage() {
     location: "San Francisco, CA",
     skills: "Distributed Systems, Next.js, Go",
     technologies: "Next.js, TypeScript, Kubernetes",
+    avatar: "",
   });
 
   const fetchMembers = async () => {
@@ -54,6 +60,7 @@ export default function TeamManagementPage() {
       location: form.location,
       skills: skillsArray,
       technologies: techArray,
+      avatar: form.avatar || undefined,
       published: true,
     } as any);
 
@@ -118,13 +125,23 @@ export default function TeamManagementPage() {
                 </div>
 
                 <div className="w-16 h-16 rounded-xl overflow-hidden border border-white/10 bg-neutral-900">
-                  <img src={m.avatar} alt={m.name} className="w-full h-full object-cover grayscale" />
+                  <img
+                    src={m.avatar}
+                    alt={m.name}
+                    className="w-full h-full object-cover grayscale"
+                  />
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-bold text-white tracking-tight">{m.name}</h3>
-                  <p className="text-xs text-neutral-400 font-mono">{m.title}</p>
-                  <p className="text-[11px] text-neutral-500 font-mono">{m.email}</p>
+                  <h3 className="text-lg font-bold text-white tracking-tight">
+                    {m.name}
+                  </h3>
+                  <p className="text-xs text-neutral-400 font-mono">
+                    {m.title}
+                  </p>
+                  <p className="text-[11px] text-neutral-500 font-mono">
+                    {m.email}
+                  </p>
                 </div>
               </div>
 
@@ -146,12 +163,21 @@ export default function TeamManagementPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
           <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-lg w-full p-6 sm:p-8 space-y-4 my-8 font-sans text-xs">
             <div className="flex justify-between items-center border-b border-white/10 pb-4">
-              <h3 className="text-base font-bold text-white font-mono uppercase">Add Team Member</h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-neutral-400 hover:text-white">✕</button>
+              <h3 className="text-base font-bold text-white font-mono uppercase">
+                Add Team Member
+              </h3>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-neutral-400 hover:text-white"
+              >
+                ✕
+              </button>
             </div>
             <form onSubmit={handleCreate} className="space-y-4">
               <div className="space-y-1">
-                <label className="font-mono text-neutral-400 uppercase">Full Name *</label>
+                <label className="font-mono text-neutral-400 uppercase">
+                  Full Name *
+                </label>
                 <input
                   type="text"
                   required
@@ -161,7 +187,9 @@ export default function TeamManagementPage() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="font-mono text-neutral-400 uppercase">Title *</label>
+                <label className="font-mono text-neutral-400 uppercase">
+                  Title *
+                </label>
                 <input
                   type="text"
                   required
@@ -171,7 +199,9 @@ export default function TeamManagementPage() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="font-mono text-neutral-400 uppercase">Email Address *</label>
+                <label className="font-mono text-neutral-400 uppercase">
+                  Email Address *
+                </label>
                 <input
                   type="email"
                   required
@@ -181,16 +211,22 @@ export default function TeamManagementPage() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="font-mono text-neutral-400 uppercase">Tagline</label>
+                <label className="font-mono text-neutral-400 uppercase">
+                  Tagline
+                </label>
                 <input
                   type="text"
                   value={form.tagline}
-                  onChange={(e) => setForm({ ...form, tagline: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, tagline: e.target.value })
+                  }
                   className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                 />
               </div>
               <div className="space-y-1">
-                <label className="font-mono text-neutral-400 uppercase">Biography</label>
+                <label className="font-mono text-neutral-400 uppercase">
+                  Biography
+                </label>
                 <textarea
                   rows={3}
                   value={form.bio}
@@ -198,6 +234,14 @@ export default function TeamManagementPage() {
                   className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                 />
               </div>
+              <ImageUploader
+                label="Profile Avatar / Headshot"
+                value={form.avatar}
+                onChange={(url) => setForm({ ...form, avatar: url })}
+                folder="Team"
+                aspect="square"
+                hint="Square portrait photo of the engineer. Used on team directory & public portfolio."
+              />
               <div className="pt-4 flex justify-end gap-3 border-t border-white/10 font-mono">
                 <button
                   type="button"
