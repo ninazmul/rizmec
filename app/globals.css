@@ -172,3 +172,26 @@ h1, h2, h3, h4, h5, h6 {
 .cl-userButtonBox {
   flex-direction: row-reverse;
 }
+
+/* ==============================================================================
+   Universal Print Stylesheet Rules
+   ============================================================================== */
+@media print {
+  @page {
+    size: auto;
+    margin: 10mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #111827 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
