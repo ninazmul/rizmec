@@ -2,31 +2,44 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Users, Plus, Trash2, ArrowUpRight, ShieldCheck } from "lucide-react";
+import {
+  Users,
+  Plus,
+  Trash2,
+  ArrowUpRight,
+  ShieldCheck,
+  Edit2,
+} from "lucide-react";
 import {
   getTeamMembers,
   createTeamMember,
+  updateTeamMember,
   deleteTeamMember,
 } from "@/lib/actions/team.actions";
 import ImageUploader from "@/components/shared/ImageUploader";
+import toast from "react-hot-toast";
+
+const DEFAULT_FORM = {
+  name: "",
+  title: "",
+  tagline: "",
+  bio: "",
+  email: "",
+  role: "engineering",
+  location: "San Francisco, CA",
+  skills: "Distributed Systems, Next.js, Go",
+  technologies: "Next.js, TypeScript, Kubernetes",
+  avatar: "",
+};
 
 export default function TeamManagementPage() {
   const [members, setMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  const [form, setForm] = useState({
-    name: "",
-    title: "",
-    tagline: "",
-    bio: "",
-    email: "",
-    role: "engineering",
-    location: "San Francisco, CA",
-    skills: "Distributed Systems, Next.js, Go",
-    technologies: "Next.js, TypeScript, Kubernetes",
-    avatar: "",
-  });
+  const [form, setForm] = useState(DEFAULT_FORM);
 
   const fetchMembers = async () => {
     setLoading(true);
@@ -41,38 +54,106 @@ export default function TeamManagementPage() {
     fetchMembers();
   }, []);
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const openCreate = () => {
+    setForm(DEFAULT_FORM);
+    setEditingId(null);
+    setIsModalOpen(true);
+  };
+
+  const openEdit = (tm: any) => {
+    setForm({
+      name: tm.name || "",
+      title: tm.title || "",
+      tagline: tm.tagline || "",
+      bio: tm.bio || "",
+      email: tm.email || "",
+      role: tm.role || "engineering",
+      location: tm.location || "San Francisco, CA",
+      skills: Array.isArray(tm.skills)
+        ? tm.skills
+            .map((s: any) => (typeof s === "string" ? s : s.name))
+            .join(", ")
+        : tm.skills || "",
+      technologies: Array.isArray(tm.technologies)
+        ? tm.technologies.join(", ")
+        : tm.technologies || "",
+      avatar: tm.avatar || "",
+    });
+    setEditingId(tm._id);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setEditingId(null);
+    setIsModalOpen(false);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const skillsArray = form.skills.split(",").map((s) => ({
-      name: s.trim(),
-      level: 90,
-      category: "Core",
-    }));
-    const techArray = form.technologies.split(",").map((t) => t.trim());
+    setSaving(true);
 
-    const res = await createTeamMember({
-      name: form.name,
-      title: form.title,
-      tagline: form.tagline,
-      bio: form.bio,
-      email: form.email,
-      role: form.role as any,
-      location: form.location,
-      skills: skillsArray,
-      technologies: techArray,
-      avatar: form.avatar || undefined,
-      published: true,
-    } as any);
+    try {
+      const skillsArray = form.skills
+        .split(",")
+        .filter(Boolean)
+        .map((s) => ({
+          name: s.trim(),
+          level: 90,
+          category: "Core",
+        }));
+      const techArray = form.technologies
+        .split(",")
+        .filter(Boolean)
+        .map((t) => t.trim());
 
-    if (res.success) {
-      setIsModalOpen(false);
-      fetchMembers();
+      const payload: any = {
+        name: form.name,
+        title: form.title,
+        tagline: form.tagline,
+        bio: form.bio,
+        email: form.email,
+        role: form.role as any,
+        location: form.location,
+        skills: skillsArray,
+        technologies: techArray,
+        avatar: form.avatar || undefined,
+      };
+
+      let res;
+
+      if (editingId) {
+        res = await updateTeamMember(editingId, payload);
+        if (res.success) {
+          toast.success("Team member updated successfully");
+          closeModal();
+          fetchMembers();
+        } else {
+          toast.error(res.error || "Failed to update team member");
+        }
+      } else {
+        res = await createTeamMember({
+          ...payload,
+          published: true,
+        } as any);
+        if (res.success) {
+          toast.success("Team member created successfully");
+          closeModal();
+          fetchMembers();
+        } else {
+          toast.error(res.error || "Failed to create team member");
+        }
+      }
+    } catch (error: any) {
+      toast.error(error.message || "An unexpected error occurred");
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Remove team member?")) {
+    if (confirm("Delete this team member? This action cannot be undone.")) {
       await deleteTeamMember(id);
+      toast.success("Team member removed");
       fetchMembers();
     }
   };
@@ -90,7 +171,7 @@ export default function TeamManagementPage() {
         </div>
 
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={openCreate}
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white text-black font-mono text-xs font-semibold uppercase tracking-wider hover:bg-neutral-200 transition-all"
         >
           <Plus className="w-3.5 h-3.5" />
@@ -145,7 +226,13 @@ export default function TeamManagementPage() {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-white/10 flex justify-end">
+              <div className="pt-4 border-t border-white/10 flex justify-end gap-2">
+                <button
+                  onClick={() => openEdit(m)}
+                  className="p-1.5 rounded text-neutral-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
                 <button
                   onClick={() => handleDelete(m._id)}
                   className="p-1.5 rounded text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
@@ -164,16 +251,16 @@ export default function TeamManagementPage() {
           <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-lg w-full p-6 sm:p-8 space-y-4 my-8 font-sans text-xs">
             <div className="flex justify-between items-center border-b border-white/10 pb-4">
               <h3 className="text-base font-bold text-white font-mono uppercase">
-                Add Team Member
+                {editingId ? "Edit Team Member" : "Add Team Member"}
               </h3>
               <button
-                onClick={() => setIsModalOpen(false)}
+                onClick={closeModal}
                 className="text-neutral-400 hover:text-white"
               >
                 ✕
               </button>
             </div>
-            <form onSubmit={handleCreate} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1">
                 <label className="font-mono text-neutral-400 uppercase">
                   Full Name *
@@ -212,6 +299,38 @@ export default function TeamManagementPage() {
               </div>
               <div className="space-y-1">
                 <label className="font-mono text-neutral-400 uppercase">
+                  Role
+                </label>
+                <select
+                  value={form.role}
+                  onChange={(e) => setForm({ ...form, role: e.target.value })}
+                  className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
+                >
+                  <option value="engineering">Engineering</option>
+                  <option value="design">Design</option>
+                  <option value="product">Product</option>
+                  <option value="leadership">Leadership</option>
+                  <option value="operations">Operations</option>
+                  <option value="marketing">Marketing</option>
+                  <option value="sales">Sales</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div className="space-y-1">
+                <label className="font-mono text-neutral-400 uppercase">
+                  Location
+                </label>
+                <input
+                  type="text"
+                  value={form.location}
+                  onChange={(e) =>
+                    setForm({ ...form, location: e.target.value })
+                  }
+                  className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="font-mono text-neutral-400 uppercase">
                   Tagline
                 </label>
                 <input
@@ -234,6 +353,32 @@ export default function TeamManagementPage() {
                   className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                 />
               </div>
+              <div className="space-y-1">
+                <label className="font-mono text-neutral-400 uppercase">
+                  Skills (comma-separated)
+                </label>
+                <input
+                  type="text"
+                  value={form.skills}
+                  onChange={(e) => setForm({ ...form, skills: e.target.value })}
+                  placeholder="e.g. Distributed Systems, Next.js, Go"
+                  className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="font-mono text-neutral-400 uppercase">
+                  Technologies (comma-separated)
+                </label>
+                <input
+                  type="text"
+                  value={form.technologies}
+                  onChange={(e) =>
+                    setForm({ ...form, technologies: e.target.value })
+                  }
+                  placeholder="e.g. Next.js, TypeScript, Kubernetes"
+                  className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
+                />
+              </div>
               <ImageUploader
                 label="Profile Avatar / Headshot"
                 value={form.avatar}
@@ -245,16 +390,24 @@ export default function TeamManagementPage() {
               <div className="pt-4 flex justify-end gap-3 border-t border-white/10 font-mono">
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={closeModal}
                   className="px-4 py-2 rounded-lg border border-white/10 text-neutral-400"
+                  disabled={saving}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 rounded-lg bg-white text-black font-bold uppercase"
+                  disabled={saving}
+                  className="px-6 py-2 rounded-lg bg-white text-black font-bold uppercase disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Save Engineer
+                  {saving
+                    ? editingId
+                      ? "Updating..."
+                      : "Saving..."
+                    : editingId
+                      ? "Update Engineer"
+                      : "Save Engineer"}
                 </button>
               </div>
             </form>

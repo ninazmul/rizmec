@@ -1,7 +1,16 @@
 import React from "react";
 import Link from "next/link";
 import { Metadata } from "next";
-import { ArrowUpRight, Cpu, Server, Globe, Layers, Workflow, Terminal } from "lucide-react";
+import {
+  ArrowUpRight,
+  Cpu,
+  Server,
+  Globe,
+  Layers,
+  Workflow,
+  Terminal,
+  Smartphone,
+} from "lucide-react";
 import { getServices } from "@/lib/actions/service.actions";
 
 export const revalidate = 60;
@@ -17,6 +26,7 @@ const iconMap: Record<string, React.ReactNode> = {
   Server: <Server className="w-6 h-6 text-white" />,
   Globe: <Globe className="w-6 h-6 text-white" />,
   Layers: <Layers className="w-6 h-6 text-white" />,
+  Smartphone: <Smartphone className="w-6 h-6 text-white" />,
   Workflow: <Workflow className="w-6 h-6 text-white" />,
   Terminal: <Terminal className="w-6 h-6 text-white" />,
 };
@@ -36,14 +46,18 @@ export default async function ServicesCatalogPage() {
           Engineering disciplines built for mission-critical scale.
         </h1>
         <p className="text-lg sm:text-xl text-neutral-400 font-light leading-relaxed">
-          From deterministic AI pipelines to multi-region cloud meshes, explore the core technical disciplines RIZMEC deploys for international enterprise partners.
+          From deterministic AI pipelines to multi-region cloud meshes, explore
+          the core technical disciplines RIZMEC deploys for international
+          enterprise partners.
         </p>
       </div>
 
       {/* Services Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {services.map((service: any) => {
-          const icon = iconMap[service.iconName] || <Terminal className="w-6 h-6 text-white" />;
+          const icon = iconMap[service.iconName] || (
+            <Terminal className="w-6 h-6 text-white" />
+          );
           return (
             <div
               key={service.slug}
@@ -75,7 +89,10 @@ export default async function ServicesCatalogPage() {
                 {/* Features List */}
                 <div className="space-y-2 pt-2 border-t border-white/5">
                   {(service.features || []).slice(0, 3).map((f: any) => (
-                    <div key={f.title} className="text-xs text-neutral-300 flex items-start gap-2">
+                    <div
+                      key={f.title}
+                      className="text-xs text-neutral-300 flex items-start gap-2"
+                    >
                       <span className="w-1.5 h-1.5 rounded-full bg-white mt-1.5 shrink-0" />
                       <span>{f.title}</span>
                     </div>
@@ -85,14 +102,16 @@ export default async function ServicesCatalogPage() {
 
               <div className="pt-6 border-t border-white/10 flex items-center justify-between">
                 <div className="flex flex-wrap gap-1.5">
-                  {(service.technologies || []).slice(0, 3).map((tech: string) => (
-                    <span
-                      key={tech}
-                      className="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 text-neutral-400 border border-white/5"
-                    >
-                      {tech}
-                    </span>
-                  ))}
+                  {(service.technologies || [])
+                    .slice(0, 3)
+                    .map((tech: string) => (
+                      <span
+                        key={tech}
+                        className="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 text-neutral-400 border border-white/5"
+                      >
+                        {tech}
+                      </span>
+                    ))}
                 </div>
                 <Link
                   href={`/services/${service.slug}`}

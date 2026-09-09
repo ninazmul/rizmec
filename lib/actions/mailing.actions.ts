@@ -1,7 +1,9 @@
 "use server";
 
 import { connectToDatabase } from "@/lib/database";
-import MailCampaign, { IMailCampaign } from "@/lib/database/models/mailCampaign.model";
+import MailCampaign, {
+  IMailCampaign,
+} from "@/lib/database/models/mailCampaign.model";
 import EmailTemplate from "@/lib/database/models/emailTemplate.model";
 import Lead from "@/lib/database/models/lead.model";
 import { requirePermission } from "@/lib/auth/rbac";
@@ -70,7 +72,10 @@ export async function sendMailCampaign(campaignId: string) {
     }).lean();
 
     if (leads.length === 0) {
-      return { success: false, error: "No eligible recipients found matching criteria." };
+      return {
+        success: false,
+        error: "No eligible recipients found matching criteria.",
+      };
     }
 
     campaign.status = "sending";
@@ -178,6 +183,74 @@ export async function saveEmailTemplate(data: {
     return { success: true, data: JSON.parse(JSON.stringify(template)) };
   } catch (error: any) {
     console.error("Error saving email template:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateMailCampaign(
+  id: string,
+  data: {
+    name?: string;
+    subject?: string;
+    previewText?: string;
+    contentHtml?: string;
+    targetStatus?: string[];
+  },
+) {
+  try {
+    await requirePermission("mailing", "update");
+    await connectToDatabase();
+
+    const existing = await MailCampaign.findById(id);
+    if (!existing) return { success: false, error: "Campaign not found." };
+    if (existing.status === "completed" || existing.status === "sending") {
+      return {
+        success: false,
+        error: `Campaign is ${existing.status} and cannot be edited.`,
+      };
+    }
+
+    const updateData: any = { ...data };
+    if (data.targetStatus) {
+      const recipientCount = await Lead.countDocuments({
+        status: { $in: data.targetStatus },
+      });
+      updateData.recipientCount = recipientCount;
+    }
+
+    const updated = await MailCampaign.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true },
+    ).lean();
+
+    revalidatePath("/dashboard/mailing");
+    return { success: true, data: JSON.parse(JSON.stringify(updated)) };
+  } catch (error: any) {
+    console.error("Error updating mail campaign:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteMailCampaign(id: string) {
+  try {
+    await requirePermission("mailing", "delete");
+    await connectToDatabase();
+
+    const existing = await MailCampaign.findById(id);
+    if (!existing) return { success: false, error: "Campaign not found." };
+    if (existing.status === "sending") {
+      return {
+        success: false,
+        error: "Cannot delete a campaign that is currently sending.",
+      };
+    }
+
+    await MailCampaign.findByIdAndDelete(id);
+    revalidatePath("/dashboard/mailing");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error deleting mail campaign:", error);
     return { success: false, error: error.message };
   }
 }

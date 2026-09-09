@@ -10,11 +10,27 @@ import {
   Trash2,
   Edit2,
   CheckCircle2,
-  AlertCircle,
-  Clock,
-  ArrowUpRight,
 } from "lucide-react";
-import { getLeads, createLead, updateLead, deleteLead, importLeadsBatch } from "@/lib/actions/lead.actions";
+import {
+  getLeads,
+  createLead,
+  updateLead,
+  deleteLead,
+  importLeadsBatch,
+} from "@/lib/actions/lead.actions";
+import toast from "react-hot-toast";
+
+const DEFAULT_LEAD_FORM = {
+  name: "",
+  company: "",
+  email: "",
+  phone: "",
+  serviceInterest: "Applied AI Systems & Autonomous Agents",
+  budget: "$100k - $250k",
+  priority: "medium",
+  status: "new",
+  notes: "",
+};
 
 export default function LeadsCrmPage() {
   const [leads, setLeads] = useState<any[]>([]);
@@ -23,21 +39,11 @@ export default function LeadsCrmPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  // Create Lead Modal
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [newLeadForm, setNewLeadForm] = useState({
-    name: "",
-    company: "",
-    email: "",
-    phone: "",
-    serviceInterest: "Applied AI Systems & Autonomous Agents",
-    budget: "$100k - $250k",
-    priority: "medium",
-    status: "new",
-    notes: "",
-  });
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [leadForm, setLeadForm] = useState({ ...DEFAULT_LEAD_FORM });
+  const [savingLead, setSavingLead] = useState(false);
 
-  // Bulk CSV Import Modal
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [importPreview, setImportPreview] = useState<any[]>([]);
@@ -62,39 +68,78 @@ export default function LeadsCrmPage() {
     fetchLeads();
   }, [search, statusFilter]);
 
-  const handleCreateLead = async (e: React.FormEvent) => {
+  const openCreate = () => {
+    setEditingId(null);
+    setLeadForm({ ...DEFAULT_LEAD_FORM });
+    setIsFormOpen(true);
+  };
+
+  const openEdit = (lead: any) => {
+    setEditingId(lead._id);
+    setLeadForm({
+      name: lead.name || "",
+      company: lead.company || "",
+      email: lead.email || "",
+      phone: lead.phone || "",
+      serviceInterest:
+        lead.serviceInterest || DEFAULT_LEAD_FORM.serviceInterest,
+      budget: lead.budget || DEFAULT_LEAD_FORM.budget,
+      priority: lead.priority || "medium",
+      status: lead.status || "new",
+      notes: lead.notes || "",
+    });
+    setIsFormOpen(true);
+  };
+
+  const closeForm = () => {
+    setIsFormOpen(false);
+    setEditingId(null);
+    setLeadForm({ ...DEFAULT_LEAD_FORM });
+  };
+
+  const handleSubmitLead = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await createLead(newLeadForm as any);
+    setSavingLead(true);
+    const res = editingId
+      ? await updateLead(
+          editingId,
+          leadForm as any,
+          editingId ? "Lead details updated." : undefined,
+        )
+      : await createLead(leadForm as any);
+    setSavingLead(false);
+
     if (res.success) {
-      setIsCreateOpen(false);
-      setNewLeadForm({
-        name: "",
-        company: "",
-        email: "",
-        phone: "",
-        serviceInterest: "Applied AI Systems & Autonomous Agents",
-        budget: "$100k - $250k",
-        priority: "medium",
-        status: "new",
-        notes: "",
-      });
+      toast.success(editingId ? "Lead updated." : "Lead added.");
+      closeForm();
       fetchLeads();
+    } else {
+      toast.error(res.error || "Failed to save lead.");
     }
   };
 
   const handleStatusChange = async (leadId: string, newStatus: string) => {
-    await updateLead(leadId, { status: newStatus as any }, `Status updated to ${newStatus}`);
-    fetchLeads();
+    const res = await updateLead(
+      leadId,
+      { status: newStatus as any },
+      `Status updated to ${newStatus}`,
+    );
+    if (res.success) {
+      toast.success("Lead status updated.");
+      fetchLeads();
+    } else {
+      toast.error(res.error || "Failed to update status.");
+    }
   };
 
   const handleDeleteLead = async (leadId: string) => {
     if (confirm("Are you sure you want to delete this lead?")) {
-      await deleteLead(leadId);
+      const res = await deleteLead(leadId);
+      if (res.success) toast.success("Lead deleted.");
       fetchLeads();
     }
   };
 
-  // CSV parsing
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -122,7 +167,8 @@ export default function LeadsCrmPage() {
             email: lead.email,
             phone: lead.phone || "",
             source: "import",
-            serviceInterest: lead.service || lead.serviceinterest || "Digital Engineering",
+            serviceInterest:
+              lead.service || lead.serviceinterest || "Digital Engineering",
             budget: lead.budget || "Enterprise",
             priority: lead.priority || "medium",
           });
@@ -136,17 +182,22 @@ export default function LeadsCrmPage() {
   const executeBulkImport = async () => {
     if (importPreview.length === 0) return;
     setImporting(true);
-    const res = await importLeadsBatch(importPreview);
-    setImporting(false);
-    setImportResult(res);
-    if (res.success) {
-      fetchLeads();
-    }
+    importLeadsBatch(importPreview).then((res) => {
+      setImporting(false);
+      setImportResult(res);
+      if (res.success) fetchLeads();
+    });
+  };
+
+  const priorityBadge = (p: string) => {
+    if (p === "high") return "bg-rose-500/15 text-rose-300 border-rose-500/30";
+    if (p === "low")
+      return "bg-neutral-500/15 text-neutral-400 border-neutral-500/30";
+    return "bg-amber-500/15 text-amber-300 border-amber-500/30";
   };
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
         <div>
           <span className="text-xs font-mono tracking-widest text-neutral-400 uppercase">
@@ -171,7 +222,7 @@ export default function LeadsCrmPage() {
             <span>Bulk CSV Import</span>
           </button>
           <button
-            onClick={() => setIsCreateOpen(true)}
+            onClick={openCreate}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white text-black font-semibold uppercase tracking-wider hover:bg-neutral-200 transition-all"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -180,7 +231,6 @@ export default function LeadsCrmPage() {
         </div>
       </div>
 
-      {/* Filters & Search Toolbar */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl border border-white/10 bg-neutral-950">
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -213,7 +263,6 @@ export default function LeadsCrmPage() {
         </div>
       </div>
 
-      {/* Leads Table */}
       <div className="rounded-2xl border border-white/10 bg-neutral-950 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
@@ -221,6 +270,7 @@ export default function LeadsCrmPage() {
               <tr className="border-b border-white/10 text-neutral-400 font-mono uppercase bg-neutral-900/50">
                 <th className="py-3 px-4">Lead Contact</th>
                 <th className="py-3 px-4">Company / Org</th>
+                <th className="py-3 px-4">Priority</th>
                 <th className="py-3 px-4">Service Interest</th>
                 <th className="py-3 px-4">Budget</th>
                 <th className="py-3 px-4">Pipeline Status</th>
@@ -230,27 +280,45 @@ export default function LeadsCrmPage() {
             <tbody className="divide-y divide-white/5 font-sans">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-neutral-500 font-mono">
+                  <td
+                    colSpan={7}
+                    className="py-12 text-center text-neutral-500 font-mono"
+                  >
                     Loading CRM telemetry...
                   </td>
                 </tr>
               ) : leads.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-neutral-500 font-mono">
+                  <td
+                    colSpan={7}
+                    className="py-12 text-center text-neutral-500 font-mono"
+                  >
                     No leads found matching criteria.
                   </td>
                 </tr>
               ) : (
                 leads.map((lead) => (
-                  <tr key={lead._id} className="hover:bg-white/[0.01] transition-colors">
+                  <tr
+                    key={lead._id}
+                    className="hover:bg-white/[0.01] transition-colors"
+                  >
                     <td className="py-4 px-4">
                       <div className="font-bold text-white">{lead.name}</div>
-                      <div className="text-neutral-400 font-mono text-[11px]">{lead.email}</div>
+                      <div className="text-neutral-400 font-mono text-[11px]">
+                        {lead.email}
+                      </div>
                     </td>
                     <td className="py-4 px-4 text-neutral-300 font-mono">
                       {lead.company || "N/A"}
                     </td>
-                    <td className="py-4 px-4 text-neutral-300">
+                    <td className="py-4 px-4">
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold border ${priorityBadge(lead.priority)}`}
+                      >
+                        {lead.priority || "medium"}
+                      </span>
+                    </td>
+                    <td className="py-4 px-4 text-neutral-300 max-w-xs truncate">
                       {lead.serviceInterest}
                     </td>
                     <td className="py-4 px-4 font-mono font-semibold text-white">
@@ -259,13 +327,15 @@ export default function LeadsCrmPage() {
                     <td className="py-4 px-4">
                       <select
                         value={lead.status}
-                        onChange={(e) => handleStatusChange(lead._id, e.target.value)}
+                        onChange={(e) =>
+                          handleStatusChange(lead._id, e.target.value)
+                        }
                         className={`px-2.5 py-1 rounded text-[10px] font-mono uppercase font-bold border focus:outline-none ${
                           lead.status === "new"
                             ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
                             : lead.status === "won"
-                            ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
-                            : "bg-white/5 text-neutral-300 border-white/10"
+                              ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
+                              : "bg-white/5 text-neutral-300 border-white/10"
                         }`}
                       >
                         <option value="new">New</option>
@@ -278,13 +348,22 @@ export default function LeadsCrmPage() {
                       </select>
                     </td>
                     <td className="py-4 px-4 text-right">
-                      <button
-                        onClick={() => handleDeleteLead(lead._id)}
-                        className="p-1.5 rounded text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
-                        title="Delete Lead"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="inline-flex items-center gap-1">
+                        <button
+                          onClick={() => openEdit(lead)}
+                          className="p-1.5 rounded text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                          title="Edit lead"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteLead(lead._id)}
+                          className="p-1.5 rounded text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                          title="Delete Lead"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -294,38 +373,50 @@ export default function LeadsCrmPage() {
         </div>
       </div>
 
-      {/* Manual Add Lead Modal */}
-      {isCreateOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-lg w-full p-6 sm:p-8 space-y-6">
+      {isFormOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-lg w-full p-6 sm:p-8 space-y-6 my-8">
             <div className="flex justify-between items-center border-b border-white/10 pb-4">
-              <h3 className="text-lg font-bold text-white font-mono uppercase">Add Lead to CRM</h3>
+              <h3 className="text-lg font-bold text-white font-mono uppercase">
+                {editingId ? "Edit Lead Record" : "Add Lead to CRM"}
+              </h3>
               <button
-                onClick={() => setIsCreateOpen(false)}
+                onClick={closeForm}
                 className="text-neutral-400 hover:text-white"
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleCreateLead} className="space-y-4 font-sans text-xs">
+            <form
+              onSubmit={handleSubmitLead}
+              className="space-y-4 font-sans text-xs"
+            >
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-neutral-400 font-mono uppercase">Full Name *</label>
+                  <label className="text-neutral-400 font-mono uppercase">
+                    Full Name *
+                  </label>
                   <input
                     type="text"
                     required
-                    value={newLeadForm.name}
-                    onChange={(e) => setNewLeadForm({ ...newLeadForm, name: e.target.value })}
+                    value={leadForm.name}
+                    onChange={(e) =>
+                      setLeadForm({ ...leadForm, name: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-neutral-400 font-mono uppercase">Company</label>
+                  <label className="text-neutral-400 font-mono uppercase">
+                    Company
+                  </label>
                   <input
                     type="text"
-                    value={newLeadForm.company}
-                    onChange={(e) => setNewLeadForm({ ...newLeadForm, company: e.target.value })}
+                    value={leadForm.company}
+                    onChange={(e) =>
+                      setLeadForm({ ...leadForm, company: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                   />
                 </div>
@@ -333,21 +424,29 @@ export default function LeadsCrmPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-neutral-400 font-mono uppercase">Corporate Email *</label>
+                  <label className="text-neutral-400 font-mono uppercase">
+                    Corporate Email *
+                  </label>
                   <input
                     type="email"
                     required
-                    value={newLeadForm.email}
-                    onChange={(e) => setNewLeadForm({ ...newLeadForm, email: e.target.value })}
+                    value={leadForm.email}
+                    onChange={(e) =>
+                      setLeadForm({ ...leadForm, email: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-neutral-400 font-mono uppercase">Phone</label>
+                  <label className="text-neutral-400 font-mono uppercase">
+                    Phone
+                  </label>
                   <input
                     type="text"
-                    value={newLeadForm.phone}
-                    onChange={(e) => setNewLeadForm({ ...newLeadForm, phone: e.target.value })}
+                    value={leadForm.phone}
+                    onChange={(e) =>
+                      setLeadForm({ ...leadForm, phone: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                   />
                 </div>
@@ -355,48 +454,107 @@ export default function LeadsCrmPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-neutral-400 font-mono uppercase">Service Interest</label>
+                  <label className="text-neutral-400 font-mono uppercase">
+                    Service Interest
+                  </label>
                   <input
                     type="text"
-                    value={newLeadForm.serviceInterest}
-                    onChange={(e) => setNewLeadForm({ ...newLeadForm, serviceInterest: e.target.value })}
+                    value={leadForm.serviceInterest}
+                    onChange={(e) =>
+                      setLeadForm({
+                        ...leadForm,
+                        serviceInterest: e.target.value,
+                      })
+                    }
                     className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-neutral-400 font-mono uppercase">Budget</label>
+                  <label className="text-neutral-400 font-mono uppercase">
+                    Budget
+                  </label>
                   <input
                     type="text"
-                    value={newLeadForm.budget}
-                    onChange={(e) => setNewLeadForm({ ...newLeadForm, budget: e.target.value })}
+                    value={leadForm.budget}
+                    onChange={(e) =>
+                      setLeadForm({ ...leadForm, budget: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                   />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-neutral-400 font-mono uppercase">
+                    Priority
+                  </label>
+                  <select
+                    value={leadForm.priority}
+                    onChange={(e) =>
+                      setLeadForm({ ...leadForm, priority: e.target.value })
+                    }
+                    className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-neutral-400 font-mono uppercase">
+                    Pipeline Status
+                  </label>
+                  <select
+                    value={leadForm.status}
+                    onChange={(e) =>
+                      setLeadForm({ ...leadForm, status: e.target.value })
+                    }
+                    className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
+                  >
+                    <option value="new">New</option>
+                    <option value="contacted">Contacted</option>
+                    <option value="qualified">Qualified</option>
+                    <option value="proposal">Proposal</option>
+                    <option value="negotiation">Negotiation</option>
+                    <option value="won">Won</option>
+                    <option value="lost">Lost</option>
+                  </select>
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-neutral-400 font-mono uppercase">Initial Notes</label>
+                <label className="text-neutral-400 font-mono uppercase">
+                  Notes
+                </label>
                 <textarea
                   rows={3}
-                  value={newLeadForm.notes}
-                  onChange={(e) => setNewLeadForm({ ...newLeadForm, notes: e.target.value })}
+                  value={leadForm.notes}
+                  onChange={(e) =>
+                    setLeadForm({ ...leadForm, notes: e.target.value })
+                  }
                   className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                 />
               </div>
 
-              <div className="pt-4 flex justify-end gap-3 border-t border-white/10">
+              <div className="pt-4 flex justify-end gap-3 border-t border-white/10 font-mono">
                 <button
                   type="button"
-                  onClick={() => setIsCreateOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-white/10 font-mono text-neutral-400 hover:text-white"
+                  onClick={closeForm}
+                  className="px-4 py-2 rounded-lg border border-white/10 text-neutral-400 hover:text-white"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-lg bg-white text-black font-mono font-bold uppercase"
+                  disabled={savingLead}
+                  className="px-5 py-2 rounded-lg bg-white text-black font-bold uppercase disabled:opacity-50"
                 >
-                  Save Lead
+                  {savingLead
+                    ? "Saving..."
+                    : editingId
+                      ? "Update Lead"
+                      : "Save Lead"}
                 </button>
               </div>
             </form>
@@ -404,17 +562,17 @@ export default function LeadsCrmPage() {
         </div>
       )}
 
-      {/* Bulk CSV Import Modal */}
       {isImportOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-xl w-full p-6 sm:p-8 space-y-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-xl w-full p-6 sm:p-8 space-y-6 my-8">
             <div className="flex justify-between items-center border-b border-white/10 pb-4">
               <div>
                 <h3 className="text-lg font-bold text-white font-mono uppercase">
                   Bulk CSV Lead Import
                 </h3>
                 <p className="text-xs text-neutral-400">
-                  Import thousands of leads with duplicate detection and batch processing.
+                  Import thousands of leads with duplicate detection and batch
+                  processing.
                 </p>
               </div>
               <button
@@ -433,8 +591,12 @@ export default function LeadsCrmPage() {
                 </div>
                 <div className="space-y-1 text-neutral-300">
                   <div>Batch ID: {importResult.batchId}</div>
-                  <div className="text-emerald-400">Successfully Inserted: {importResult.insertedCount} leads</div>
-                  <div className="text-amber-400">Skipped Duplicates: {importResult.skippedCount}</div>
+                  <div className="text-emerald-400">
+                    Successfully Inserted: {importResult.insertedCount} leads
+                  </div>
+                  <div className="text-amber-400">
+                    Skipped Duplicates: {importResult.skippedCount}
+                  </div>
                 </div>
                 <button
                   onClick={() => setIsImportOpen(false)}
@@ -449,7 +611,9 @@ export default function LeadsCrmPage() {
                   <Upload className="w-8 h-8 text-neutral-400 mx-auto" />
                   <div className="text-xs font-mono text-neutral-300">
                     Upload a CSV file containing columns: <br />
-                    <span className="text-white font-bold">name, email, company, phone, service, budget</span>
+                    <span className="text-white font-bold">
+                      name, email, company, phone, service, budget
+                    </span>
                   </div>
                   <input
                     type="file"
@@ -463,10 +627,13 @@ export default function LeadsCrmPage() {
                   <div className="p-4 rounded-xl border border-white/10 bg-neutral-900 space-y-2 text-xs font-mono">
                     <div className="flex justify-between text-neutral-300">
                       <span>Parsed Valid Records:</span>
-                      <strong className="text-white">{importPreview.length} leads</strong>
+                      <strong className="text-white">
+                        {importPreview.length} leads
+                      </strong>
                     </div>
                     <p className="text-[11px] text-neutral-400">
-                      Duplicate email addresses will be skipped automatically during batch execution.
+                      Duplicate email addresses will be skipped automatically
+                      during batch execution.
                     </p>
                   </div>
                 )}
@@ -484,7 +651,9 @@ export default function LeadsCrmPage() {
                     disabled={importing || importPreview.length === 0}
                     className="px-6 py-2 rounded-lg bg-white text-black font-bold uppercase disabled:opacity-50"
                   >
-                    {importing ? "Processing Batch..." : `Execute Import (${importPreview.length})`}
+                    {importing
+                      ? "Processing Batch..."
+                      : `Execute Import (${importPreview.length})`}
                   </button>
                 </div>
               </div>

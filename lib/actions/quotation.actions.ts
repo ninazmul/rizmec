@@ -25,7 +25,11 @@ export async function getQuotations(params?: {
     if (params?.limit) q = q.limit(params.limit);
 
     const quotations = await q.lean();
-    return { success: true, data: JSON.parse(JSON.stringify(quotations)), total };
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(quotations)),
+      total,
+    };
   } catch (error: any) {
     console.error("Error fetching quotations:", error);
     return { success: false, error: error.message, data: [], total: 0 };
@@ -154,7 +158,10 @@ export async function signAndAcceptQuotation(
     }
 
     if (quotation.status === "accepted") {
-      return { success: false, error: "This quotation has already been signed and accepted." };
+      return {
+        success: false,
+        error: "This quotation has already been signed and accepted.",
+      };
     }
 
     // Freeze snapshot
@@ -249,6 +256,95 @@ export async function convertQuotationToInvoice(quotationId: string) {
     return { success: true, data: JSON.parse(JSON.stringify(invoice)) };
   } catch (error: any) {
     console.error("Error converting quotation to invoice:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateQuotation(
+  id: string,
+  data: Partial<IQuotation> & {
+    lineItems?: Array<{
+      item: string;
+      description?: string;
+      quantity: number;
+      unitPrice: number;
+      discount?: number;
+    }>;
+  },
+) {
+  try {
+    await requirePermission("quotations", "update");
+    await connectToDatabase();
+
+    const existing = await Quotation.findById(id);
+    if (!existing) return { success: false, error: "Quotation not found." };
+
+    const updatePayload: any = { ...data };
+
+    if (data.lineItems && data.lineItems.length > 0) {
+      let subtotal = 0;
+      let discountTotal = 0;
+      const computedLineItems = data.lineItems.map((li) => {
+        const gross = (li.quantity || 1) * (li.unitPrice || 0);
+        const discountVal = li.discount ? (gross * li.discount) / 100 : 0;
+        const total = gross - discountVal;
+        subtotal += gross;
+        discountTotal += discountVal;
+        return {
+          item: li.item,
+          description: li.description || "",
+          quantity: li.quantity || 1,
+          unitPrice: li.unitPrice || 0,
+          discount: li.discount || 0,
+          total,
+        };
+      });
+      const taxRate =
+        data.taxRate !== undefined ? data.taxRate : existing.taxRate || 0;
+      const netSubtotal = subtotal - discountTotal;
+      const taxAmount = (netSubtotal * taxRate) / 100;
+      const totalAmount = netSubtotal + taxAmount;
+      updatePayload.lineItems = computedLineItems;
+      updatePayload.subtotal = subtotal;
+      updatePayload.discountTotal = discountTotal;
+      updatePayload.taxRate = taxRate;
+      updatePayload.taxAmount = taxAmount;
+      updatePayload.totalAmount = totalAmount;
+    }
+
+    if (data.validUntil) {
+      updatePayload.validUntil = new Date(data.validUntil as any);
+    }
+
+    const updated = await Quotation.findByIdAndUpdate(
+      id,
+      { $set: updatePayload },
+      { new: true },
+    ).lean();
+
+    revalidatePath("/dashboard/quotations");
+    revalidatePath(`/quote/${existing.secureToken}`);
+    return { success: true, data: JSON.parse(JSON.stringify(updated)) };
+  } catch (error: any) {
+    console.error("Error updating quotation:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteQuotation(id: string) {
+  try {
+    await requirePermission("quotations", "delete");
+    await connectToDatabase();
+
+    const existing = await Quotation.findById(id);
+    if (!existing) return { success: false, error: "Quotation not found." };
+
+    await Quotation.findByIdAndDelete(id);
+    revalidatePath("/dashboard/quotations");
+    if (existing.secureToken) revalidatePath(`/quote/${existing.secureToken}`);
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error deleting quotation:", error);
     return { success: false, error: error.message };
   }
 }

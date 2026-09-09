@@ -11,34 +11,43 @@ import {
   CheckCircle2,
   Trash2,
   FileCheck2,
+  Edit2,
 } from "lucide-react";
 import {
   getQuotations,
   createQuotation,
   convertQuotationToInvoice,
+  updateQuotation,
+  deleteQuotation,
 } from "@/lib/actions/quotation.actions";
+import toast from "react-hot-toast";
+
+const DEFAULT_FORM = {
+  clientName: "",
+  clientCompany: "",
+  clientEmail: "",
+  clientPhone: "",
+  projectName: "",
+  description: "",
+  currency: "USD",
+  taxRate: 0,
+  validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+  notes: "",
+  termsConditions: "",
+  lineItems: [
+    { item: "", description: "", quantity: 1, unitPrice: 0, discount: 0 },
+  ],
+};
 
 export default function QuotationsPage() {
   const [quotations, setQuotations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  // New quotation state with dynamic line items
-  const [form, setForm] = useState({
-    clientName: "",
-    clientCompany: "",
-    clientEmail: "",
-    clientPhone: "",
-    projectName: "",
-    description: "",
-    currency: "USD",
-    taxRate: 0,
-    validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-    lineItems: [
-      { item: "Core Systems Architecture & Engineering", description: "Architecture specification and kernel setup", quantity: 1, unitPrice: 35000, discount: 0 },
-    ],
-  });
+  const [form, setForm] = useState({ ...DEFAULT_FORM });
 
   const fetchQuotations = async () => {
     setLoading(true);
@@ -52,6 +61,58 @@ export default function QuotationsPage() {
   useEffect(() => {
     fetchQuotations();
   }, []);
+
+  const openCreate = () => {
+    setEditingId(null);
+    setForm({
+      ...DEFAULT_FORM,
+      lineItems: [
+        { item: "", description: "", quantity: 1, unitPrice: 0, discount: 0 },
+      ],
+    });
+    setIsModalOpen(true);
+  };
+
+  const openEdit = (q: any) => {
+    setEditingId(q._id);
+    setForm({
+      clientName: q.clientName || "",
+      clientCompany: q.clientCompany || "",
+      clientEmail: q.clientEmail || "",
+      clientPhone: q.clientPhone || "",
+      projectName: q.projectName || "",
+      description: q.description || "",
+      currency: q.currency || "USD",
+      taxRate: q.taxRate ?? 0,
+      validUntil: q.validUntil
+        ? new Date(q.validUntil).toISOString().split("T")[0]
+        : DEFAULT_FORM.validUntil,
+      notes: q.notes || "",
+      termsConditions: q.termsConditions || "",
+      lineItems:
+        q.lineItems && q.lineItems.length > 0
+          ? q.lineItems.map((li: any) => ({
+              item: li.item || "",
+              description: li.description || "",
+              quantity: li.quantity ?? 1,
+              unitPrice: li.unitPrice ?? 0,
+              discount: li.discount ?? 0,
+            }))
+          : [{ item: "", description: "", quantity: 1, unitPrice: 0, discount: 0 }],
+    });
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingId(null);
+    setForm({
+      ...DEFAULT_FORM,
+      lineItems: [
+        { item: "", description: "", quantity: 1, unitPrice: 0, discount: 0 },
+      ],
+    });
+  };
 
   const addLineItem = () => {
     setForm({
@@ -74,12 +135,43 @@ export default function QuotationsPage() {
     setForm({ ...form, lineItems: updated });
   };
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await createQuotation(form as any);
+    setSaving(true);
+
+    const filteredLineItems = form.lineItems.filter((li) => li.item && li.item.trim() !== "");
+    const payload = { ...form, lineItems: filteredLineItems };
+
+    try {
+      let res;
+      if (editingId) {
+        res = await updateQuotation(editingId, payload as any);
+      } else {
+        res = await createQuotation(payload as any);
+      }
+
+      if (res.success) {
+        toast.success(editingId ? "Quotation updated successfully." : "Quotation issued successfully.");
+        closeModal();
+        fetchQuotations();
+      } else {
+        toast.error(res.error || "Failed to save quotation.");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Unexpected error.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Permanently delete this quotation? This action cannot be undone.")) return;
+    const res = await deleteQuotation(id);
     if (res.success) {
-      setIsModalOpen(false);
+      toast.success("Quotation deleted.");
       fetchQuotations();
+    } else {
+      toast.error(res.error || "Failed to delete quotation.");
     }
   };
 
@@ -87,10 +179,10 @@ export default function QuotationsPage() {
     if (confirm("Generate an active invoice from this accepted quotation?")) {
       const res = await convertQuotationToInvoice(quoteId);
       if (res.success) {
-        alert("Invoice successfully generated! Accessible in Invoices module.");
+        toast.success("Invoice successfully generated! Accessible in Invoices module.");
         fetchQuotations();
       } else {
-        alert(res.error || "Failed to convert quotation.");
+        toast.error(res.error || "Failed to convert quotation.");
       }
     }
   };
@@ -104,7 +196,6 @@ export default function QuotationsPage() {
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
         <div>
           <span className="text-xs font-mono tracking-widest text-neutral-400 uppercase">
@@ -116,7 +207,7 @@ export default function QuotationsPage() {
         </div>
 
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={openCreate}
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white text-black font-mono text-xs font-semibold uppercase tracking-wider hover:bg-neutral-200 transition-all"
         >
           <Plus className="w-3.5 h-3.5" />
@@ -124,7 +215,6 @@ export default function QuotationsPage() {
         </button>
       </div>
 
-      {/* Table */}
       <div className="rounded-2xl border border-white/10 bg-neutral-950 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
@@ -205,15 +295,31 @@ export default function QuotationsPage() {
                       </div>
                     </td>
                     <td className="py-4 px-4 text-right">
-                      {q.status === "accepted" && (
+                      <div className="flex flex-wrap justify-end gap-1.5">
                         <button
-                          onClick={() => handleConvertToInvoice(q._id)}
-                          className="inline-flex items-center gap-1 px-3 py-1 rounded bg-white text-black font-bold uppercase text-[10px] hover:bg-neutral-200"
+                          onClick={() => openEdit(q)}
+                          className="p-1.5 rounded border border-white/10 text-neutral-400 hover:text-white hover:bg-white/5"
+                          title="Edit quotation"
                         >
-                          <Receipt className="w-3 h-3" />
-                          <span>Convert to Invoice</span>
+                          <Edit2 className="w-3.5 h-3.5" />
                         </button>
-                      )}
+                        <button
+                          onClick={() => handleDelete(q._id)}
+                          className="p-1.5 rounded border border-rose-500/20 text-rose-400 hover:bg-rose-500/10"
+                          title="Delete quotation"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                        {q.status === "accepted" && (
+                          <button
+                            onClick={() => handleConvertToInvoice(q._id)}
+                            className="inline-flex items-center gap-1 px-3 py-1 rounded bg-white text-black font-bold uppercase text-[10px] hover:bg-neutral-200"
+                          >
+                            <Receipt className="w-3 h-3" />
+                            <span>Convert to Invoice</span>
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -223,23 +329,22 @@ export default function QuotationsPage() {
         </div>
       </div>
 
-      {/* Generator Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-2xl w-full p-6 sm:p-8 space-y-6 my-8">
+          <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-3xl w-full p-6 sm:p-8 space-y-6 my-8">
             <div className="flex justify-between items-center border-b border-white/10 pb-4">
               <div>
                 <h3 className="text-lg font-bold text-white font-mono uppercase">
-                  Generate Engineering Scope Quotation
+                  {editingId ? "Update Engineering Scope Quotation" : "Generate Engineering Scope Quotation"}
                 </h3>
                 <p className="text-xs text-neutral-400 font-mono">
                   Calculates totals and issues unpredictable cryptographic token.
                 </p>
               </div>
-              <button onClick={() => setIsModalOpen(false)} className="text-neutral-400 hover:text-white">✕</button>
+              <button onClick={closeModal} className="text-neutral-400 hover:text-white">✕</button>
             </div>
 
-            <form onSubmit={handleCreate} className="space-y-6 text-xs font-sans">
+            <form onSubmit={handleSubmit} className="space-y-6 text-xs font-sans">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="font-mono text-neutral-400 uppercase">Client Name *</label>
@@ -275,6 +380,18 @@ export default function QuotationsPage() {
                   />
                 </div>
                 <div className="space-y-1">
+                  <label className="font-mono text-neutral-400 uppercase">Client Phone</label>
+                  <input
+                    type="tel"
+                    value={form.clientPhone}
+                    onChange={(e) => setForm({ ...form, clientPhone: e.target.value })}
+                    className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1 col-span-2 sm:col-span-1">
                   <label className="font-mono text-neutral-400 uppercase">Project Name *</label>
                   <input
                     type="text"
@@ -284,9 +401,56 @@ export default function QuotationsPage() {
                     className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                   />
                 </div>
+                <div className="space-y-1 col-span-2 sm:col-span-1 grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="font-mono text-neutral-400 uppercase">Currency</label>
+                    <select
+                      value={form.currency}
+                      onChange={(e) => setForm({ ...form, currency: e.target.value })}
+                      className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
+                    >
+                      <option value="USD">USD</option>
+                      <option value="EUR">EUR</option>
+                      <option value="GBP">GBP</option>
+                      <option value="BDT">BDT</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="font-mono text-neutral-400 uppercase">Tax Rate (%)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={form.taxRate}
+                      onChange={(e) => setForm({ ...form, taxRate: Number(e.target.value) })}
+                      className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white font-mono"
+                    />
+                  </div>
+                </div>
               </div>
 
-              {/* Dynamic Line Items */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="font-mono text-neutral-400 uppercase">Valid Until Date</label>
+                  <input
+                    type="date"
+                    value={form.validUntil}
+                    onChange={(e) => setForm({ ...form, validUntil: e.target.value })}
+                    className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="font-mono text-neutral-400 uppercase">Project Description</label>
+                  <input
+                    type="text"
+                    value={form.description}
+                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    placeholder="Brief scope summary"
+                    className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
+                  />
+                </div>
+              </div>
+
               <div className="space-y-3 pt-4 border-t border-white/10">
                 <div className="flex justify-between items-center font-mono">
                   <span className="text-white uppercase font-bold">Line Items & Deliverables</span>
@@ -301,7 +465,7 @@ export default function QuotationsPage() {
 
                 <div className="space-y-3">
                   {form.lineItems.map((item, idx) => (
-                    <div key={idx} className="p-4 rounded-xl border border-white/10 bg-neutral-900 space-y-2">
+                    <div key={idx} className="p-4 rounded-xl border border-white/10 bg-neutral-900 space-y-3">
                       <div className="flex justify-between items-center">
                         <span className="font-mono text-neutral-400 text-[11px]">Item #{idx + 1}</span>
                         {form.lineItems.length > 1 && (
@@ -314,8 +478,8 @@ export default function QuotationsPage() {
                           </button>
                         )}
                       </div>
-                      <div className="grid grid-cols-12 gap-3">
-                        <div className="col-span-6">
+                      <div className="space-y-2">
+                        <div>
                           <input
                             type="text"
                             placeholder="Deliverable title"
@@ -325,25 +489,54 @@ export default function QuotationsPage() {
                             className="w-full px-3 py-1.5 bg-black border border-white/10 rounded text-white"
                           />
                         </div>
-                        <div className="col-span-2">
-                          <input
-                            type="number"
-                            placeholder="Qty"
-                            required
-                            value={item.quantity}
-                            onChange={(e) => updateLineItem(idx, "quantity", Number(e.target.value))}
-                            className="w-full px-2 py-1.5 bg-black border border-white/10 rounded text-white font-mono text-center"
+                        <div>
+                          <textarea
+                            placeholder="Deliverable description (optional)"
+                            rows={2}
+                            value={item.description}
+                            onChange={(e) => updateLineItem(idx, "description", e.target.value)}
+                            className="w-full px-3 py-1.5 bg-black border border-white/10 rounded text-white text-xs"
                           />
                         </div>
-                        <div className="col-span-4">
-                          <input
-                            type="number"
-                            placeholder="Rate (USD)"
-                            required
-                            value={item.unitPrice}
-                            onChange={(e) => updateLineItem(idx, "unitPrice", Number(e.target.value))}
-                            className="w-full px-3 py-1.5 bg-black border border-white/10 rounded text-white font-mono text-right"
-                          />
+                        <div className="grid grid-cols-12 gap-3">
+                          <div className="col-span-3">
+                            <label className="block text-[10px] font-mono text-neutral-500 mb-1">Qty</label>
+                            <input
+                              type="number"
+                              min="1"
+                              placeholder="Qty"
+                              required
+                              value={item.quantity}
+                              onChange={(e) => updateLineItem(idx, "quantity", Number(e.target.value))}
+                              className="w-full px-2 py-1.5 bg-black border border-white/10 rounded text-white font-mono text-center"
+                            />
+                          </div>
+                          <div className="col-span-4">
+                            <label className="block text-[10px] font-mono text-neutral-500 mb-1">Rate</label>
+                            <input
+                              type="number"
+                              placeholder="Rate"
+                              required
+                              value={item.unitPrice}
+                              onChange={(e) => updateLineItem(idx, "unitPrice", Number(e.target.value))}
+                              className="w-full px-3 py-1.5 bg-black border border-white/10 rounded text-white font-mono text-right"
+                            />
+                          </div>
+                          <div className="col-span-3">
+                            <label className="block text-[10px] font-mono text-neutral-500 mb-1">Discount %</label>
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              placeholder="0"
+                              value={item.discount}
+                              onChange={(e) => updateLineItem(idx, "discount", Number(e.target.value))}
+                              className="w-full px-3 py-1.5 bg-black border border-white/10 rounded text-white font-mono text-right"
+                            />
+                          </div>
+                          <div className="col-span-2 flex items-end justify-end font-mono text-[11px] text-neutral-400 pb-1.5">
+                            {((item.quantity || 1) * (item.unitPrice || 0) * (1 - (item.discount || 0) / 100)).toLocaleString()}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -351,19 +544,44 @@ export default function QuotationsPage() {
                 </div>
               </div>
 
+              <div className="space-y-3 pt-4 border-t border-white/10">
+                <div className="space-y-1">
+                  <label className="font-mono text-neutral-400 uppercase">Internal Notes</label>
+                  <textarea
+                    rows={2}
+                    value={form.notes}
+                    onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                    placeholder="Not visible to client"
+                    className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white text-xs"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="font-mono text-neutral-400 uppercase">Terms & Conditions</label>
+                  <textarea
+                    rows={3}
+                    value={form.termsConditions}
+                    onChange={(e) => setForm({ ...form, termsConditions: e.target.value })}
+                    placeholder="Visible to client on quotation document"
+                    className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white text-xs"
+                  />
+                </div>
+              </div>
+
               <div className="pt-4 flex justify-end gap-3 border-t border-white/10 font-mono">
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-white/10 text-neutral-400"
+                  onClick={closeModal}
+                  className="px-4 py-2 rounded-lg border border-white/10 text-neutral-400 hover:bg-white/5"
+                  disabled={saving}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 rounded-lg bg-white text-black font-bold uppercase"
+                  disabled={saving}
+                  className="px-6 py-2 rounded-lg bg-white text-black font-bold uppercase disabled:opacity-50"
                 >
-                  Issue Quotation
+                  {saving ? "Saving..." : editingId ? "Update Quotation" : "Issue Quotation"}
                 </button>
               </div>
             </form>

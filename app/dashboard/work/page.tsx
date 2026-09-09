@@ -2,35 +2,41 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { FolderGit2, Plus, Trash2, ArrowUpRight } from "lucide-react";
+import { FolderGit2, Plus, Trash2, ArrowUpRight, Edit2 } from "lucide-react";
 import {
   getProjects,
   createProject,
   deleteProject,
+  updateProject,
 } from "@/lib/actions/project.actions";
 import ImageUploader from "@/components/shared/ImageUploader";
+import toast from "react-hot-toast";
+
+const DEFAULT_FORM = {
+  title: "",
+  clientName: "",
+  industry: "Enterprise Technology",
+  summary: "",
+  challenge: "",
+  solution: "",
+  results: "",
+  metric1Label: "Execution Latency",
+  metric1Val: "< 15 ms",
+  metric2Label: "Throughput Gain",
+  metric2Val: "+150%",
+  services: "Cloud Infrastructure, Distributed Systems",
+  technologies: "Next.js, Go, Kubernetes, TypeScript",
+  thumbnail: "",
+};
 
 export default function WorkCmsPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  const [form, setForm] = useState({
-    title: "",
-    clientName: "",
-    industry: "Enterprise Technology",
-    summary: "",
-    challenge: "",
-    solution: "",
-    results: "",
-    metric1Label: "Execution Latency",
-    metric1Val: "< 15 ms",
-    metric2Label: "Throughput Gain",
-    metric2Val: "+150%",
-    services: "Cloud Infrastructure, Distributed Systems",
-    technologies: "Next.js, Go, Kubernetes, TypeScript",
-    thumbnail: "",
-  });
+  const [form, setForm] = useState({ ...DEFAULT_FORM });
 
   const fetchProjects = async () => {
     setLoading(true);
@@ -45,8 +51,43 @@ export default function WorkCmsPage() {
     fetchProjects();
   }, []);
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const openCreate = () => {
+    setEditingId(null);
+    setForm({ ...DEFAULT_FORM });
+    setIsModalOpen(true);
+  };
+
+  const openEdit = (p: any) => {
+    setEditingId(p._id);
+    setForm({
+      title: p.title || "",
+      clientName: p.clientName || "",
+      industry: p.industry || "Enterprise Technology",
+      summary: p.summary || "",
+      challenge: p.challenge || "",
+      solution: p.solution || "",
+      results: p.results || "",
+      metric1Label: p.metrics?.[0]?.label || "Execution Latency",
+      metric1Val: p.metrics?.[0]?.value || "< 15 ms",
+      metric2Label: p.metrics?.[1]?.label || "Throughput Gain",
+      metric2Val: p.metrics?.[1]?.value || "+150%",
+      services: (p.services || []).join(", "),
+      technologies: (p.technologies || []).join(", "),
+      thumbnail: p.thumbnail || "",
+    });
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingId(null);
+    setForm({ ...DEFAULT_FORM });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSaving(true);
+
     const sArray = form.services
       .split(",")
       .map((s) => s.trim())
@@ -56,7 +97,7 @@ export default function WorkCmsPage() {
       .map((t) => t.trim())
       .filter(Boolean);
 
-    const res = await createProject({
+    const payload = {
       title: form.title,
       clientName: form.clientName,
       industry: form.industry,
@@ -71,19 +112,30 @@ export default function WorkCmsPage() {
       services: sArray,
       technologies: tArray,
       thumbnail: form.thumbnail || undefined,
-      published: true,
-      featured: true,
-    } as any);
+    } as any;
+
+    const res = editingId
+      ? await updateProject(editingId, payload)
+      : await createProject({ ...payload, published: true, featured: true });
 
     if (res.success) {
-      setIsModalOpen(false);
+      toast.success(editingId ? "Case study updated." : "Case study created.");
+      closeModal();
       fetchProjects();
+    } else {
+      toast.error(res.error || "Failed to save case study.");
     }
+    setSaving(false);
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Delete case study?")) {
-      await deleteProject(id);
+    if (confirm("Delete case study? This cannot be undone.")) {
+      const res = await deleteProject(id);
+      if (res.success) {
+        toast.success("Case study deleted.");
+      } else {
+        toast.error(res.error || "Failed to delete case study.");
+      }
       fetchProjects();
     }
   };
@@ -101,7 +153,7 @@ export default function WorkCmsPage() {
         </div>
 
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={openCreate}
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white text-black font-mono text-xs font-semibold uppercase tracking-wider hover:bg-neutral-200 transition-all"
         >
           <Plus className="w-3.5 h-3.5" />
@@ -152,10 +204,18 @@ export default function WorkCmsPage() {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-white/10 flex justify-end">
+              <div className="pt-4 border-t border-white/10 flex justify-end gap-2">
+                <button
+                  onClick={() => openEdit(p)}
+                  className="p-1.5 rounded text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                  title="Edit case study"
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
                 <button
                   onClick={() => handleDelete(p._id)}
                   className="p-1.5 rounded text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                  title="Delete case study"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -171,16 +231,16 @@ export default function WorkCmsPage() {
           <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-lg w-full p-6 sm:p-8 space-y-4 my-8 font-sans text-xs">
             <div className="flex justify-between items-center border-b border-white/10 pb-4">
               <h3 className="text-base font-bold text-white font-mono uppercase">
-                Add Case Study
+                {editingId ? "Edit Case Study" : "Create Case Study"}
               </h3>
               <button
-                onClick={() => setIsModalOpen(false)}
+                onClick={closeModal}
                 className="text-neutral-400 hover:text-white"
               >
                 ✕
               </button>
             </div>
-            <form onSubmit={handleCreate} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1">
                 <label className="font-mono text-neutral-400 uppercase">
                   Project Title *
@@ -304,16 +364,21 @@ export default function WorkCmsPage() {
               <div className="pt-4 flex justify-end gap-3 border-t border-white/10 font-mono">
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={closeModal}
                   className="px-4 py-2 rounded-lg border border-white/10 text-neutral-400"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 rounded-lg bg-white text-black font-bold uppercase"
+                  disabled={saving}
+                  className="px-6 py-2 rounded-lg bg-white text-black font-bold uppercase disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Publish Case Study
+                  {saving
+                    ? "Saving..."
+                    : editingId
+                      ? "Update Case Study"
+                      : "Save Case Study"}
                 </button>
               </div>
             </form>

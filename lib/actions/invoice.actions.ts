@@ -171,3 +171,98 @@ export async function recordInvoicePayment(
     return { success: false, error: error.message };
   }
 }
+
+export async function updateInvoice(
+  id: string,
+  data: Partial<IInvoice> & {
+    lineItems?: Array<{
+      item: string;
+      description?: string;
+      quantity: number;
+      unitPrice: number;
+    }>;
+  },
+) {
+  try {
+    await requirePermission("invoices", "update");
+    await connectToDatabase();
+
+    const existing = await Invoice.findById(id);
+    if (!existing) return { success: false, error: "Invoice not found." };
+
+    const updatePayload: any = { ...data };
+
+    if (data.lineItems && data.lineItems.length > 0) {
+      let subtotal = 0;
+      const computedItems = data.lineItems.map((li) => {
+        const total = (li.quantity || 1) * (li.unitPrice || 0);
+        subtotal += total;
+        return {
+          item: li.item,
+          description: li.description || "",
+          quantity: li.quantity || 1,
+          unitPrice: li.unitPrice || 0,
+          total,
+        };
+      });
+      const taxAmount =
+        data.taxAmount !== undefined ? data.taxAmount : existing.taxAmount || 0;
+      const discountAmount =
+        data.discountAmount !== undefined
+          ? data.discountAmount
+          : existing.discountAmount || 0;
+      const totalAmount = subtotal + taxAmount - discountAmount;
+      const amountPaid = existing.amountPaid || 0;
+      const amountDue = Math.max(0, totalAmount - amountPaid);
+      let status = existing.status;
+      if (amountDue === 0) status = "paid";
+      else if (amountPaid > 0) status = "partially_paid";
+      else status = data.status || existing.status || "sent";
+
+      updatePayload.lineItems = computedItems;
+      updatePayload.subtotal = subtotal;
+      updatePayload.taxAmount = taxAmount;
+      updatePayload.discountAmount = discountAmount;
+      updatePayload.totalAmount = totalAmount;
+      updatePayload.amountDue = amountDue;
+      updatePayload.status = status;
+    }
+
+    if (data.dueDate) {
+      updatePayload.dueDate = new Date(data.dueDate as any);
+    }
+
+    const updated = await Invoice.findByIdAndUpdate(
+      id,
+      { $set: updatePayload },
+      { new: true },
+    ).lean();
+
+    revalidatePath("/dashboard/invoices");
+    revalidatePath(`/invoice/${existing.secureToken}`);
+    return { success: true, data: JSON.parse(JSON.stringify(updated)) };
+  } catch (error: any) {
+    console.error("Error updating invoice:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteInvoice(id: string) {
+  try {
+    await requirePermission("invoices", "delete");
+    await connectToDatabase();
+
+    const existing = await Invoice.findById(id);
+    if (!existing) return { success: false, error: "Invoice not found." };
+
+    await Payment.deleteMany({ invoiceId: id });
+    await Invoice.findByIdAndDelete(id);
+    revalidatePath("/dashboard/invoices");
+    if (existing.secureToken)
+      revalidatePath(`/invoice/${existing.secureToken}`);
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error deleting invoice:", error);
+    return { success: false, error: error.message };
+  }
+}

@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Database,
   Lock,
+  Smartphone,
 } from "lucide-react";
 import { getServices } from "@/lib/actions/service.actions";
 import { getProducts } from "@/lib/actions/product.actions";
@@ -36,6 +37,7 @@ const iconMap: Record<string, React.ReactNode> = {
   Server: <Server className="w-5 h-5 text-white" />,
   Globe: <Globe className="w-5 h-5 text-white" />,
   Layers: <Layers className="w-5 h-5 text-white" />,
+  Smartphone: <Smartphone className="w-5 h-5 text-white" />,
   Workflow: <Workflow className="w-5 h-5 text-white" />,
   Terminal: <Terminal className="w-5 h-5 text-white" />,
 };

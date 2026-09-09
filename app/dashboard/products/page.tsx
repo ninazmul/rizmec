@@ -2,24 +2,29 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Boxes, Plus, Trash2, ArrowUpRight } from "lucide-react";
-import { getProducts, createProduct, deleteProduct } from "@/lib/actions/product.actions";
+import { Boxes, Plus, Edit2, Trash2, ArrowUpRight } from "lucide-react";
+import { getProducts, createProduct, deleteProduct, updateProduct } from "@/lib/actions/product.actions";
+import toast from "react-hot-toast";
+
+const DEFAULT_FORM = {
+  title: "",
+  tagline: "",
+  category: "SaaS Platform",
+  summary: "",
+  description: "",
+  features: "Dynamic Multi-Cloud Routing, Zero-Loss Recovery, Sub-15ms Latency",
+  techStack: "Go, Kubernetes, Next.js, Rust",
+  status: "active",
+};
 
 export default function ProductsCmsPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  const [form, setForm] = useState({
-    title: "",
-    tagline: "",
-    category: "SaaS Platform",
-    summary: "",
-    description: "",
-    features: "Dynamic Multi-Cloud Routing, Zero-Loss Recovery, Sub-15ms Latency",
-    techStack: "Go, Kubernetes, Next.js, Rust",
-    status: "active",
-  });
+  const [form, setForm] = useState({ ...DEFAULT_FORM });
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -34,12 +39,47 @@ export default function ProductsCmsPage() {
     fetchProducts();
   }, []);
 
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const featArray = form.features.split(",").map((f) => f.trim()).filter(Boolean);
-    const stackArray = form.techStack.split(",").map((s) => s.trim()).filter(Boolean);
+  const openCreate = () => {
+    setEditingId(null);
+    setForm({ ...DEFAULT_FORM });
+    setIsModalOpen(true);
+  };
 
-    const res = await createProduct({
+  const openEdit = (p: any) => {
+    setEditingId(p._id);
+    setForm({
+      title: p.title || "",
+      tagline: p.tagline || "",
+      category: p.category || "SaaS Platform",
+      summary: p.summary || "",
+      description: p.description || "",
+      features: (p.features || []).join(", "),
+      techStack: (p.techStack || []).join(", "),
+      status: p.status || "active",
+    });
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingId(null);
+    setForm({ ...DEFAULT_FORM });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+
+    const featArray = form.features
+      .split(",")
+      .map((f) => f.trim())
+      .filter(Boolean);
+    const stackArray = form.techStack
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    const payload = {
       title: form.title,
       tagline: form.tagline,
       category: form.category as any,
@@ -48,17 +88,24 @@ export default function ProductsCmsPage() {
       features: featArray,
       techStack: stackArray,
       status: form.status as any,
-      published: true,
-    } as any);
+    } as any;
+
+    const res = editingId
+      ? await updateProduct(editingId, payload)
+      : await createProduct({ ...payload, published: true });
 
     if (res.success) {
-      setIsModalOpen(false);
+      toast.success(editingId ? "Product updated." : "Product created.");
+      closeModal();
       fetchProducts();
+    } else {
+      toast.error(res.error || "Failed to save product.");
     }
+    setSaving(false);
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Delete product platform?")) {
+    if (confirm("Delete product platform? This cannot be undone.")) {
       await deleteProduct(id);
       fetchProducts();
     }
@@ -77,7 +124,7 @@ export default function ProductsCmsPage() {
         </div>
 
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={openCreate}
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white text-black font-mono text-xs font-semibold uppercase tracking-wider hover:bg-neutral-200 transition-all"
         >
           <Plus className="w-3.5 h-3.5" />
@@ -116,10 +163,18 @@ export default function ProductsCmsPage() {
                 </p>
               </div>
 
-              <div className="pt-4 border-t border-white/10 flex justify-end">
+              <div className="pt-4 border-t border-white/10 flex justify-end gap-2">
+                <button
+                  onClick={() => openEdit(p)}
+                  className="p-1.5 rounded text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                  title="Edit product"
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
                 <button
                   onClick={() => handleDelete(p._id)}
                   className="p-1.5 rounded text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                  title="Delete product"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -134,10 +189,12 @@ export default function ProductsCmsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
           <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-lg w-full p-6 sm:p-8 space-y-4 my-8 font-sans text-xs">
             <div className="flex justify-between items-center border-b border-white/10 pb-4">
-              <h3 className="text-base font-bold text-white font-mono uppercase">Add Product Platform</h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-neutral-400 hover:text-white">✕</button>
+              <h3 className="text-base font-bold text-white font-mono uppercase">
+                {editingId ? "Edit Product" : "Create Product"}
+              </h3>
+              <button onClick={closeModal} className="text-neutral-400 hover:text-white">✕</button>
             </div>
-            <form onSubmit={handleCreate} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1">
                 <label className="font-mono text-neutral-400 uppercase">Title *</label>
                 <input
@@ -202,16 +259,21 @@ export default function ProductsCmsPage() {
               <div className="pt-4 flex justify-end gap-3 border-t border-white/10 font-mono">
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={closeModal}
                   className="px-4 py-2 rounded-lg border border-white/10 text-neutral-400"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 rounded-lg bg-white text-black font-bold uppercase"
+                  disabled={saving}
+                  className="px-6 py-2 rounded-lg bg-white text-black font-bold uppercase disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Save Platform
+                  {saving
+                    ? "Saving..."
+                    : editingId
+                      ? "Update Product"
+                      : "Save Product"}
                 </button>
               </div>
             </form>
