@@ -81,6 +81,7 @@ export default function ImageUploader({
         await startUpload([file], { folder });
       } catch (e) {
         console.error(e);
+        toast.error(`Upload failed: ${e instanceof Error ? e.message : 'Unknown error'}`);
         setUploading(false);
       }
     },
