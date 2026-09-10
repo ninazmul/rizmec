@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { getMyProfile, updateMyProfile, checkSlugAvailable } from "@/lib/actions/team.actions";
 import { getResumeDownloadUrl } from "@/lib/utils";
+import ImageUploader from "@/components/shared/ImageUploader";
 
 export default function MemberProfileDashboardPage() {
   const [loading, setLoading] = useState(true);
@@ -837,19 +838,20 @@ export default function MemberProfileDashboardPage() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[11px] font-mono text-neutral-400 uppercase">Screenshot / Image URL</label>
-                      <input
-                        type="text"
-                        value={proj.imageUrl}
-                        onChange={(e) => {
-                          const updated = [...form.customProjects];
-                          updated[idx].imageUrl = e.target.value;
-                          setForm({ ...form, customProjects: updated });
-                        }}
-                        placeholder="https://..."
-                        className="w-full px-3 py-2 bg-neutral-950 border border-white/10 rounded-lg text-white font-mono text-xs"
-                      />
-                    </div>
+  <label className="text-[11px] font-mono text-neutral-400 uppercase">Screenshot / Image Upload</label>
+  <ImageUploader
+    value={proj.imageUrl}
+    onChange={(url) => {
+      const updated = [...form.customProjects];
+      updated[idx].imageUrl = url;
+      setForm({ ...form, customProjects: updated });
+    }}
+    folder="project-images"
+    aspect="auto"
+    maxSizeMB={8}
+    label="Upload Project Image"
+  />
+</div>
                   </div>
                 </div>
               ))}
