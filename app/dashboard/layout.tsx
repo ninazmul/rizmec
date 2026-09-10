@@ -8,6 +8,7 @@ import { cookies } from "next/headers";
 import { Show, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({
   children,
@@ -18,6 +19,14 @@ export default async function DashboardLayout({
   const defaultOpen = cookieStore.get("sidebar:state")?.value === "true";
 
   const access = await requireDashboardAccess("/sign-in");
+
+  // Force workers & interns without a team profile to complete onboarding first
+  const needsOnboarding =
+    (access.role === "worker" || access.role === "intern") &&
+    !access.teamMemberId;
+  if (needsOnboarding) {
+    redirect("/onboarding");
+  }
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
