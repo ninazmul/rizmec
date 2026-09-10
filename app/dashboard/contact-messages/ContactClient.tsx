@@ -58,7 +58,7 @@ export default function ContactClient({ initialMessages, access }: Props) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       <div className="flex justify-between items-center bg-white p-6 rounded-lg shadow-sm border">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Contact Form Messages</h1>

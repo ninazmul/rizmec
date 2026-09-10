@@ -148,6 +148,7 @@ export default function MediaClient({
   };
 
   return (
+    <div className="max-w-7xl mx-auto">
     <div className="flex flex-col md:flex-row gap-6 min-h-[calc(100vh-140px)]">
       {/* Sidebar: Folders List */}
       <div className="w-full md:w-60 bg-white p-4 rounded-xl border border-gray-200 shrink-0">
@@ -421,6 +422,7 @@ export default function MediaClient({
         </DialogContent>
       </Dialog>
       )}
+    </div>
     </div>
   );
 }

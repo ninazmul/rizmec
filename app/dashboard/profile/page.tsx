@@ -312,7 +312,7 @@ export default function MemberProfileDashboardPage() {
   }
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto pb-24">
+    <div className="space-y-8 max-w-7xl mx-auto pb-24">
       {/* Studio Top Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
         <div>

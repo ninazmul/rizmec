@@ -61,7 +61,7 @@ export default function SettingsClient({ initialSettings, access }: Props) {
   };
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto font-sans text-xs">
+    <div className="space-y-8 max-w-7xl mx-auto font-sans text-xs">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
         <div>
           <span className="text-xs font-mono tracking-widest text-neutral-400 uppercase">
