@@ -513,13 +513,14 @@ export default function MemberProfileDashboardPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-mono text-neutral-400 uppercase">Profile Photo / Avatar URL</label>
-                <input
-                  type="text"
+                <label className="text-xs font-mono text-neutral-400 uppercase">Profile Photo / Avatar Upload</label>
+                <ImageUploader
                   value={form.avatar}
-                  onChange={(e) => setForm({ ...form, avatar: e.target.value })}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full px-3.5 py-2.5 bg-neutral-900 border border-white/10 rounded-xl text-white font-mono text-xs focus:outline-none focus:border-cyan-500/50"
+                  onChange={(url) => setForm({ ...form, avatar: url })}
+                  folder="profile-avatars"
+                  aspect="square"
+                  maxSizeMB={4}
+                  label="Upload Avatar"
                 />
               </div>
 
