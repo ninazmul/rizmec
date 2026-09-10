@@ -104,3 +104,31 @@ export function formatCount(num: number): string {
 export function safeJson<T>(data: T): T {
   return JSON.parse(JSON.stringify(data));
 }
+
+// ===== Convert Google Drive / external links to direct download URLs =====
+export function getResumeDownloadUrl(url?: string): string {
+  if (!url || typeof url !== "string") return "";
+  const trimmed = url.trim();
+  if (!trimmed) return "";
+
+  // Google Drive file link: /file/d/{id}/view...
+  const driveFileMatch = trimmed.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/i);
+  if (driveFileMatch && driveFileMatch[1]) {
+    return `https://drive.google.com/uc?export=download&id=${driveFileMatch[1]}`;
+  }
+
+  // Google Drive open link: /open?id={id}
+  const driveOpenMatch = trimmed.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/i);
+  if (driveOpenMatch && driveOpenMatch[1]) {
+    return `https://drive.google.com/uc?export=download&id=${driveOpenMatch[1]}`;
+  }
+
+  // Google Drive uc link: /uc?...id={id}
+  const driveUcMatch = trimmed.match(/drive\.google\.com\/uc\?.*id=([a-zA-Z0-9_-]+)/i);
+  if (driveUcMatch && driveUcMatch[1]) {
+    return `https://drive.google.com/uc?export=download&id=${driveUcMatch[1]}`;
+  }
+
+  // Direct PDF or any other external URL
+  return trimmed;
+}

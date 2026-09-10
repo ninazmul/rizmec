@@ -89,6 +89,7 @@ export interface ITeamMember extends Document {
   availability?: IAvailability;
   seo?: ISeoConfig;
   achievements: string[];
+  resumeUrl?: string;
   socialLinks: {
     github?: string;
     linkedin?: string;
@@ -203,6 +204,7 @@ const TeamMemberSchema = new Schema<ITeamMember>(
       customDescription: { type: String, default: "" },
     },
     achievements: { type: [String], default: [] },
+    resumeUrl: { type: String, default: "" },
     socialLinks: {
       github: { type: String, default: "" },
       linkedin: { type: String, default: "" },

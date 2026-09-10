@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { TiltCard } from "@/components/ui/TiltCard";
+import { getResumeDownloadUrl } from "@/lib/utils";
 
 // Social icon helpers
 const GithubIcon = ({ className }: { className?: string }) => (
@@ -219,18 +220,44 @@ export function PortfolioHero3D({ member, theme = "obsidian", onPrintResume }: P
             </button>
           </div>
 
-          {/* Action CTAs: Resume Print & Direct Engage */}
+          {/* Action CTAs: Resume Print/Download & Direct Engage */}
           <div className="flex flex-wrap items-center gap-4 pt-4">
             <button
               onClick={() => {
-                if (onPrintResume) onPrintResume();
-                else window.print();
+                const downloadUrl = getResumeDownloadUrl(member.resumeUrl);
+                if (downloadUrl) {
+                  const link = document.createElement("a");
+                  link.href = downloadUrl;
+                  link.target = "_blank";
+                  link.rel = "noopener noreferrer";
+                  link.download = `${(member.name || "Resume").replace(/\s+/g, "_")}_Resume.pdf`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                } else {
+                  if (onPrintResume) onPrintResume();
+                  else window.print();
+                }
               }}
               className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-white text-black font-mono text-xs font-bold uppercase tracking-wider hover:bg-neutral-200 transition-all shadow-lg hover:shadow-white/10"
+              title={member.resumeUrl ? "Download PDF Resume" : "Print ATS Resume"}
             >
               <Download className="w-4 h-4" />
               <span>Download Resume / CV</span>
             </button>
+
+            {member.resumeUrl && (
+              <button
+                onClick={() => {
+                  if (onPrintResume) onPrintResume();
+                  else window.print();
+                }}
+                className="inline-flex items-center gap-2 px-4 py-3.5 rounded-xl border border-white/10 bg-white/[0.03] text-neutral-400 font-mono text-xs hover:text-white hover:border-white/20 transition-all"
+                title="Print clean ATS formatted resume"
+              >
+                <span>ATS Print</span>
+              </button>
+            )}
 
             {calendlyUrl ? (
               <a

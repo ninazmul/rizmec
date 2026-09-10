@@ -82,6 +82,7 @@ export function PortfolioPublicView({ member, assignedProjects = [] }: Portfolio
           activeTheme={theme}
           onThemeChange={setTheme}
           onPrintResume={handlePrint}
+          resumeUrl={member.resumeUrl}
         />
       </div>
 

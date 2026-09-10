@@ -177,6 +177,7 @@ export async function updateMyProfile(data: {
   certifications?: any[];
   customProjects?: any[];
   achievements?: string[];
+  resumeUrl?: string;
   themeConfig?: any;
   contactInfo?: any;
   availability?: any;
@@ -243,6 +244,8 @@ export async function updateMyProfile(data: {
         contactInfo: data.contactInfo || { personalEmail: access.email, publicEmail: true },
         availability: data.availability || { status: "open_to_work", label: "Open for new opportunities" },
         seo: data.seo || {},
+        achievements: data.achievements || [],
+        resumeUrl: data.resumeUrl || "",
         socialLinks: data.socialLinks || {},
         published: true,
       });

@@ -2,12 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import { Download, Palette, Menu, X, Sparkles } from "lucide-react";
+import { getResumeDownloadUrl } from "@/lib/utils";
 
 interface PortfolioNavProps {
   name: string;
   activeTheme: string;
   onThemeChange: (theme: string) => void;
   onPrintResume?: () => void;
+  resumeUrl?: string;
 }
 
 export function PortfolioNav({
@@ -15,6 +17,7 @@ export function PortfolioNav({
   activeTheme,
   onThemeChange,
   onPrintResume,
+  resumeUrl,
 }: PortfolioNavProps) {
   const [scrolled, setScrolled] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -124,10 +127,23 @@ export function PortfolioNav({
           {/* Download Resume / Print Button */}
           <button
             onClick={() => {
-              if (onPrintResume) onPrintResume();
-              else window.print();
+              const downloadUrl = getResumeDownloadUrl(resumeUrl);
+              if (downloadUrl) {
+                const link = document.createElement("a");
+                link.href = downloadUrl;
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+                link.download = `${(name || "Resume").replace(/\s+/g, "_")}_Resume.pdf`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              } else {
+                if (onPrintResume) onPrintResume();
+                else window.print();
+              }
             }}
             className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-black font-mono text-xs font-bold uppercase tracking-wider hover:bg-neutral-200 transition-all shadow-md"
+            title={resumeUrl ? "Download PDF Resume" : "Print Resume"}
           >
             <Download className="w-3.5 h-3.5" />
             <span>Resume</span>
@@ -184,13 +200,25 @@ export function PortfolioNav({
           <button
             onClick={() => {
               setMobileMenuOpen(false);
-              if (onPrintResume) onPrintResume();
-              else window.print();
+              const downloadUrl = getResumeDownloadUrl(resumeUrl);
+              if (downloadUrl) {
+                const link = document.createElement("a");
+                link.href = downloadUrl;
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+                link.download = `${(name || "Resume").replace(/\s+/g, "_")}_Resume.pdf`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              } else {
+                if (onPrintResume) onPrintResume();
+                else window.print();
+              }
             }}
             className="w-full mt-2 py-3 rounded-xl bg-white text-black font-bold flex items-center justify-center gap-2"
           >
             <Download className="w-4 h-4" />
-            <span>Download Resume (Print)</span>
+            <span>{resumeUrl ? "Download PDF Resume" : "Download Resume (Print)"}</span>
           </button>
         </div>
       )}

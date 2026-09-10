@@ -19,8 +19,10 @@ import {
   Sparkles,
   Layers,
   AlertCircle,
+  Download,
 } from "lucide-react";
 import { getMyProfile, updateMyProfile, checkSlugAvailable } from "@/lib/actions/team.actions";
+import { getResumeDownloadUrl } from "@/lib/utils";
 
 export default function MemberProfileDashboardPage() {
   const [loading, setLoading] = useState(true);
@@ -85,6 +87,7 @@ export default function MemberProfileDashboardPage() {
       customTitle: "",
       customDescription: "",
     },
+    resumeUrl: "",
   });
 
   // Load profile data on mount
@@ -118,6 +121,7 @@ export default function MemberProfileDashboardPage() {
           education: d.education || [],
           certifications: d.certifications || [],
           achievements: d.achievements || [],
+          resumeUrl: d.resumeUrl || "",
           contactInfo: d.contactInfo || {
             personalEmail: d.email || "",
             publicEmail: true,
@@ -205,6 +209,7 @@ export default function MemberProfileDashboardPage() {
       education: form.education,
       certifications: form.certifications,
       achievements: form.achievements,
+      resumeUrl: form.resumeUrl,
       contactInfo: form.contactInfo,
       socialLinks: form.socialLinks,
       themeConfig: form.themeConfig,
@@ -435,6 +440,37 @@ export default function MemberProfileDashboardPage() {
               {slugStatus.available && (
                 <p className="text-[11px] font-mono text-emerald-400">✓ URL handle is available!</p>
               )}
+            </div>
+
+            {/* Google Drive PDF / Resume Download Link */}
+            <div className="p-5 rounded-2xl border border-cyan-500/20 bg-cyan-950/20 space-y-2.5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                <label className="text-xs font-mono text-cyan-300 font-bold uppercase flex items-center gap-2">
+                  <Download className="w-4 h-4 text-cyan-400" />
+                  <span>External Resume Link (Google Drive PDF / Document)</span>
+                </label>
+                {form.resumeUrl && (
+                  <a
+                    href={getResumeDownloadUrl(form.resumeUrl)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[11px] font-mono text-cyan-400 hover:text-cyan-200 underline flex items-center gap-1 self-start sm:self-auto"
+                  >
+                    <span>Test Download</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+              </div>
+              <input
+                type="url"
+                value={form.resumeUrl}
+                onChange={(e) => setForm({ ...form, resumeUrl: e.target.value })}
+                placeholder="https://drive.google.com/file/d/1A2B3C.../view?usp=sharing"
+                className="w-full px-3.5 py-2.5 bg-neutral-900 border border-white/10 rounded-xl text-white font-mono text-xs focus:outline-none focus:border-cyan-400"
+              />
+              <p className="text-[11px] text-neutral-400 leading-relaxed font-light">
+                Paste your Google Drive PDF share link or direct resume link. When visitors click <strong className="text-neutral-200">"Download Resume / CV"</strong> or <strong className="text-neutral-200">"Resume"</strong> on your public portfolio, this file will be automatically triggered for download.
+              </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
