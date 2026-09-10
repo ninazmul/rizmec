@@ -18,6 +18,7 @@ import {
   Lock,
   Smartphone,
 } from "lucide-react";
+import { HeroTerminalVisual } from "@/components/home/HeroTerminalVisual";
 import { getServices } from "@/lib/actions/service.actions";
 import { getProducts } from "@/lib/actions/product.actions";
 import { getProjects } from "@/lib/actions/project.actions";
@@ -68,51 +69,57 @@ export default async function HomePage() {
           1. HERO SECTION: Cinematic Editorial Authority
       ======================================================== */}
       <section className="relative pt-36 pb-24 md:pt-44 md:pb-36 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="space-y-8 max-w-4xl">
-          {/* System Telemetry Badge */}
-          <div className="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-mono text-xs tracking-widest text-neutral-300 uppercase">
-              GLOBAL TECHNOLOGY ENGINEERING
-            </span>
-            <span className="text-neutral-600">|</span>
-            <span className="font-mono text-xs text-neutral-400">
-              P99 &lt; 15MS
-            </span>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          {/* Left Column: Headline, Copy & CTAs */}
+          <div className="lg:col-span-7 space-y-8">
+            {/* System Telemetry Badge */}
+            <div className="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-mono text-xs tracking-widest text-neutral-300 uppercase">
+                GLOBAL TECHNOLOGY ENGINEERING
+              </span>
+              <span className="text-neutral-600">|</span>
+              <span className="font-mono text-xs text-neutral-400">
+                P99 &lt; 15MS
+              </span>
+            </div>
+
+            {/* Editorial Headline */}
+            <h1 className="text-5xl sm:text-6xl xl:text-7xl font-black tracking-tight text-white leading-[1.05]">
+              Intelligence. <br />
+              <span className="text-neutral-400">Engineered.</span>
+            </h1>
+
+            {/* Subtext */}
+            <p className="text-lg sm:text-xl text-neutral-400 font-light max-w-2xl leading-relaxed">
+              From algorithms to intelligent systems. We architect, build, and
+              deploy mission-critical software, autonomous neural pipelines, and
+              zero-downtime distributed infrastructure for the world's most
+              demanding enterprises.
+            </p>
+
+            {/* Hero CTAs */}
+            <div className="flex flex-wrap items-center gap-4 pt-2">
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-white text-black font-semibold text-xs tracking-widest uppercase hover:bg-neutral-200 transition-all group"
+              >
+                <span>Initiate Project</span>
+                <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </Link>
+
+              <Link
+                href="/work"
+                className="inline-flex items-center gap-2 px-7 py-4 rounded-full border border-white/20 text-white font-mono text-xs tracking-wider uppercase hover:bg-white/5 transition-colors"
+              >
+                <span>Explore Case Studies</span>
+                <ChevronRight className="w-3.5 h-3.5 text-neutral-400" />
+              </Link>
+            </div>
           </div>
 
-          {/* Editorial Headline */}
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight text-white leading-[1.05]">
-            Intelligence. <br />
-            <span className="text-neutral-400">Engineered.</span>
-          </h1>
-
-          {/* Subtext */}
-          <p className="text-lg sm:text-2xl text-neutral-400 font-light max-w-2xl leading-relaxed">
-            From algorithms to intelligent systems. We architect, build, and
-            deploy mission-critical software, autonomous neural pipelines, and
-            zero-downtime distributed infrastructure for the world's most
-            demanding enterprises.
-          </p>
-
-          {/* Hero CTAs */}
-          <div className="flex flex-wrap items-center gap-4 pt-4">
-            <Link
-              href="/contact"
-              className="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-white text-black font-semibold text-xs tracking-widest uppercase hover:bg-neutral-200 transition-all group"
-            >
-              <span>Initiate Project</span>
-              <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </Link>
-
-            <Link
-              href="/work"
-              className="inline-flex items-center gap-2 px-7 py-4 rounded-full border border-white/20 text-white font-mono text-xs tracking-wider uppercase hover:bg-white/5 transition-colors"
-            >
-              <span>Explore Case Studies</span>
-              <ChevronRight className="w-3.5 h-3.5 text-neutral-400" />
-            </Link>
-          </div>
+          {/* Right Column: Visual Interactive Preview Showcase Card */}
+          <HeroTerminalVisual />
         </div>
 
         {/* Hero Architectural Architecture Telemetry Strip */}
