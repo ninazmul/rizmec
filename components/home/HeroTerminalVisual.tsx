@@ -27,7 +27,7 @@ export function HeroTerminalVisual() {
       <motion.div
         animate={{ y: [0, -6, 0] }}
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute -top-4 -right-2 sm:-top-5 sm:-right-4 z-40 glass px-4 py-2.5 rounded-xl border border-white/25 bg-[#121218]/95 backdrop-blur-md shadow-2xl flex items-center gap-2 pointer-events-none border-glow"
+        className="absolute top-5 right-2 sm:right-4 z-40 glass px-4 py-2.5 rounded-xl border border-white/25 bg-[#121218]/95 backdrop-blur-md shadow-2xl flex items-center gap-2 pointer-events-none border-glow w-fit"
       >
         <Sparkles
           className="w-4 h-4 text-amber-300 animate-spin"

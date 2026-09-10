@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import RizmecLogo from "@/components/shared/RizmecLogo";
-import { CheckCircle2, ShieldCheck, Printer, FileCheck2, AlertCircle } from "lucide-react";
+import { CheckCircle2, ShieldCheck, Printer, FileCheck2, AlertCircle, Layers } from "lucide-react";
 import { signAndAcceptQuotation } from "@/lib/actions/quotation.actions";
 
 interface Props {
@@ -317,6 +317,67 @@ export default function PublicQuoteView({ quotation: initialQuote }: Props) {
                 </div>
               </div>
             </div>
+
+            {/* Payment Schedule & Milestones */}
+            {((quotation.paymentSchedule && quotation.paymentSchedule.length > 0) || quotation.paymentTerms) && (
+              <div className="p-6 rounded-xl border border-white/10 bg-white/[0.02] space-y-4 print:bg-neutral-50 print:border-neutral-200">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3 print:border-neutral-200">
+                  <div className="flex items-center gap-2">
+                    <Layers className="w-4 h-4 text-cyan-400 print:text-neutral-800" />
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-white print:text-neutral-900">
+                      Payment Schedule & Milestones
+                    </span>
+                  </div>
+                  {quotation.paymentTerms && (
+                    <span className="text-[11px] font-mono text-neutral-400 print:text-neutral-600">
+                      {quotation.paymentTerms}
+                    </span>
+                  )}
+                </div>
+
+                {quotation.paymentSchedule && quotation.paymentSchedule.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs font-mono">
+                      <thead>
+                        <tr className="border-b border-white/10 text-neutral-400 uppercase text-[10px] print:border-neutral-200 print:text-neutral-600">
+                          <th className="py-2 pr-3">Milestone</th>
+                          <th className="py-2 px-3 text-center">Share</th>
+                          <th className="py-2 px-3 text-right">Amount</th>
+                          <th className="py-2 pl-3 text-left">Trigger / Deliverable</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5 print:divide-neutral-200 text-xs">
+                        {quotation.paymentSchedule.map((m: any, idx: number) => {
+                          const milestoneAmount = Math.round(((quotation.totalAmount * (m.percent || 0)) / 100) * 100) / 100;
+                          return (
+                            <tr key={idx} className="print:text-neutral-900">
+                              <td className="py-2.5 pr-3 font-bold text-white print:text-neutral-900">
+                                {m.milestone}
+                              </td>
+                              <td className="py-2.5 px-3 text-center">
+                                <span className="inline-block px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 text-[10px] font-bold">
+                                  {m.percent}%
+                                </span>
+                              </td>
+                              <td className="py-2.5 px-3 text-right font-bold text-white print:text-neutral-900">
+                                {quotation.currency} {milestoneAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                              </td>
+                              <td className="py-2.5 pl-3 text-neutral-300 print:text-neutral-700 text-[11px]">
+                                {m.trigger}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-xs font-mono text-neutral-300 print:text-neutral-800">
+                    {quotation.paymentTerms}
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Terms & Conditions */}
             {quotation.termsConditions && (

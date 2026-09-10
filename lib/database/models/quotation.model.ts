@@ -9,6 +9,13 @@ export interface IQuotationLineItem {
   total: number;
 }
 
+export interface IPaymentMilestone {
+  milestone: string;   // e.g. "Advance", "Midpoint", "Delivery"
+  percent: number;     // e.g. 30, 40, 30
+  trigger: string;     // e.g. "On project start", "At 50% completion", "On final delivery"
+  dueDate?: Date;
+}
+
 export interface IQuotation extends Document {
   _id: any;
   quoteNumber: string;
@@ -28,6 +35,7 @@ export interface IQuotation extends Document {
   totalAmount: number;
   currency: string;
   paymentTerms: string;
+  paymentSchedule: IPaymentMilestone[];
   validUntil: Date;
   notes?: string;
   termsConditions?: string;
@@ -75,6 +83,20 @@ const QuotationSchema = new Schema<IQuotation>(
     totalAmount: { type: Number, required: true, default: 0 },
     currency: { type: String, default: "USD" },
     paymentTerms: { type: String, default: "50% upfront, 50% upon milestone completion" },
+    paymentSchedule: {
+      type: [
+        new Schema(
+          {
+            milestone: { type: String, required: true },
+            percent: { type: Number, required: true },
+            trigger: { type: String, default: "" },
+            dueDate: { type: Date },
+          },
+          { _id: false },
+        ),
+      ],
+      default: [],
+    },
     validUntil: { type: Date, required: true },
     notes: { type: String, default: "" },
     termsConditions: { type: String, default: "Standard RIZMEC Engineering Services Agreement applies." },

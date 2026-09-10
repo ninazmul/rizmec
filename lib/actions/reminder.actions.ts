@@ -59,6 +59,7 @@ export async function sendInvoicePaymentReminder(
         <h2 style="font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 16px;">
           Payment Notice — ${invoice.invoiceNumber}
         </h2>
+        ${(invoice as any).milestoneLabel ? `<div style="display:inline-block;margin-bottom:16px;padding:6px 14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:20px;font-size:12px;font-family:monospace;text-transform:uppercase;letter-spacing:0.08em;color:#d4d4d8;">Milestone: ${(invoice as any).milestoneLabel}</div>` : ""}
         <p style="font-size: 15px; color: #d4d4d8; line-height: 1.6; margin-bottom: 24px;">
           This is a notification regarding outstanding payment for project <strong>${invoice.projectName}</strong>.
         </p>
@@ -68,12 +69,13 @@ export async function sendInvoicePaymentReminder(
               <td style="color: #a1a1aa; padding: 6px 0;">Invoice Number:</td>
               <td style="color: #ffffff; text-align: right; font-weight: 600;">${invoice.invoiceNumber}</td>
             </tr>
+            ${(invoice as any).milestoneLabel ? `<tr><td style="color:#a1a1aa;padding:6px 0;">Payment Milestone:</td><td style="color:#ffffff;text-align:right;font-weight:600;">${(invoice as any).milestoneLabel}</td></tr>` : ""}
             <tr>
               <td style="color: #a1a1aa; padding: 6px 0;">Due Date:</td>
               <td style="color: #ffffff; text-align: right; font-weight: 600;">${new Date(invoice.dueDate).toLocaleDateString()}</td>
             </tr>
             <tr>
-              <td style="color: #a1a1aa; padding: 6px 0;">Total Amount:</td>
+              <td style="color: #a1a1aa; padding: 6px 0;">Milestone Amount:</td>
               <td style="color: #ffffff; text-align: right; font-weight: 600;">${invoice.currency} ${invoice.totalAmount.toLocaleString()}</td>
             </tr>
             <tr style="border-top: 1px solid rgba(255,255,255,0.1);">

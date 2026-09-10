@@ -31,6 +31,13 @@ export interface IInvoice extends Document {
   status: "draft" | "sent" | "viewed" | "partially_paid" | "paid" | "overdue" | "cancelled";
   notes?: string;
   paymentInstructions?: string;
+  milestoneLabel?: string;          // e.g. "Advance – 30%"
+  paymentSchedule?: Array<{         // full schedule copied from quotation
+    milestone: string;
+    percent: number;
+    trigger: string;
+    dueDate?: Date;
+  }>;
   remindersCount: number;
   lastReminderSentAt?: Date;
   createdAt: Date;
@@ -78,6 +85,21 @@ const InvoiceSchema = new Schema<IInvoice>(
     paymentInstructions: {
       type: String,
       default: "Bank Wire Transfer: Account Name: RIZMEC Engineering Inc. | SWIFT: RIZMUS33 | IBAN: US34RIZM000192837465",
+    },
+    milestoneLabel: { type: String, default: "" },
+    paymentSchedule: {
+      type: [
+        new Schema(
+          {
+            milestone: { type: String },
+            percent: { type: Number },
+            trigger: { type: String },
+            dueDate: { type: Date },
+          },
+          { _id: false },
+        ),
+      ],
+      default: [],
     },
     remindersCount: { type: Number, default: 0 },
     lastReminderSentAt: { type: Date },
