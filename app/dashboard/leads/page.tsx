@@ -374,8 +374,8 @@ export default function LeadsCrmPage() {
       </div>
 
       {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-lg w-full p-6 sm:p-8 space-y-6 my-8">
+        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-lg w-full p-6 sm:p-8 space-y-6 my-8 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center border-b border-white/10 pb-4">
               <h3 className="text-lg font-bold text-white font-mono uppercase">
                 {editingId ? "Edit Lead Record" : "Add Lead to CRM"}
@@ -563,8 +563,8 @@ export default function LeadsCrmPage() {
       )}
 
       {isImportOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-xl w-full p-6 sm:p-8 space-y-6 my-8">
+        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-xl w-full p-6 sm:p-8 space-y-6 my-8 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center border-b border-white/10 pb-4">
               <div>
                 <h3 className="text-lg font-bold text-white font-mono uppercase">

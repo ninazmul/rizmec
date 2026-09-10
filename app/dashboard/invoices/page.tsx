@@ -692,8 +692,8 @@ export default function InvoicesDashboardPage() {
 
       {/* ─── Modal 1: Reminder Confirmation Modal ────────────────────────────── */}
       {reminderModalInvoice && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-lg w-full p-6 sm:p-7 space-y-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-lg w-full p-6 sm:p-7 space-y-6 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-start border-b border-white/10 pb-4">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
@@ -811,8 +811,8 @@ export default function InvoicesDashboardPage() {
 
       {/* ─── Modal 2: Record Payment Modal ───────────────────────────────────── */}
       {selectedInvoiceForPayment && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-md w-full p-6 sm:p-7 space-y-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-md w-full p-6 sm:p-7 space-y-6 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-start border-b border-white/10 pb-4">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
@@ -922,8 +922,8 @@ export default function InvoicesDashboardPage() {
 
       {/* ─── Modal 3: Delete Confirmation Modal ──────────────────────────────── */}
       {deleteModalInvoice && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="bg-neutral-950 border border-rose-500/20 rounded-2xl max-w-md w-full p-6 space-y-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <div className="bg-neutral-950 border border-rose-500/20 rounded-2xl max-w-md w-full p-6 space-y-6 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400">
                 <Trash2 className="w-5 h-5" />
@@ -973,8 +973,8 @@ export default function InvoicesDashboardPage() {
 
       {/* ─── Modal 4: Create / Edit Form Modal ───────────────────────────────── */}
       {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-          <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-3xl w-full p-6 sm:p-8 space-y-6 my-8 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-3xl w-full p-6 sm:p-8 space-y-6 my-8 max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="flex justify-between items-center border-b border-white/10 pb-4">
               <div>
                 <h3 className="text-lg font-bold text-white font-mono uppercase">
