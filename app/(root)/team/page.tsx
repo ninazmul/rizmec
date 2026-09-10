@@ -43,7 +43,7 @@ export default async function TeamDirectoryPage() {
         {members.map((member: any) => (
           <TiltCard key={member.slug} maxTilt={8} glareOpacity={0.15}>
             <Link
-              href={`/team/${member.slug}`}
+              href={`/p/${member.slug}`}
               className="p-6 rounded-2xl border border-white/10 bg-neutral-900/50 backdrop-blur-xl hover:border-white/30 transition-all flex flex-col justify-between space-y-6 group h-full"
             >
               <div className="space-y-4">

@@ -163,7 +163,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                 {project.teamMemberIds.map((m: any) => (
                   <Link
                     key={m._id || m.slug}
-                    href={`/team/${m.slug}`}
+                    href={`/p/${m.slug}`}
                     className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors group"
                   >
                     <img

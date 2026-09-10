@@ -196,7 +196,7 @@ export default function TeamManagementPage() {
                     {m.role}
                   </span>
                   <Link
-                    href={`/team/${m.slug}`}
+                    href={`/p/${m.slug}`}
                     target="_blank"
                     className="text-neutral-400 hover:text-white flex items-center gap-1 font-mono text-xs"
                   >

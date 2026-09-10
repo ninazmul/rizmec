@@ -147,7 +147,7 @@ export default async function AboutPage() {
           {teamMembers.map((member: any) => (
             <TiltCard key={member.slug} maxTilt={8} glareOpacity={0.14}>
               <Link
-                href={`/team/${member.slug}`}
+                href={`/p/${member.slug}`}
                 className="p-6 rounded-2xl border border-white/10 bg-neutral-900/40 backdrop-blur-xl hover:border-white/30 transition-all space-y-4 group h-full block"
               >
                 <div className="aspect-square rounded-xl overflow-hidden bg-neutral-950 border border-white/10 shadow-inner">

@@ -120,10 +120,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .lean<any[]>();
 
   const teamUrls: MetadataRoute.Sitemap = teamMembers.map((t) => ({
-    url: `${baseUrl}/team/${t.slug}`,
+    url: `${baseUrl}/p/${t.slug}`,
     lastModified: t.updatedAt ? new Date(t.updatedAt) : new Date(),
     changeFrequency: "monthly",
-    priority: 0.5,
+    priority: 0.6,
   }));
 
   // Dynamic: CMS pages

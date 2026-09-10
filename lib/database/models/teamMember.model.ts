@@ -26,6 +26,44 @@ export interface ICertification {
   credentialUrl?: string;
 }
 
+export interface ICustomProject {
+  title: string;
+  description: string;
+  role?: string;
+  technologies: string[];
+  liveUrl?: string;
+  githubUrl?: string;
+  imageUrl?: string;
+  metrics?: string[];
+  featured?: boolean;
+}
+
+export interface IThemeConfig {
+  preset?: "obsidian" | "cyber" | "minimal" | "emerald" | "sapphire";
+  effect3D?: "tilt" | "particles" | "mesh" | "minimal";
+  accentColor?: string;
+}
+
+export interface IContactInfo {
+  personalEmail?: string;
+  publicEmail?: boolean;
+  phone?: string;
+  calendlyUrl?: string;
+  telegram?: string;
+  whatsapp?: string;
+  discord?: string;
+}
+
+export interface IAvailability {
+  status?: "open_to_work" | "contract" | "advisory" | "employed";
+  label?: string;
+}
+
+export interface ISeoConfig {
+  customTitle?: string;
+  customDescription?: string;
+}
+
 export interface ITeamMember extends Document {
   _id: any;
   userId?: Schema.Types.ObjectId;
@@ -45,6 +83,11 @@ export interface ITeamMember extends Document {
   experience: IExperience[];
   education: IEducation[];
   certifications: ICertification[];
+  customProjects?: ICustomProject[];
+  themeConfig?: IThemeConfig;
+  contactInfo?: IContactInfo;
+  availability?: IAvailability;
+  seo?: ISeoConfig;
   achievements: string[];
   socialLinks: {
     github?: string;
@@ -97,6 +140,21 @@ const CertificationSchema = new Schema<ICertification>(
   { _id: false },
 );
 
+const CustomProjectSchema = new Schema<ICustomProject>(
+  {
+    title: { type: String, required: true },
+    description: { type: String, default: "" },
+    role: { type: String, default: "" },
+    technologies: { type: [String], default: [] },
+    liveUrl: { type: String, default: "" },
+    githubUrl: { type: String, default: "" },
+    imageUrl: { type: String, default: "" },
+    metrics: { type: [String], default: [] },
+    featured: { type: Boolean, default: true },
+  },
+  { _id: false },
+);
+
 const TeamMemberSchema = new Schema<ITeamMember>(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User" },
@@ -121,6 +179,29 @@ const TeamMemberSchema = new Schema<ITeamMember>(
     experience: { type: [ExperienceSchema], default: [] },
     education: { type: [EducationSchema], default: [] },
     certifications: { type: [CertificationSchema], default: [] },
+    customProjects: { type: [CustomProjectSchema], default: [] },
+    themeConfig: {
+      preset: { type: String, default: "obsidian" },
+      effect3D: { type: String, default: "tilt" },
+      accentColor: { type: String, default: "" },
+    },
+    contactInfo: {
+      personalEmail: { type: String, default: "" },
+      publicEmail: { type: Boolean, default: true },
+      phone: { type: String, default: "" },
+      calendlyUrl: { type: String, default: "" },
+      telegram: { type: String, default: "" },
+      whatsapp: { type: String, default: "" },
+      discord: { type: String, default: "" },
+    },
+    availability: {
+      status: { type: String, default: "open_to_work" },
+      label: { type: String, default: "Open for new opportunities & consulting" },
+    },
+    seo: {
+      customTitle: { type: String, default: "" },
+      customDescription: { type: String, default: "" },
+    },
     achievements: { type: [String], default: [] },
     socialLinks: {
       github: { type: String, default: "" },
