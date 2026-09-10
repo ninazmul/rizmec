@@ -17,8 +17,11 @@ import {
   Database,
   Lock,
   Smartphone,
+  CheckCircle2,
 } from "lucide-react";
 import { HeroTerminalVisual } from "@/components/home/HeroTerminalVisual";
+import { TiltCard } from "@/components/ui/TiltCard";
+import { CyberGlowMesh } from "@/components/ui/CyberGlowMesh";
 import { getServices } from "@/lib/actions/service.actions";
 import { getProducts } from "@/lib/actions/product.actions";
 import { getProjects } from "@/lib/actions/project.actions";
@@ -61,20 +64,20 @@ export default async function HomePage() {
 
   return (
     <div className="relative overflow-hidden bg-[#09090b]">
-      {/* Subtle algorithmic background grid */}
-      <div className="absolute inset-0 tech-grid opacity-40 pointer-events-none" />
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-white/[0.015] blur-[160px] pointer-events-none rounded-full" />
+      {/* Cinematic 3D Ambient Mesh & Grid Background */}
+      <CyberGlowMesh intensity="medium" />
+      <div className="absolute inset-0 tech-grid opacity-30 pointer-events-none" />
 
       {/* ========================================================
-          1. HERO SECTION: Cinematic Editorial Authority
+          1. HERO SECTION: Cinematic Editorial Authority & 3D Visual
       ======================================================== */}
       <section className="relative pt-36 pb-24 md:pt-44 md:pb-36 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           {/* Left Column: Headline, Copy & CTAs */}
           <div className="lg:col-span-7 space-y-8">
             {/* System Telemetry Badge */}
-            <div className="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-white/15 bg-white/[0.03] backdrop-blur-xl shadow-lg border-glow">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400/50" />
               <span className="font-mono text-xs tracking-widest text-neutral-300 uppercase">
                 GLOBAL TECHNOLOGY ENGINEERING
               </span>
@@ -84,8 +87,8 @@ export default async function HomePage() {
               </span>
             </div>
 
-            {/* Editorial Headline */}
-            <h1 className="text-5xl sm:text-6xl xl:text-7xl font-black tracking-tight text-white leading-[1.05]">
+            {/* Editorial Headline with Chrome Titanium Gradient */}
+            <h1 className="text-5xl sm:text-6xl xl:text-7xl font-black tracking-tight leading-[1.05] text-chrome">
               Intelligence. <br />
               <span className="text-neutral-400">Engineered.</span>
             </h1>
@@ -98,11 +101,11 @@ export default async function HomePage() {
               demanding enterprises.
             </p>
 
-            {/* Hero CTAs */}
+            {/* Hero CTAs with 3D Depth & Light Effects */}
             <div className="flex flex-wrap items-center gap-4 pt-2">
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-white text-black font-semibold text-xs tracking-widest uppercase hover:bg-neutral-200 transition-all group"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white text-black font-semibold text-xs tracking-widest uppercase btn-shimmer btn-glow group"
               >
                 <span>Initiate Project</span>
                 <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -110,7 +113,7 @@ export default async function HomePage() {
 
               <Link
                 href="/work"
-                className="inline-flex items-center gap-2 px-7 py-4 rounded-full border border-white/20 text-white font-mono text-xs tracking-wider uppercase hover:bg-white/5 transition-colors"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full border border-white/20 text-white font-mono text-xs tracking-wider uppercase btn-glow-outline backdrop-blur-sm"
               >
                 <span>Explore Case Studies</span>
                 <ChevronRight className="w-3.5 h-3.5 text-neutral-400" />
@@ -124,47 +127,47 @@ export default async function HomePage() {
 
         {/* Hero Architectural Architecture Telemetry Strip */}
         <div className="mt-20 pt-8 border-t border-white/10 grid grid-cols-2 md:grid-cols-4 gap-6 font-mono text-xs">
-          <div>
+          <div className="p-4 rounded-xl border border-white/5 bg-white/[0.01] backdrop-blur-sm">
             <div className="text-neutral-400 uppercase tracking-wider mb-1">
               Scale Reliability
             </div>
             <div className="text-xl sm:text-2xl font-bold text-white tracking-tight">
               99.999%
             </div>
-            <div className="text-[11px] text-neutral-400 mt-1">
+            <div className="text-[11px] text-neutral-500 mt-1">
               Fault-tolerant distributed SLA
             </div>
           </div>
-          <div>
+          <div className="p-4 rounded-xl border border-white/5 bg-white/[0.01] backdrop-blur-sm">
             <div className="text-neutral-400 uppercase tracking-wider mb-1">
               Algorithmic Throughput
             </div>
             <div className="text-xl sm:text-2xl font-bold text-white tracking-tight">
               2.4M RPS
             </div>
-            <div className="text-[11px] text-neutral-400 mt-1">
+            <div className="text-[11px] text-neutral-500 mt-1">
               P99 sub-millisecond edge latency
             </div>
           </div>
-          <div>
+          <div className="p-4 rounded-xl border border-white/5 bg-white/[0.01] backdrop-blur-sm">
             <div className="text-neutral-400 uppercase tracking-wider mb-1">
               Global Deployments
             </div>
             <div className="text-xl sm:text-2xl font-bold text-white tracking-tight">
               40+ Clusters
             </div>
-            <div className="text-[11px] text-neutral-400 mt-1">
+            <div className="text-[11px] text-neutral-500 mt-1">
               Multi-region active-active topology
             </div>
           </div>
-          <div>
+          <div className="p-4 rounded-xl border border-white/5 bg-white/[0.01] backdrop-blur-sm">
             <div className="text-neutral-400 uppercase tracking-wider mb-1">
               Deterministic AI
             </div>
             <div className="text-xl sm:text-2xl font-bold text-white tracking-tight">
               100% Guardrailed
             </div>
-            <div className="text-[11px] text-neutral-400 mt-1">
+            <div className="text-[11px] text-neutral-500 mt-1">
               Audit-ready agentic execution
             </div>
           </div>
@@ -172,18 +175,19 @@ export default async function HomePage() {
       </section>
 
       {/* ========================================================
-          2. POSITIONING & PHILOSOPHY: The 4 Pillars
+          2. POSITIONING & PHILOSOPHY: The 4 Pillars (Interactive 3D Tilt)
       ======================================================== */}
-      <section className="py-24 border-t border-white/10 bg-neutral-950">
+      <section className="py-24 border-t border-white/10 bg-neutral-950/60 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mb-16">
-            <span className="text-xs font-mono tracking-widest text-neutral-400 uppercase font-semibold">
-              // Philosophy
+          <div className="max-w-3xl mb-16 space-y-3">
+            <span className="text-xs font-mono tracking-widest text-emerald-400 uppercase font-semibold flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              // Core Philosophy
             </span>
-            <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight mt-2">
+            <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight text-chrome">
               From algorithms to intelligent systems.
             </h2>
-            <p className="text-neutral-400 text-base sm:text-lg leading-relaxed mt-4">
+            <p className="text-neutral-400 text-base sm:text-lg leading-relaxed">
               We reject brittle software templates and superficial AI wrappers.
               Real international enterprise engineering demands mathematical
               precision, zero-trust security, and deterministic resiliency.
@@ -191,77 +195,114 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="p-8 rounded-xl border border-white/10 bg-white/[0.01] hover:border-white/30 transition-all space-y-4">
-              <div className="w-10 h-10 rounded-lg border border-white/10 flex items-center justify-center bg-white/5">
-                <Code2 className="w-5 h-5 text-white" />
+            <TiltCard maxTilt={10} glareOpacity={0.18}>
+              <div className="p-8 rounded-2xl border border-white/10 bg-neutral-900/50 backdrop-blur-xl hover:border-white/30 transition-all space-y-4 h-full flex flex-col justify-between group">
+                <div className="space-y-4">
+                  <div className="w-12 h-12 rounded-xl border border-white/15 flex items-center justify-center bg-white/5 group-hover:bg-white/10 group-hover:scale-105 transition-all shadow-inner">
+                    <Code2 className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-white tracking-tight">
+                    Precision Engineering
+                  </h3>
+                  <p className="text-xs text-neutral-400 leading-relaxed">
+                    Strict type safety, static memory guarantees, and formal
+                    verification preventing catastrophic production regressions.
+                  </p>
+                </div>
+                <div className="pt-4 border-t border-white/5 flex items-center gap-2 text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
+                  <span>01</span>
+                  <span>/</span>
+                  <span>FORMAL_VERIFICATION</span>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-white tracking-tight">
-                Precision Engineering
-              </h3>
-              <p className="text-xs text-neutral-400 leading-relaxed">
-                Strict type safety, static memory guarantees, and formal
-                verification preventing catastrophic production regressions.
-              </p>
-            </div>
+            </TiltCard>
 
-            <div className="p-8 rounded-xl border border-white/10 bg-white/[0.01] hover:border-white/30 transition-all space-y-4">
-              <div className="w-10 h-10 rounded-lg border border-white/10 flex items-center justify-center bg-white/5">
-                <Cpu className="w-5 h-5 text-white" />
+            <TiltCard maxTilt={10} glareOpacity={0.18}>
+              <div className="p-8 rounded-2xl border border-white/10 bg-neutral-900/50 backdrop-blur-xl hover:border-white/30 transition-all space-y-4 h-full flex flex-col justify-between group">
+                <div className="space-y-4">
+                  <div className="w-12 h-12 rounded-xl border border-white/15 flex items-center justify-center bg-white/5 group-hover:bg-white/10 group-hover:scale-105 transition-all shadow-inner">
+                    <Cpu className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-white tracking-tight">
+                    Deterministic AI
+                  </h3>
+                  <p className="text-xs text-neutral-400 leading-relaxed">
+                    Converting probabilistic neural outputs into bounded,
+                    grammar-constrained, audit-verifiable transactional events.
+                  </p>
+                </div>
+                <div className="pt-4 border-t border-white/5 flex items-center gap-2 text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
+                  <span>02</span>
+                  <span>/</span>
+                  <span>NEURAL_BOUNDS</span>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-white tracking-tight">
-                Deterministic AI
-              </h3>
-              <p className="text-xs text-neutral-400 leading-relaxed">
-                Converting probabilistic neural outputs into bounded,
-                grammar-constrained, audit-verifiable transactional events.
-              </p>
-            </div>
+            </TiltCard>
 
-            <div className="p-8 rounded-xl border border-white/10 bg-white/[0.01] hover:border-white/30 transition-all space-y-4">
-              <div className="w-10 h-10 rounded-lg border border-white/10 flex items-center justify-center bg-white/5">
-                <Server className="w-5 h-5 text-white" />
+            <TiltCard maxTilt={10} glareOpacity={0.18}>
+              <div className="p-8 rounded-2xl border border-white/10 bg-neutral-900/50 backdrop-blur-xl hover:border-white/30 transition-all space-y-4 h-full flex flex-col justify-between group">
+                <div className="space-y-4">
+                  <div className="w-12 h-12 rounded-xl border border-white/15 flex items-center justify-center bg-white/5 group-hover:bg-white/10 group-hover:scale-105 transition-all shadow-inner">
+                    <Server className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-white tracking-tight">
+                    Distributed Resiliency
+                  </h3>
+                  <p className="text-xs text-neutral-400 leading-relaxed">
+                    Multi-region Kubernetes mesh topologies surviving data center
+                    outages with automated sub-3-second failover.
+                  </p>
+                </div>
+                <div className="pt-4 border-t border-white/5 flex items-center gap-2 text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
+                  <span>03</span>
+                  <span>/</span>
+                  <span>MULTI_REGION</span>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-white tracking-tight">
-                Distributed Resiliency
-              </h3>
-              <p className="text-xs text-neutral-400 leading-relaxed">
-                Multi-region Kubernetes mesh topologies surviving data center
-                outages with automated sub-3-second failover.
-              </p>
-            </div>
+            </TiltCard>
 
-            <div className="p-8 rounded-xl border border-white/10 bg-white/[0.01] hover:border-white/30 transition-all space-y-4">
-              <div className="w-10 h-10 rounded-lg border border-white/10 flex items-center justify-center bg-white/5">
-                <Lock className="w-5 h-5 text-white" />
+            <TiltCard maxTilt={10} glareOpacity={0.18}>
+              <div className="p-8 rounded-2xl border border-white/10 bg-neutral-900/50 backdrop-blur-xl hover:border-white/30 transition-all space-y-4 h-full flex flex-col justify-between group">
+                <div className="space-y-4">
+                  <div className="w-12 h-12 rounded-xl border border-white/15 flex items-center justify-center bg-white/5 group-hover:bg-white/10 group-hover:scale-105 transition-all shadow-inner">
+                    <Lock className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-white tracking-tight">
+                    Zero-Trust Security
+                  </h3>
+                  <p className="text-xs text-neutral-400 leading-relaxed">
+                    Hardware-backed cryptographic authorization, mTLS service
+                    isolation, and immutable tamper-evident audit logs.
+                  </p>
+                </div>
+                <div className="pt-4 border-t border-white/5 flex items-center gap-2 text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
+                  <span>04</span>
+                  <span>/</span>
+                  <span>CRYPTOGRAPHIC</span>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-white tracking-tight">
-                Zero-Trust Security
-              </h3>
-              <p className="text-xs text-neutral-400 leading-relaxed">
-                Hardware-backed cryptographic authorization, mTLS service
-                isolation, and immutable tamper-evident audit logs.
-              </p>
-            </div>
+            </TiltCard>
           </div>
         </div>
       </section>
 
       {/* ========================================================
-          3. DYNAMIC SERVICES & CAPABILITIES
+          3. DYNAMIC SERVICES & CAPABILITIES (3D Cards)
       ======================================================== */}
-      <section className="py-24 border-t border-white/10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-24 border-t border-white/10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div>
-            <span className="text-xs font-mono tracking-widest text-neutral-400 uppercase font-semibold">
-              // Capabilities
+            <span className="text-xs font-mono tracking-widest text-cyan-400 uppercase font-semibold flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+              // Technical Capabilities
             </span>
-            <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight mt-2">
+            <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight mt-2 text-chrome">
               Engineering Disciplines
             </h2>
           </div>
           <Link
             href="/services"
-            className="inline-flex items-center gap-1.5 text-xs font-mono text-neutral-400 hover:text-white uppercase tracking-wider transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/15 bg-white/[0.02] text-xs font-mono text-neutral-300 uppercase tracking-wider btn-glow-outline"
           >
             <span>View All Capabilities</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
@@ -274,61 +315,65 @@ export default async function HomePage() {
               <Terminal className="w-5 h-5 text-white" />
             );
             return (
-              <Link
-                key={service.slug}
-                href={`/services/${service.slug}`}
-                className="group relative p-8 rounded-xl border border-white/10 bg-white/[0.01] hover:bg-white/[0.03] hover:border-white/30 transition-all flex flex-col justify-between"
-              >
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center">
-                      {icon}
+              <TiltCard key={service.slug} maxTilt={8} glareOpacity={0.14}>
+                <Link
+                  href={`/services/${service.slug}`}
+                  className="group relative p-8 rounded-2xl border border-white/10 bg-neutral-900/40 backdrop-blur-xl hover:bg-neutral-900/70 hover:border-white/25 transition-all flex flex-col justify-between h-full"
+                >
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="w-11 h-11 rounded-xl border border-white/15 bg-white/5 flex items-center justify-center group-hover:scale-105 group-hover:bg-white/10 transition-all">
+                        {icon}
+                      </div>
+                      <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center bg-white/[0.02] group-hover:bg-white group-hover:text-black transition-all">
+                        <ArrowUpRight className="w-4 h-4 text-neutral-400 group-hover:text-black transition-colors" />
+                      </div>
                     </div>
-                    <ArrowUpRight className="w-4 h-4 text-neutral-400 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                    <h3 className="text-xl font-bold text-white tracking-tight group-hover:text-cyan-200 transition-colors">
+                      {service.title}
+                    </h3>
+                    <p className="text-xs text-neutral-400 leading-relaxed line-clamp-3">
+                      {service.shortDescription}
+                    </p>
                   </div>
-                  <h3 className="text-xl font-bold text-white tracking-tight group-hover:text-neutral-200">
-                    {service.title}
-                  </h3>
-                  <p className="text-xs text-neutral-400 leading-relaxed line-clamp-3">
-                    {service.shortDescription}
-                  </p>
-                </div>
 
-                <div className="pt-6 mt-6 border-t border-white/10 flex flex-wrap gap-1.5">
-                  {(service.technologies || [])
-                    .slice(0, 4)
-                    .map((tech: string) => (
-                      <span
-                        key={tech}
-                        className="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 text-neutral-300 border border-white/5"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                </div>
-              </Link>
+                  <div className="pt-6 mt-6 border-t border-white/10 flex flex-wrap gap-1.5">
+                    {(service.technologies || [])
+                      .slice(0, 4)
+                      .map((tech: string) => (
+                        <span
+                          key={tech}
+                          className="px-2.5 py-1 rounded-md text-[10px] font-mono bg-white/5 text-neutral-300 border border-white/10"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                  </div>
+                </Link>
+              </TiltCard>
             );
           })}
         </div>
       </section>
 
       {/* ========================================================
-          4. DYNAMIC PRODUCTS & PLATFORMS
+          4. DYNAMIC PRODUCTS & PLATFORMS (3D Showcase)
       ======================================================== */}
-      <section className="py-24 border-t border-white/10 bg-neutral-950">
+      <section className="py-24 border-t border-white/10 bg-neutral-950/60 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
             <div>
-              <span className="text-xs font-mono tracking-widest text-neutral-400 uppercase font-semibold">
-                // Internal Platforms
+              <span className="text-xs font-mono tracking-widest text-indigo-400 uppercase font-semibold flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                // Proprietary Software
               </span>
-              <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight mt-2">
+              <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight mt-2 text-chrome">
                 Engineered Platforms & SaaS
               </h2>
             </div>
             <Link
               href="/products"
-              className="inline-flex items-center gap-1.5 text-xs font-mono text-neutral-400 hover:text-white uppercase tracking-wider transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/15 bg-white/[0.02] text-xs font-mono text-neutral-300 uppercase tracking-wider btn-glow-outline"
             >
               <span>Explore All Platforms</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -337,91 +382,94 @@ export default async function HomePage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {products.map((product: any) => (
-              <div
-                key={product.slug}
-                className="rounded-2xl border border-white/10 bg-white/[0.01] overflow-hidden hover:border-white/30 transition-all flex flex-col justify-between"
-              >
-                <div className="p-8 sm:p-10 space-y-6">
-                  <div className="flex items-center justify-between">
-                    <span className="px-3 py-1 rounded-full text-[11px] font-mono tracking-wider uppercase border border-white/15 bg-white/5 text-neutral-300">
-                      {product.category}
-                    </span>
-                    <span className="font-mono text-xs text-neutral-400 uppercase tracking-widest">
-                      {product.status === "active"
-                        ? "PRODUCTION READY"
-                        : "BETA"}
-                    </span>
-                  </div>
-
-                  <div>
-                    <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                      {product.title}
-                    </h3>
-                    <p className="text-sm font-mono text-neutral-400 mt-1">
-                      {product.tagline}
-                    </p>
-                  </div>
-
-                  <p className="text-sm text-neutral-400 leading-relaxed">
-                    {product.summary}
-                  </p>
-
-                  <div className="space-y-2">
-                    {(product.features || [])
-                      .slice(0, 3)
-                      .map((feat: string) => (
-                        <div
-                          key={feat}
-                          className="flex items-start gap-2.5 text-xs text-neutral-300"
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full bg-white mt-1.5 shrink-0" />
-                          <span>{feat}</span>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-
-                <div className="p-8 sm:p-10 pt-0 flex items-center justify-between">
-                  <div className="flex flex-wrap gap-2">
-                    {(product.techStack || []).slice(0, 3).map((t: string) => (
-                      <span
-                        key={t}
-                        className="px-2.5 py-1 rounded text-xs font-mono bg-white/5 text-neutral-400 border border-white/5"
-                      >
-                        {t}
+              <TiltCard key={product.slug} maxTilt={6} glareOpacity={0.16}>
+                <div className="rounded-2xl border border-white/10 bg-neutral-900/50 backdrop-blur-xl overflow-hidden hover:border-white/30 transition-all flex flex-col justify-between h-full">
+                  <div className="p-8 sm:p-10 space-y-6">
+                    <div className="flex items-center justify-between">
+                      <span className="px-3.5 py-1.5 rounded-full text-[11px] font-mono tracking-wider uppercase border border-white/15 bg-white/5 text-neutral-200">
+                        {product.category}
                       </span>
-                    ))}
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                        <span className="font-mono text-xs text-emerald-400 uppercase tracking-widest font-semibold">
+                          {product.status === "active"
+                            ? "PRODUCTION READY"
+                            : "BETA"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                        {product.title}
+                      </h3>
+                      <p className="text-sm font-mono text-cyan-300 mt-1">
+                        {product.tagline}
+                      </p>
+                    </div>
+
+                    <p className="text-sm text-neutral-400 leading-relaxed">
+                      {product.summary}
+                    </p>
+
+                    <div className="space-y-2.5">
+                      {(product.features || [])
+                        .slice(0, 3)
+                        .map((feat: string) => (
+                          <div
+                            key={feat}
+                            className="flex items-start gap-2.5 text-xs text-neutral-300"
+                          >
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <span>{feat}</span>
+                          </div>
+                        ))}
+                    </div>
                   </div>
-                  <Link
-                    href={`/products/${product.slug}`}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-white/20 text-white font-mono text-xs hover:bg-white hover:text-black transition-all"
-                  >
-                    <span>Inspect Platform</span>
-                    <ArrowUpRight className="w-3 h-3" />
-                  </Link>
+
+                  <div className="p-8 sm:p-10 pt-0 flex flex-wrap items-center justify-between gap-4 border-t border-white/5">
+                    <div className="flex flex-wrap gap-2">
+                      {(product.techStack || []).slice(0, 3).map((t: string) => (
+                        <span
+                          key={t}
+                          className="px-3 py-1 rounded-md text-xs font-mono bg-white/5 text-neutral-300 border border-white/10"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                    <Link
+                      href={`/products/${product.slug}`}
+                      className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full border border-white/20 text-white font-mono text-xs btn-glow-outline"
+                    >
+                      <span>Inspect Platform</span>
+                      <ArrowUpRight className="w-3 h-3" />
+                    </Link>
+                  </div>
                 </div>
-              </div>
+              </TiltCard>
             ))}
           </div>
         </div>
       </section>
 
       {/* ========================================================
-          5. FEATURED CASE STUDIES / WORK
+          5. FEATURED CASE STUDIES / WORK (3D Depth)
       ======================================================== */}
-      <section className="py-24 border-t border-white/10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-24 border-t border-white/10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div>
-            <span className="text-xs font-mono tracking-widest text-neutral-400 uppercase font-semibold">
+            <span className="text-xs font-mono tracking-widest text-amber-400 uppercase font-semibold flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
               // Proven Track Record
             </span>
-            <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight mt-2">
+            <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight mt-2 text-chrome">
               Selected Case Studies
             </h2>
           </div>
           <Link
             href="/work"
-            className="inline-flex items-center gap-1.5 text-xs font-mono text-neutral-400 hover:text-white uppercase tracking-wider transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/15 bg-white/[0.02] text-xs font-mono text-neutral-300 uppercase tracking-wider btn-glow-outline"
           >
             <span>All Case Studies</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
@@ -430,60 +478,60 @@ export default async function HomePage() {
 
         <div className="space-y-12">
           {projects.map((project: any) => (
-            <div
-              key={project.slug}
-              className="p-8 sm:p-12 rounded-2xl border border-white/10 bg-white/[0.01] hover:border-white/30 transition-all grid grid-cols-1 lg:grid-cols-12 gap-8 items-center"
-            >
-              <div className="lg:col-span-7 space-y-5">
-                <div className="flex items-center gap-3 text-xs font-mono text-neutral-400">
-                  <span className="text-white uppercase font-bold">
-                    {project.clientName}
-                  </span>
-                  <span>//</span>
-                  <span>{project.industry}</span>
+            <TiltCard key={project.slug} maxTilt={4} glareOpacity={0.12}>
+              <div className="p-8 sm:p-12 rounded-3xl border border-white/10 bg-neutral-900/40 backdrop-blur-2xl hover:border-white/30 transition-all grid grid-cols-1 lg:grid-cols-12 gap-8 items-center group">
+                <div className="lg:col-span-7 space-y-5">
+                  <div className="flex items-center gap-3 text-xs font-mono text-neutral-400">
+                    <span className="text-white uppercase font-bold px-2.5 py-1 rounded bg-white/5 border border-white/10">
+                      {project.clientName}
+                    </span>
+                    <span>//</span>
+                    <span className="text-cyan-300">{project.industry}</span>
+                  </div>
+
+                  <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight group-hover:text-neutral-100">
+                    {project.title}
+                  </h3>
+
+                  <p className="text-sm text-neutral-400 leading-relaxed">
+                    {project.summary}
+                  </p>
+
+                  {/* Metrics */}
+                  <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/10">
+                    {(project.metrics || []).map((m: any) => (
+                      <div key={m.label} className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                        <div className="text-xl sm:text-2xl font-black text-white font-mono">
+                          {m.value}
+                        </div>
+                        <div className="text-[11px] text-neutral-400 font-mono uppercase mt-0.5">
+                          {m.label}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="pt-4">
+                    <Link
+                      href={`/work/${project.slug}`}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-black font-mono text-xs font-semibold tracking-widest uppercase btn-shimmer btn-glow group/btn"
+                    >
+                      <span>Read Architectural Breakdown</span>
+                      <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
+                    </Link>
+                  </div>
                 </div>
 
-                <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                  {project.title}
-                </h3>
-
-                <p className="text-sm text-neutral-400 leading-relaxed">
-                  {project.summary}
-                </p>
-
-                {/* Metrics */}
-                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/10">
-                  {(project.metrics || []).map((m: any) => (
-                    <div key={m.label}>
-                      <div className="text-xl sm:text-2xl font-black text-white font-mono">
-                        {m.value}
-                      </div>
-                      <div className="text-[11px] text-neutral-400 font-mono uppercase mt-0.5">
-                        {m.label}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="pt-4">
-                  <Link
-                    href={`/work/${project.slug}`}
-                    className="inline-flex items-center gap-2 text-xs font-mono text-white tracking-widest uppercase hover:underline"
-                  >
-                    <span>Read Architectural Breakdown</span>
-                    <ArrowUpRight className="w-3.5 h-3.5" />
-                  </Link>
+                <div className="lg:col-span-5 relative aspect-video rounded-2xl overflow-hidden border border-white/15 shadow-2xl">
+                  <img
+                    src={project.thumbnail}
+                    alt={project.title}
+                    className="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
                 </div>
               </div>
-
-              <div className="lg:col-span-5 relative aspect-video rounded-xl overflow-hidden border border-white/10">
-                <img
-                  src={project.thumbnail}
-                  alt={project.title}
-                  className="w-full h-full object-cover grayscale contrast-125 hover:grayscale-0 transition-all duration-500"
-                />
-              </div>
-            </div>
+            </TiltCard>
           ))}
         </div>
       </section>
@@ -491,20 +539,21 @@ export default async function HomePage() {
       {/* ========================================================
           6. LEADERSHIP & PRINCIPAL ENGINEERS
       ======================================================== */}
-      <section className="py-24 border-t border-white/10 bg-neutral-950">
+      <section className="py-24 border-t border-white/10 bg-neutral-950/60 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
             <div>
-              <span className="text-xs font-mono tracking-widest text-neutral-400 uppercase font-semibold">
+              <span className="text-xs font-mono tracking-widest text-emerald-400 uppercase font-semibold flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 // Human Capital
               </span>
-              <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight mt-2">
+              <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight mt-2 text-chrome">
                 Engineering Leadership
               </h2>
             </div>
             <Link
               href="/team"
-              className="inline-flex items-center gap-1.5 text-xs font-mono text-neutral-400 hover:text-white uppercase tracking-wider transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/15 bg-white/[0.02] text-xs font-mono text-neutral-300 uppercase tracking-wider btn-glow-outline"
             >
               <span>Meet The Entire Squad</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -513,81 +562,82 @@ export default async function HomePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {teamMembers.map((member: any) => (
-              <Link
-                key={member.slug}
-                href={`/team/${member.slug}`}
-                className="group p-6 rounded-xl border border-white/10 bg-white/[0.01] hover:border-white/30 transition-all flex flex-col justify-between"
-              >
-                <div className="space-y-4">
-                  <div className="aspect-square rounded-lg overflow-hidden border border-white/10 bg-neutral-900">
-                    <img
-                      src={member.avatar}
-                      alt={member.name}
-                      className="w-full h-full object-cover grayscale contrast-125 group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-white group-hover:text-neutral-200">
-                      {member.name}
-                    </h3>
-                    <p className="text-xs text-neutral-400 font-mono mt-0.5">
-                      {member.title}
+              <TiltCard key={member.slug} maxTilt={8} glareOpacity={0.15}>
+                <Link
+                  href={`/team/${member.slug}`}
+                  className="group p-6 rounded-2xl border border-white/10 bg-neutral-900/50 backdrop-blur-xl hover:border-white/30 transition-all flex flex-col justify-between h-full"
+                >
+                  <div className="space-y-4">
+                    <div className="aspect-square rounded-xl overflow-hidden border border-white/10 bg-neutral-950 shadow-inner">
+                      <img
+                        src={member.avatar}
+                        alt={member.name}
+                        className="w-full h-full object-cover grayscale contrast-125 group-hover:scale-105 group-hover:grayscale-0 transition-all duration-500"
+                      />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-white group-hover:text-cyan-200 transition-colors">
+                        {member.name}
+                      </h3>
+                      <p className="text-xs text-neutral-400 font-mono mt-0.5">
+                        {member.title}
+                      </p>
+                    </div>
+                    <p className="text-xs text-neutral-400 line-clamp-2 leading-relaxed">
+                      {member.tagline || member.bio}
                     </p>
                   </div>
-                  <p className="text-xs text-neutral-400 line-clamp-2 leading-relaxed">
-                    {member.tagline || member.bio}
-                  </p>
-                </div>
 
-                <div className="pt-4 mt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-neutral-400 group-hover:text-white transition-colors">
-                  <span>View Full Dossier</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                </div>
-              </Link>
+                  <div className="pt-4 mt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-neutral-400 group-hover:text-white transition-colors">
+                    <span>View Dossier</span>
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  </div>
+                </Link>
+              </TiltCard>
             ))}
           </div>
         </div>
       </section>
 
       {/* ========================================================
-          7. VERIFIED ENTERPRISE TESTIMONIALS
+          7. VERIFIED ENTERPRISE TESTIMONIALS (3D Tilt Cards)
       ======================================================== */}
       {testimonials.length > 0 && (
-        <section className="py-24 border-t border-white/10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mb-16">
-            <span className="text-xs font-mono tracking-widest text-neutral-400 uppercase font-semibold">
+        <section className="py-24 border-t border-white/10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="max-w-3xl mb-16 space-y-2">
+            <span className="text-xs font-mono tracking-widest text-cyan-400 uppercase font-semibold flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
               // Client Validation
             </span>
-            <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight mt-2">
+            <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight text-chrome">
               Verified Partner Feedback
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {testimonials.map((t: any) => (
-              <div
-                key={t._id}
-                className="p-8 rounded-xl border border-white/10 bg-white/[0.01] flex flex-col justify-between space-y-6"
-              >
-                <p className="text-sm text-neutral-300 leading-relaxed italic">
-                  "{t.content}"
-                </p>
-                <div className="flex items-center gap-3 pt-4 border-t border-white/10">
-                  <img
-                    src={t.avatar}
-                    alt={t.clientName}
-                    className="w-10 h-10 rounded-full object-cover border border-white/10 grayscale"
-                  />
-                  <div>
-                    <div className="text-sm font-bold text-white">
-                      {t.clientName}
-                    </div>
-                    <div className="text-xs text-neutral-400 font-mono">
-                      {t.position}, {t.company}
+              <TiltCard key={t._id} maxTilt={6} glareOpacity={0.12}>
+                <div className="p-8 rounded-2xl border border-white/10 bg-neutral-900/40 backdrop-blur-xl flex flex-col justify-between space-y-6 h-full hover:border-white/25 transition-all">
+                  <p className="text-sm text-neutral-300 leading-relaxed italic">
+                    "{t.content}"
+                  </p>
+                  <div className="flex items-center gap-3 pt-4 border-t border-white/10">
+                    <img
+                      src={t.avatar}
+                      alt={t.clientName}
+                      className="w-11 h-11 rounded-full object-cover border border-white/15 grayscale"
+                    />
+                    <div>
+                      <div className="text-sm font-bold text-white">
+                        {t.clientName}
+                      </div>
+                      <div className="text-xs text-neutral-400 font-mono">
+                        {t.position}, {t.company}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </TiltCard>
             ))}
           </div>
         </section>
@@ -596,10 +646,10 @@ export default async function HomePage() {
       {/* ========================================================
           8. HOSTINGER OFFICIAL PARTNER — EXCLUSIVE 20% OFF
       ======================================================== */}
-      <section className="py-24 border-t border-white/10 bg-neutral-950">
+      <section className="py-24 border-t border-white/10 bg-neutral-950 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#673DE6]/15 via-[#09090b] to-[#09090b] p-8 sm:p-12 lg:p-16">
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#673DE6]/10 blur-[120px] rounded-full pointer-events-none" />
+          <div className="relative overflow-hidden rounded-3xl border border-white/15 bg-gradient-to-br from-[#673DE6]/20 via-[#09090b] to-[#09090b] p-8 sm:p-12 lg:p-16 shadow-2xl">
+            <div className="absolute top-0 right-0 w-[550px] h-[550px] bg-[#673DE6]/15 blur-[140px] rounded-full pointer-events-none" />
             <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
               <div className="lg:col-span-5 space-y-6">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#673DE6]/40 bg-[#673DE6]/10 backdrop-blur-md">
@@ -640,12 +690,12 @@ export default async function HomePage() {
                     href="https://www.hostinger.com?REFERRALCODE=RIZMEC"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-[#673DE6] text-white font-semibold text-xs tracking-widest uppercase hover:bg-[#5A32CC] active:scale-95 transition-all shadow-lg shadow-[#673DE6]/20 group"
+                    className="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-[#673DE6] text-white font-semibold text-xs tracking-widest uppercase btn-shimmer btn-glow-purple group"
                   >
                     <span>Claim Your 20% Discount</span>
                     <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </a>
-                  <div className="inline-flex items-center gap-2 px-5 py-3.5 rounded-full border border-white/15 bg-white/[0.03]">
+                  <div className="inline-flex items-center gap-2 px-5 py-4 rounded-full border border-white/15 bg-white/[0.03] backdrop-blur-md">
                     <span className="font-mono text-[11px] tracking-widest text-neutral-400 uppercase">
                       PROMO CODE
                     </span>
@@ -655,27 +705,27 @@ export default async function HomePage() {
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-4 pt-4 max-w-md">
-                  <div className="space-y-0.5">
+                  <div className="space-y-0.5 p-3 rounded-xl bg-white/[0.02] border border-white/5">
                     <div className="text-lg sm:text-xl font-black text-white font-mono tracking-tight">
                       99.9%
                     </div>
-                    <div className="text-[10px] sm:text-[11px] text-neutral-500 font-mono uppercase tracking-wider">
+                    <div className="text-[10px] sm:text-[11px] text-neutral-400 font-mono uppercase tracking-wider">
                       Uptime SLA
                     </div>
                   </div>
-                  <div className="space-y-0.5">
+                  <div className="space-y-0.5 p-3 rounded-xl bg-white/[0.02] border border-white/5">
                     <div className="text-lg sm:text-xl font-black text-white font-mono tracking-tight">
                       24/7
                     </div>
-                    <div className="text-[10px] sm:text-[11px] text-neutral-500 font-mono uppercase tracking-wider">
-                      Expert Support
+                    <div className="text-[10px] sm:text-[11px] text-neutral-400 font-mono uppercase tracking-wider">
+                      Support
                     </div>
                   </div>
-                  <div className="space-y-0.5">
+                  <div className="space-y-0.5 p-3 rounded-xl bg-white/[0.02] border border-white/5">
                     <div className="text-lg sm:text-xl font-black text-white font-mono tracking-tight">
                       30d
                     </div>
-                    <div className="text-[10px] sm:text-[11px] text-neutral-500 font-mono uppercase tracking-wider">
+                    <div className="text-[10px] sm:text-[11px] text-neutral-400 font-mono uppercase tracking-wider">
                       Money-Back
                     </div>
                   </div>
@@ -683,101 +733,95 @@ export default async function HomePage() {
               </div>
 
               <div className="lg:col-span-7 relative">
-                <div className="relative rounded-xl border border-white/10 bg-white/[0.02] overflow-hidden backdrop-blur-sm">
-                  <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-black/40">
-                    <div className="flex gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
-                    </div>
-                    <div className="flex-1 flex justify-center">
-                      <div className="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-[11px] font-mono text-neutral-400">
-                        hostinger.com/checkout?REFERRALCODE=
-                        <span className="text-[#9D80F4]">RIZMEC</span>
+                <TiltCard maxTilt={5} glareOpacity={0.15}>
+                  <div className="relative rounded-2xl border border-white/15 bg-neutral-950/80 overflow-hidden backdrop-blur-xl shadow-2xl">
+                    <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-black/60">
+                      <div className="flex gap-1.5">
+                        <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
                       </div>
+                      <div className="flex-1 flex justify-center">
+                        <div className="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-[11px] font-mono text-neutral-300">
+                          hostinger.com/checkout?REFERRALCODE=
+                          <span className="text-[#9D80F4] font-semibold">RIZMEC</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-6 sm:p-8 space-y-5">
+                      <div className="flex items-start justify-between gap-4 pb-5 border-b border-white/10">
+                        <div>
+                          <div className="text-[11px] font-mono text-neutral-400 uppercase tracking-widest mb-1">
+                            Partner Exclusive Bundle
+                          </div>
+                          <div className="text-lg font-bold text-white">
+                            Business Web Hosting — 48 Months
+                          </div>
+                          <div className="text-xs font-mono text-neutral-400 mt-1">
+                            Free Domain • SSL • Daily Backups • CDN
+                          </div>
+                        </div>
+                        <div className="px-3 py-1 rounded-full bg-[#673DE6]/20 text-[#9D80F4] text-[10px] font-bold font-mono uppercase border border-[#673DE6]/40">
+                          Partner Deal
+                        </div>
+                      </div>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-neutral-400 font-mono text-xs">
+                            Standard Retail Price
+                          </span>
+                          <span className="text-neutral-500 line-through font-mono text-xs">
+                            $11.99/mo
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-neutral-300 font-mono text-xs">
+                            Hostinger Regular Promo
+                          </span>
+                          <span className="text-neutral-300 font-mono text-xs">
+                            $3.99/mo
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm p-3.5 rounded-xl border border-[#673DE6]/40 bg-[#673DE6]/15">
+                          <span className="text-white font-bold font-mono text-xs uppercase tracking-wider">
+                            RIZMEC Partner Price (code{" "}
+                            <span className="text-[#9D80F4]">RIZMEC</span>)
+                          </span>
+                          <span className="text-[#9D80F4] font-black font-mono text-lg tracking-tight">
+                            $3.19/mo
+                          </span>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 pt-2">
+                        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4 space-y-1">
+                          <div className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest">
+                            You Save
+                          </div>
+                          <div className="text-xl sm:text-2xl font-black text-emerald-400 font-mono tracking-tight">
+                            EXTRA 20% OFF
+                          </div>
+                        </div>
+                        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4 space-y-1">
+                          <div className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest">
+                            Applies To
+                          </div>
+                          <div className="text-sm font-bold text-white font-sans">
+                            First Purchase (any plan)
+                          </div>
+                        </div>
+                      </div>
+                      <a
+                        href="https://www.hostinger.com?REFERRALCODE=RIZMEC"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-[#673DE6] text-white font-bold font-mono text-xs tracking-widest uppercase btn-shimmer btn-glow-purple group"
+                      >
+                        <span>Activate RIZMEC x Hostinger Deal</span>
+                        <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                      </a>
                     </div>
                   </div>
-                  <div className="p-6 sm:p-8 space-y-5">
-                    <div className="flex items-start justify-between gap-4 pb-5 border-b border-white/10">
-                      <div>
-                        <div className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest mb-1">
-                          Partner Exclusive Bundle
-                        </div>
-                        <div className="text-lg font-bold text-white">
-                          Business Web Hosting — 48 Months
-                        </div>
-                        <div className="text-xs font-mono text-neutral-400 mt-1">
-                          Free Domain • SSL • Daily Backups • CDN
-                        </div>
-                      </div>
-                      <div className="px-2.5 py-1 rounded-full bg-[#673DE6]/20 text-[#673DE6] text-[10px] font-bold font-mono uppercase border border-[#673DE6]/30">
-                        Partner Deal
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-neutral-400 font-mono text-xs">
-                          Standard Retail Price
-                        </span>
-                        <span className="text-neutral-500 line-through font-mono text-xs">
-                          $11.99/mo
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-neutral-300 font-mono text-xs">
-                          Hostinger Regular Promo
-                        </span>
-                        <span className="text-neutral-300 font-mono text-xs">
-                          $3.99/mo
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm p-3 rounded-lg border border-[#673DE6]/30 bg-[#673DE6]/10">
-                        <span className="text-white font-bold font-mono text-xs uppercase tracking-wider">
-                          RIZMEC Partner Price (code{" "}
-                          <span className="text-[#9D80F4]">RIZMEC</span>)
-                        </span>
-                        <span className="text-[#9D80F4] font-black font-mono text-lg tracking-tight">
-                          $3.19/mo
-                        </span>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3 pt-2">
-                      <div className="rounded-lg border border-white/10 bg-white/[0.02] p-4 space-y-1.5">
-                        <div className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
-                          You Save
-                        </div>
-                        <div className="text-xl sm:text-2xl font-black text-emerald-400 font-mono tracking-tight">
-                          EXTRA 20% OFF
-                        </div>
-                      </div>
-                      <div className="rounded-lg border border-white/10 bg-white/[0.02] p-4 space-y-1.5">
-                        <div className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
-                          Applies To
-                        </div>
-                        <div className="text-sm font-bold text-white font-sans">
-                          First Purchase (any plan)
-                        </div>
-                      </div>
-                    </div>
-                    <a
-                      href="https://www.hostinger.com?REFERRALCODE=RIZMEC"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-[#673DE6] text-white font-bold font-mono text-xs tracking-widest uppercase hover:bg-[#5A32CC] active:scale-[0.99] transition-all group"
-                    >
-                      <span>Activate RIZMEC x Hostinger Deal</span>
-                      <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                    </a>
-                    <p className="text-center text-[10px] text-neutral-500 font-mono leading-relaxed">
-                      Discount automatically applied via referral link.
-                      Otherwise use code{" "}
-                      <span className="text-white font-bold select-all">
-                        RIZMEC
-                      </span>{" "}
-                      during checkout. Valid for new customers only.
-                    </p>
-                  </div>
-                </div>
+                </TiltCard>
               </div>
             </div>
           </div>
@@ -787,12 +831,14 @@ export default async function HomePage() {
       {/* ========================================================
           9. HIGH-IMPACT ENTERPRISE ENGAGEMENT CTA
       ======================================================== */}
-      <section className="py-24 border-t border-white/10 bg-black text-center relative">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-          <span className="font-mono text-xs tracking-widest text-neutral-400 uppercase">
-            // NEXT STEPS
-          </span>
-          <h2 className="text-4xl sm:text-6xl font-black text-white tracking-tight">
+      <section className="py-28 border-t border-white/10 bg-black text-center relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-white/[0.03] rounded-full blur-[160px] pointer-events-none" />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 relative">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/[0.03] text-xs font-mono text-neutral-300">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="tracking-widest uppercase">READY TO ENGAGE</span>
+          </div>
+          <h2 className="text-4xl sm:text-6xl font-black text-white tracking-tight text-chrome">
             Ready to engineer your next technological leap?
           </h2>
           <p className="text-neutral-400 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
@@ -803,14 +849,14 @@ export default async function HomePage() {
           <div className="pt-4 flex flex-wrap justify-center gap-4">
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white text-black font-semibold text-xs tracking-widest uppercase hover:bg-neutral-200 transition-all group"
+              className="inline-flex items-center gap-2 px-9 py-4 rounded-full bg-white text-black font-semibold text-xs tracking-widest uppercase btn-shimmer btn-glow group"
             >
               <span>Initiate Technical Scoping</span>
               <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </Link>
             <Link
               href="/services"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full border border-white/20 text-white font-mono text-xs tracking-wider uppercase hover:bg-white/5 transition-colors"
+              className="inline-flex items-center gap-2 px-9 py-4 rounded-full border border-white/20 text-white font-mono text-xs tracking-wider uppercase btn-glow-outline backdrop-blur-sm"
             >
               <span>Explore Capability Matrix</span>
             </Link>

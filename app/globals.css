@@ -175,6 +175,145 @@ h1, h2, h3, h4, h5, h6 {
   text-transform: uppercase;
 }
 
+/* 3D Perspective & Spatial Utilities */
+.perspective-1000 {
+  perspective: 1000px;
+}
+.perspective-2000 {
+  perspective: 2000px;
+}
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+}
+.translate-z-10 {
+  transform: translateZ(10px);
+}
+.translate-z-20 {
+  transform: translateZ(20px);
+}
+.translate-z-30 {
+  transform: translateZ(30px);
+}
+
+/* Glow Border & Gradient Highlights */
+.border-glow {
+  position: relative;
+}
+.border-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.15));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Shimmer Animation for Badges and Accents */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.animate-shimmer {
+  animation: shimmer 2.5s infinite;
+}
+
+/* Chrome / Titanium Text Gradient */
+.text-chrome {
+  background: linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 60%, #94A3B8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ==============================================================================
+   Button Interactive Effects: Shimmer, Radiant Glow & Micro-Physics
+   ============================================================================== */
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-shimmer::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 80%
+  );
+  transform: rotate(25deg) translateY(-120%);
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.btn-shimmer:hover::before {
+  transform: rotate(25deg) translateY(120%);
+}
+
+.btn-glow {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1),
+              0 6px 20px -2px rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-glow:hover {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3),
+              0 0 30px 2px rgba(255, 255, 255, 0.35),
+              0 10px 25px -2px rgba(255, 255, 255, 0.25);
+  transform: translateY(-1.5px);
+}
+
+.btn-glow:active {
+  transform: translateY(1px) scale(0.97);
+}
+
+.btn-glow-outline {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-glow-outline:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 0 25px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-1.5px);
+}
+
+.btn-glow-outline:active {
+  transform: translateY(1px) scale(0.97);
+}
+
+.btn-glow-purple {
+  box-shadow: 0 0 0 1px rgba(103, 61, 230, 0.4),
+              0 6px 20px -2px rgba(103, 61, 230, 0.4);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-glow-purple:hover {
+  box-shadow: 0 0 0 1px rgba(157, 128, 244, 0.6),
+              0 0 35px 2px rgba(103, 61, 230, 0.55),
+              0 10px 25px -2px rgba(103, 61, 230, 0.5);
+  transform: translateY(-1.5px);
+}
+
+.btn-glow-purple:active {
+  transform: translateY(1px) scale(0.97);
+}
+
 /* Clerk Auth Customization */
 .cl-userButtonBox {
   flex-direction: row-reverse;
