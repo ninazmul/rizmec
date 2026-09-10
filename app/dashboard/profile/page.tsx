@@ -22,7 +22,7 @@ import {
   Download,
 } from "lucide-react";
 import { getMyProfile, updateMyProfile, checkSlugAvailable } from "@/lib/actions/team.actions";
-import { getResumeDownloadUrl } from "@/lib/utils";
+import { getResumeDownloadUrl, isValidResumeUrl } from "@/lib/utils";
 import ImageUploader from "@/components/shared/ImageUploader";
 
 export default function MemberProfileDashboardPage() {
@@ -166,7 +166,12 @@ export default function MemberProfileDashboardPage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSaving(true);
+    // Validate resume URL before saving
+    if (form.resumeUrl && !isValidResumeUrl(form.resumeUrl)) {
+      setError('Invalid resume URL. Please provide a valid Google Drive or direct PDF link.');
+      setSaving(false);
+      return;
+    }
     setError("");
     setSuccess(false);
 

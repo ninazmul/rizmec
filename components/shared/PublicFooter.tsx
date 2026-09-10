@@ -73,7 +73,7 @@ export default function PublicFooter() {
   ];
 
   return (
-    <footer className="bg-black text-neutral-400 border-t border-white/10 pt-20 pb-12">
+    <footer className="bg-black text-neutral-400 border-t border-white/10 pt-20 pb-12 print:hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Tier: Brand Statement & Coordinates */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-16 border-b border-white/10">

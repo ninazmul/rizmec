@@ -13,7 +13,7 @@ export const ourFileRouter = {
   })
     .input(z.object({ folder: z.string().optional() }))
     .middleware(async ({ req, input }) => {
-      await requirePermission("dashboard", "create");
+      await requirePermission("profile", "create");
       console.log("UploadThing middleware called!", { reqUrl: req.url, input });
       const url = new URL(req.url);
       const queryFolder = url.searchParams.get("folder");

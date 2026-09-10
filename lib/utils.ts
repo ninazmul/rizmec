@@ -129,6 +129,15 @@ export function getResumeDownloadUrl(url?: string): string {
     return `https://drive.google.com/uc?export=download&id=${driveUcMatch[1]}`;
   }
 
-  // Direct PDF or any other external URL
   return trimmed;
+}
+
+// Validate resume URLs (Google Drive or direct PDF/DOC links)
+export function isValidResumeUrl(url?: string): boolean {
+  if (!url || typeof url !== "string") return false;
+  const trimmed = url.trim();
+  if (!trimmed) return false;
+  const drivePattern = /drive\.google\.com\/.*\/d\/|drive\.google\.com\/open\?id=|drive\.google\.com\/uc\?.*id=/i;
+  const directPattern = /\.(pdf|doc|docx)(\?.*)?$/i;
+  return drivePattern.test(trimmed) || directPattern.test(trimmed);
 }
