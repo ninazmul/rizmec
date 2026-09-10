@@ -92,14 +92,25 @@ export function ProjectShowcase3D({ projects = [], theme = "obsidian" }: Project
                       <span>Key Verified Outcomes</span>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {project.metrics.map((metric, mIdx) => (
-                        <div
-                          key={mIdx}
-                          className="px-3 py-2 rounded-xl bg-white/[0.03] border border-white/10 text-xs font-mono text-neutral-200"
-                        >
-                          ⚡ {metric}
-                        </div>
-                      ))}
+                      {project.metrics.map((metric: any, mIdx: number) => {
+                        const metricText =
+                          typeof metric === "string"
+                            ? metric
+                            : metric?.label && metric?.value
+                            ? `${metric.label}: ${metric.value}${metric.change ? ` (${metric.change})` : ""}`
+                            : typeof metric === "object"
+                            ? metric?.value || metric?.label || ""
+                            : String(metric);
+
+                        return (
+                          <div
+                            key={mIdx}
+                            className="px-3 py-2 rounded-xl bg-white/[0.03] border border-white/10 text-xs font-mono text-neutral-200"
+                          >
+                            ⚡ {metricText}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}

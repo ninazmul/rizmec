@@ -21,7 +21,16 @@ export function PortfolioPublicView({ member, assignedProjects = [] }: Portfolio
 
   // Combine customProjects with any assigned projects if available
   const allProjects = [
-    ...(member.customProjects || []),
+    ...(member.customProjects || []).map((p: any) => ({
+      ...p,
+      metrics: (p.metrics || []).map((m: any) =>
+        typeof m === "string"
+          ? m
+          : m?.label && m?.value
+          ? `${m.label}: ${m.value}${m.change ? ` (${m.change})` : ""}`
+          : String(m)
+      ),
+    })),
     ...assignedProjects.map((p) => ({
       title: p.title,
       description: p.summary || p.description,
@@ -30,7 +39,15 @@ export function PortfolioPublicView({ member, assignedProjects = [] }: Portfolio
       liveUrl: p.liveUrl || `/work/${p.slug}`,
       githubUrl: p.githubUrl,
       imageUrl: p.coverImage || p.images?.[0],
-      metrics: p.metrics || [],
+      metrics: (p.metrics || []).map((m: any) =>
+        typeof m === "string"
+          ? m
+          : m?.label && m?.value
+          ? `${m.label}: ${m.value}${m.change ? ` (${m.change})` : ""}`
+          : typeof m === "object"
+          ? m?.value || m?.label || ""
+          : String(m)
+      ),
       featured: p.featured,
     })),
   ];
@@ -100,12 +117,23 @@ export function PortfolioPublicView({ member, assignedProjects = [] }: Portfolio
           theme={theme}
         />
 
-        {/* Unbranded Clean Footer */}
-        <footer className="py-12 border-t border-white/10 text-center font-mono text-xs text-neutral-500 space-y-2">
-          <p>&copy; {new Date().getFullYear()} {member.name}. All rights reserved.</p>
-          <p className="text-[11px] text-neutral-600 font-light">
-            Crafted for verified engineering credentials &amp; career portfolio.
-          </p>
+        {/* Footer with Rizmec Reference */}
+        <footer className="py-12 border-t border-white/10 text-center font-mono text-xs text-neutral-500 space-y-3">
+          <p className="text-neutral-400">&copy; {new Date().getFullYear()} {member.name}. All rights reserved.</p>
+          <div className="flex items-center justify-center gap-2 text-[11px] text-neutral-500">
+            <span>Powered by</span>
+            <a
+              href="/"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 font-bold tracking-wider text-neutral-300 hover:text-white transition-colors"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+              <span>RIZMEC</span>
+            </a>
+            <span className="text-neutral-600">&bull;</span>
+            <span className="text-neutral-500 font-light">Verified Engineering Network</span>
+          </div>
         </footer>
       </main>
 

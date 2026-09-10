@@ -126,7 +126,16 @@ export function ResumePrintView({ member }: ResumePrintViewProps) {
                   <p className="text-xs text-neutral-600">{proj.description}</p>
                   {proj.metrics && proj.metrics.length > 0 && (
                     <p className="text-xs text-neutral-700 italic">
-                      Outcomes: {proj.metrics.join(" | ")}
+                      Outcomes:{" "}
+                      {proj.metrics
+                        .map((m: any) =>
+                          typeof m === "string"
+                            ? m
+                            : m?.label && m?.value
+                            ? `${m.label}: ${m.value}`
+                            : String(m)
+                        )
+                        .join(" | ")}
                     </p>
                   )}
                   {proj.technologies && proj.technologies.length > 0 && (
