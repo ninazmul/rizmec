@@ -48,9 +48,25 @@ export async function getProjects(params?: {
 }
 
 export async function getProjectBySlug(slug: string) {
+  // Fetch current user access to enforce project visibility restrictions
+  const { getCurrentDashboardAccess } = await import("@/lib/auth/rbac");
+  const access = await getCurrentDashboardAccess();
+  if (!access) {
+    return { success: false, error: "Unauthorized", data: null };
+  }
+
   try {
     await connectToDatabase();
-    const project = await Project.findOne({ slug: slug.toLowerCase() })
+    const query: any = { slug: slug.toLowerCase() };
+    // Restrict workers and interns to projects they are assigned to
+    if (access.role === "worker" || access.role === "intern") {
+      if (access.teamMemberId) {
+        query.teamMemberIds = access.teamMemberId;
+      } else {
+        return { success: false, error: "Unauthorized", data: null };
+      }
+    }
+    const project = await Project.findOne(query)
       .populate("teamMemberIds", "name title avatar slug bio skills socialLinks")
       .lean();
     if (!project) return { success: false, data: null };

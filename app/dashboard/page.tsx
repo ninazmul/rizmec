@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { requireDashboardAccess } from "@/lib/auth/rbac";
+import { redirect } from "next/navigation";
 import { connectToDatabase } from "@/lib/database";
 import Lead from "@/lib/database/models/lead.model";
 import Project from "@/lib/database/models/project.model";
@@ -28,6 +29,12 @@ export const dynamic = "force-dynamic";
 
 export default async function DashboardOverviewPage() {
   const access = await requireDashboardAccess("/sign-in");
+
+  // Restrict dashboard overview to admins and super admins only
+  if (access.role !== "super_admin" && access.role !== "admin") {
+    redirect("/dashboard/profile");
+  }
+
   await connectToDatabase();
 
   const [
