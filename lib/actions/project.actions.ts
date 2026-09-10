@@ -11,12 +11,28 @@ export async function getProjects(params?: {
   industry?: string;
   limit?: number;
 }) {
+  // Fetch current user access to enforce project visibility restrictions
+  const { getCurrentDashboardAccess } = await import("@/lib/auth/rbac");
+  const access = await getCurrentDashboardAccess();
+  if (!access) {
+    return { success: false, error: "Unauthorized", data: [] };
+  }
   try {
     await connectToDatabase();
     const query: any = {};
     if (params?.published !== undefined) query.published = params.published;
     if (params?.featured !== undefined) query.featured = params.featured;
     if (params?.industry) query.industry = params.industry;
+
+    // Restrict workers and interns to only projects they are assigned to
+    if (access.role === "worker" || access.role === "intern") {
+      if (access.teamMemberId) {
+        query.teamMemberIds = access.teamMemberId;
+      } else {
+        // No team member association, return empty list
+        return { success: true, data: [] };
+      }
+    }
 
     let q = Project.find(query)
       .populate("teamMemberIds", "name title avatar slug")
