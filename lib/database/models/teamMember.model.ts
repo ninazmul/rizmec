@@ -74,7 +74,7 @@ export interface ITeamMember extends Document {
   bio: string;
   avatar: string;
   coverImage?: string;
-  role: "leadership" | "engineering" | "ai_systems" | "architecture" | "product";
+  role: "leadership" | "engineering" | "ai_systems" | "architecture" | "product" | "intern" | "design" | "operations" | "marketing" | "sales" | "other";
   email: string;
   phone?: string;
   location?: string;
@@ -144,21 +144,21 @@ const CertificationSchema = new Schema<ICertification>(
 const CustomProjectSchema = new Schema<ICustomProject>(
   {
     title: { type: String, required: true },
-    description: { type: String, default: "" },
+    description: { type: String, required: true },
     role: { type: String, default: "" },
     technologies: { type: [String], default: [] },
     liveUrl: { type: String, default: "" },
     githubUrl: { type: String, default: "" },
     imageUrl: { type: String, default: "" },
     metrics: { type: [String], default: [] },
-    featured: { type: Boolean, default: true },
+    featured: { type: Boolean, default: false },
   },
   { _id: false },
 );
 
 const TeamMemberSchema = new Schema<ITeamMember>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: "User" },
+    userId: { type: Schema.Types.ObjectId, ref: "User", index: true },
     name: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, lowercase: true, trim: true, index: true },
     title: { type: String, required: true, trim: true },
@@ -168,7 +168,7 @@ const TeamMemberSchema = new Schema<ITeamMember>(
     coverImage: { type: String, default: "" },
     role: {
       type: String,
-      enum: ["leadership", "engineering", "ai_systems", "architecture", "product"],
+      enum: ["leadership", "engineering", "ai_systems", "architecture", "product", "intern", "design", "operations", "marketing", "sales", "other"],
       default: "engineering",
       index: true,
     },

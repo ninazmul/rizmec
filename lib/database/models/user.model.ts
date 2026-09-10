@@ -11,7 +11,7 @@ export interface IUser extends Document {
   email: string;
   name: string;
   imageUrl?: string;
-  role: "super_admin" | "admin" | "moderator" | "worker";
+  role: "super_admin" | "admin" | "moderator" | "worker" | "intern";
   status: "active" | "suspended";
   permissions: IUserPermission[];
   teamMemberId?: Schema.Types.ObjectId;
@@ -35,7 +35,7 @@ const UserSchema = new Schema<IUser>(
     imageUrl: { type: String, default: "" },
     role: {
       type: String,
-      enum: ["super_admin", "admin", "moderator", "worker"],
+      enum: ["super_admin", "admin", "moderator", "worker", "intern"],
       default: "worker",
       index: true,
     },

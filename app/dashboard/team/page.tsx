@@ -3,11 +3,9 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  Users,
   Plus,
   Trash2,
   ArrowUpRight,
-  ShieldCheck,
   Edit2,
 } from "lucide-react";
 import {
@@ -307,6 +305,7 @@ export default function TeamManagementPage() {
                   className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                 >
                   <option value="engineering">Engineering</option>
+                  <option value="intern">Intern / Trainee</option>
                   <option value="design">Design</option>
                   <option value="product">Product</option>
                   <option value="leadership">Leadership</option>

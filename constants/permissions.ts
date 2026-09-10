@@ -33,7 +33,7 @@ export const CMS_ACTIONS = [
 
 export type CmsAction = (typeof CMS_ACTIONS)[number];
 
-export type UserRole = "super_admin" | "admin" | "moderator" | "worker";
+export type UserRole = "super_admin" | "admin" | "moderator" | "worker" | "intern";
 
 // Default permission matrix per role
 export const ROLE_DEFAULT_PERMISSIONS: Record<
@@ -76,6 +76,11 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<
     { module: "dashboard", actions: ["read"] },
     { module: "projects", actions: ["read"] },
     { module: "profile", actions: ["all"] }, // Personal portfolio management
+  ],
+  intern: [
+    { module: "dashboard", actions: ["read"] },
+    { module: "projects", actions: ["read"] }, // View assigned projects
+    { module: "profile", actions: ["all"] }, // Personal portfolio management & sharing
   ],
 };
 

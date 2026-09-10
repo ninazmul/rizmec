@@ -9,6 +9,7 @@ import {
   deleteProject,
   updateProject,
 } from "@/lib/actions/project.actions";
+import { getTeamMembers } from "@/lib/actions/team.actions";
 import ImageUploader from "@/components/shared/ImageUploader";
 import toast from "react-hot-toast";
 
@@ -27,10 +28,12 @@ const DEFAULT_FORM = {
   services: "Cloud Infrastructure, Distributed Systems",
   technologies: "Next.js, Go, Kubernetes, TypeScript",
   thumbnail: "",
+  teamMemberIds: [] as string[],
 };
 
 export default function WorkCmsPage() {
   const [projects, setProjects] = useState<any[]>([]);
+  const [teamMembers, setTeamMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -47,8 +50,16 @@ export default function WorkCmsPage() {
     setLoading(false);
   };
 
+  const fetchTeam = async () => {
+    const res = await getTeamMembers();
+    if (res.success) {
+      setTeamMembers(res.data);
+    }
+  };
+
   useEffect(() => {
     fetchProjects();
+    fetchTeam();
   }, []);
 
   const openCreate = () => {
@@ -74,6 +85,9 @@ export default function WorkCmsPage() {
       services: (p.services || []).join(", "),
       technologies: (p.technologies || []).join(", "),
       thumbnail: p.thumbnail || "",
+      teamMemberIds: (p.teamMemberIds || []).map((m: any) =>
+        typeof m === "object" ? m._id : m
+      ),
     });
     setIsModalOpen(true);
   };
@@ -112,6 +126,7 @@ export default function WorkCmsPage() {
       services: sArray,
       technologies: tArray,
       thumbnail: form.thumbnail || undefined,
+      teamMemberIds: form.teamMemberIds,
     } as any;
 
     const res = editingId
@@ -202,6 +217,36 @@ export default function WorkCmsPage() {
                     </div>
                   ))}
                 </div>
+
+                {/* Assigned Team & Interns */}
+                {p.teamMemberIds && p.teamMemberIds.length > 0 && (
+                  <div className="pt-2.5 border-t border-white/5 space-y-1.5">
+                    <div className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">
+                      Assigned Contributors:
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {p.teamMemberIds.map((m: any) => (
+                        <div
+                          key={m._id || m.slug}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/10 text-[10px] text-neutral-300 font-mono"
+                          title={`${m.name} (${m.role || m.title})`}
+                        >
+                          <img
+                            src={m.avatar || "/assets/images/placeholder.webp"}
+                            alt={m.name}
+                            className="w-3.5 h-3.5 rounded-full object-cover shrink-0"
+                          />
+                          <span>{m.name}</span>
+                          {m.role === "intern" && (
+                            <span className="text-[9px] text-cyan-400 font-bold ml-0.5">
+                              (Intern)
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="pt-4 border-t border-white/10 flex justify-end gap-2">
@@ -361,6 +406,81 @@ export default function WorkCmsPage() {
                 aspect="video"
                 hint="16:9 hero image shown on homepage case study cards, work listing, and public case study page."
               />
+
+              {/* Assign Team Members & Interns */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="font-mono text-neutral-400 uppercase text-xs">
+                    Assigned Team & Contributors (Engineers & Interns)
+                  </label>
+                  <span className="text-[11px] font-mono text-cyan-400">
+                    {form.teamMemberIds.length} selected
+                  </span>
+                </div>
+                {teamMembers.length === 0 ? (
+                  <div className="p-3 rounded-lg border border-white/10 bg-neutral-900 text-xs text-neutral-500 font-mono">
+                    No team members found in directory.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-44 overflow-y-auto p-2.5 bg-neutral-900 border border-white/10 rounded-xl">
+                    {teamMembers.map((m) => {
+                      const isSelected = form.teamMemberIds.includes(m._id);
+                      const isIntern = m.role === "intern";
+                      return (
+                        <button
+                          key={m._id}
+                          type="button"
+                          onClick={() => {
+                            setForm((prev) => ({
+                              ...prev,
+                              teamMemberIds: isSelected
+                                ? prev.teamMemberIds.filter((id) => id !== m._id)
+                                : [...prev.teamMemberIds, m._id],
+                            }));
+                          }}
+                          className={`flex items-center gap-2.5 p-2 rounded-lg text-left transition-all border ${
+                            isSelected
+                              ? "bg-white/10 border-cyan-400/50 text-white"
+                              : "bg-neutral-950/60 border-white/5 text-neutral-400 hover:border-white/20 hover:text-neutral-200"
+                          }`}
+                        >
+                          <img
+                            src={m.avatar || "/assets/images/placeholder.webp"}
+                            alt={m.name}
+                            className="w-6 h-6 rounded-full object-cover shrink-0 border border-white/10"
+                          />
+                          <div className="truncate flex-1 min-w-0">
+                            <div className="text-xs font-semibold truncate text-white flex items-center gap-1.5">
+                              <span>{m.name}</span>
+                              {isIntern && (
+                                <span className="px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[9px] uppercase font-mono">
+                                  Intern
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-[10px] font-mono text-neutral-500 truncate">
+                              {m.title || "Team Member"}
+                            </div>
+                          </div>
+                          <div
+                            className={`w-4 h-4 rounded border flex items-center justify-center text-[10px] shrink-0 ${
+                              isSelected
+                                ? "bg-cyan-500 border-cyan-400 text-black font-bold"
+                                : "border-white/20"
+                            }`}
+                          >
+                            {isSelected ? "✓" : ""}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+                <p className="text-[11px] text-neutral-500 font-light">
+                  Assigned members (including interns) will automatically showcase this project on their public portfolio page (<code className="text-neutral-400">/p/[slug]</code>).
+                </p>
+              </div>
+
               <div className="pt-4 flex justify-end gap-3 border-t border-white/10 font-mono">
                 <button
                   type="button"

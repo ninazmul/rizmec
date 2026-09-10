@@ -75,17 +75,27 @@ export default function ProjectManagementDashboardPage() {
                 {/* Team Members assigned */}
                 <div className="pt-3 border-t border-white/5 space-y-2">
                   <div className="text-[11px] font-mono text-neutral-400 uppercase">
-                    Assigned Engineers:
+                    Assigned Contributors:
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     {(p.teamMemberIds || []).map((m: any) => (
-                      <img
+                      <div
                         key={m._id || m.slug}
-                        src={m.avatar || "/assets/images/placeholder.webp"}
-                        alt={m.name}
-                        title={m.name}
-                        className="w-8 h-8 rounded-full border border-white/10 object-cover grayscale"
-                      />
+                        className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/[0.04] border border-white/10"
+                        title={`${m.name} (${m.role || m.title || "Team"})`}
+                      >
+                        <img
+                          src={m.avatar || "/assets/images/placeholder.webp"}
+                          alt={m.name}
+                          className="w-5 h-5 rounded-full border border-white/10 object-cover"
+                        />
+                        <span className="text-[11px] text-neutral-300 font-mono">{m.name}</span>
+                        {m.role === "intern" && (
+                          <span className="text-[9px] text-cyan-400 font-bold uppercase font-mono">
+                            Intern
+                          </span>
+                        )}
+                      </div>
                     ))}
                   </div>
                 </div>

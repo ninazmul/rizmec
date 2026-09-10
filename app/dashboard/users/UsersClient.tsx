@@ -132,6 +132,7 @@ const ROLE_COLORS: Record<string, string> = {
   admin: "bg-blue-500/15 text-blue-300 border-blue-500/30",
   moderator: "bg-amber-500/15 text-amber-300 border-amber-500/30",
   worker: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+  intern: "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -144,6 +145,7 @@ const ROLE_OPTIONS: { value: UserRole; label: string; description: string }[] = 
   { value: "admin", label: "Admin", description: "Full CRM & content access" },
   { value: "moderator", label: "Moderator", description: "Limited read/edit access" },
   { value: "worker", label: "Worker", description: "Project view & personal profile" },
+  { value: "intern", label: "Intern", description: "Team membership, edit portfolio & assigned projects" },
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -288,6 +290,7 @@ export default function UsersClient({
   // Permissions dialog
   const [isPermissionsDialogOpen, setIsPermissionsDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<IUser | null>(null);
+  const [editingUserRole, setEditingUserRole] = useState<UserRole>("worker");
   const [permissions, setPermissions] = useState<{ module: string; actions: string[] }[]>([]);
 
   // Delete dialog
@@ -362,15 +365,19 @@ export default function UsersClient({
     }
     setIsSubmittingAdmin(true);
     try {
-      await createPreRegisteredAdmin({ name: newAdminName, email: newAdminEmail });
-      toast.success("Admin pre-registered successfully");
+      await createPreRegisteredAdmin({
+        name: newAdminName,
+        email: newAdminEmail,
+        role: newAdminRole,
+      });
+      toast.success("User pre-registered successfully");
       setIsAddAdminOpen(false);
       setNewAdminName("");
       setNewAdminEmail("");
       setNewAdminRole("admin");
       reloadUsers();
     } catch (error: any) {
-      toast.error(error.message || "Failed to pre-register admin");
+      toast.error(error.message || "Failed to pre-register user");
     } finally {
       setIsSubmittingAdmin(false);
     }
@@ -381,6 +388,7 @@ export default function UsersClient({
   const openPermissionsDialog = (user: IUser) => {
     setEditingUser(user);
     setPermissions(user.permissions || []);
+    setEditingUserRole((user as any).role || "worker");
     setIsPermissionsDialogOpen(true);
   };
 
@@ -425,6 +433,7 @@ export default function UsersClient({
   };
 
   const applyRolePreset = (role: UserRole) => {
+    setEditingUserRole(role);
     const preset = ROLE_DEFAULT_PERMISSIONS[role] || [];
     setPermissions(preset.map((p) => ({ module: p.module, actions: [...p.actions] })));
   };
@@ -433,8 +442,12 @@ export default function UsersClient({
     if (!editingUser) return;
     setIsLoading(true);
     try {
-      await updateUserPermissions(editingUser._id.toString(), permissions);
-      toast.success("Permissions updated");
+      await updateUserPermissions(
+        editingUser._id.toString(),
+        permissions,
+        editingUserRole,
+      );
+      toast.success("Permissions and role updated");
       setIsPermissionsDialogOpen(false);
       reloadUsers();
     } catch {
@@ -711,7 +724,11 @@ export default function UsersClient({
                     <button
                       key={r.value}
                       onClick={() => applyRolePreset(r.value)}
-                      className="px-2.5 py-1 rounded-lg text-[10px] font-mono uppercase tracking-wider border border-white/10 bg-white/5 text-neutral-300 hover:border-white/30 hover:text-white transition-all"
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-mono uppercase tracking-wider border transition-all ${
+                        editingUserRole === r.value
+                          ? "border-cyan-400 bg-cyan-500/20 text-cyan-200 font-bold"
+                          : "border-white/10 bg-white/5 text-neutral-300 hover:border-white/30 hover:text-white"
+                      }`}
                     >
                       {r.label}
                     </button>
@@ -959,7 +976,7 @@ export default function UsersClient({
                   <label className="text-[10px] font-mono text-neutral-400 uppercase tracking-wider">
                     Role
                   </label>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {ROLE_OPTIONS.map((r) => (
                       <button
                         key={r.value}

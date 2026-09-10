@@ -5,7 +5,13 @@ import User, { IUser } from "@/lib/database/models/user.model";
 import { requirePermission } from "@/lib/auth/rbac";
 import { safeJson, handleError } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
-import { CMS_ACTIONS, CMS_MODULES, SUPER_ADMIN_ONLY_MODULES } from "@/constants/permissions";
+import {
+  CMS_ACTIONS,
+  CMS_MODULES,
+  SUPER_ADMIN_ONLY_MODULES,
+  UserRole,
+  ROLE_DEFAULT_PERMISSIONS,
+} from "@/constants/permissions";
 
 const SUPER_ADMIN_EMAILS = Array.from(
   new Set([
@@ -144,6 +150,7 @@ export async function getAllUsers(params: {
 export async function createPreRegisteredAdmin(params: {
   email: string;
   name: string;
+  role?: UserRole;
 }) {
   const adminAccess = await requirePermission("users", "create");
   try {
@@ -157,13 +164,17 @@ export async function createPreRegisteredAdmin(params: {
       throw new Error("A user with this email already exists");
     }
 
+    const assignedRole = params.role || "admin";
+    const defaultPerms = ROLE_DEFAULT_PERMISSIONS[assignedRole] || [];
+
     // Create the user record with a temporary clerkId placeholder
     const newUser = await User.create({
       clerkId: `pre_${Date.now()}`,
       email: normalizedEmail,
       name: params.name.trim(),
+      role: assignedRole,
       status: "active",
-      permissions: [],
+      permissions: defaultPerms,
     });
 
     revalidatePath("/dashboard/users");
@@ -177,6 +188,7 @@ export async function createPreRegisteredAdmin(params: {
 export async function updateUserPermissions(
   userId: string,
   permissions: { module: string; actions: string[] }[],
+  role?: UserRole,
 ) {
   const adminAccess = await requirePermission("users", "update");
   try {
@@ -195,6 +207,9 @@ export async function updateUserPermissions(
     }
 
     user.permissions = permissions;
+    if (role) {
+      user.role = role;
+    }
     await user.save();
 
     revalidatePath("/dashboard/users");
