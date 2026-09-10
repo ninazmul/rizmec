@@ -73,12 +73,10 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<
     { module: "profile", actions: ["all"] },
   ],
   worker: [
-    { module: "dashboard", actions: ["read"] },
     { module: "projects", actions: ["read"] },
     { module: "profile", actions: ["all"] }, // Personal portfolio management
   ],
   intern: [
-    { module: "dashboard", actions: ["read"] },
     { module: "projects", actions: ["read"] }, // View assigned projects
     { module: "profile", actions: ["all"] }, // Personal portfolio management & sharing
   ],

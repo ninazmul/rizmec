@@ -67,6 +67,19 @@ export default function AdminSidebar({ access }: { access: DashboardAccess }) {
   const currentPath = usePathname();
   const { canAccessModule } = usePermissions(access);
 
+  const isWorkerOrIntern = access.role === "worker" || access.role === "intern";
+  const hasAssignedProjects = (access.assignedProjectsCount ?? 0) > 0;
+
+  const visibleModules = CMS_MODULES.filter((module) => {
+    if (isWorkerOrIntern && module === "dashboard") {
+      return false;
+    }
+    if (isWorkerOrIntern && module === "projects" && !hasAssignedProjects) {
+      return false;
+    }
+    return canAccessModule(module);
+  });
+
   return (
     <Sidebar
       className="bg-neutral-950 text-neutral-300 border-r border-white/10 font-sans"
@@ -92,11 +105,10 @@ export default function AdminSidebar({ access }: { access: DashboardAccess }) {
 
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1 px-1">
-              {CMS_MODULES.filter((module) => canAccessModule(module)).map(
-                (module) => {
-                  const title = MODULE_LABELS[module];
-                  const url = MODULE_ROUTES[module];
-                  const Icon = iconMap[module];
+              {visibleModules.map((module) => {
+                const title = MODULE_LABELS[module];
+                const url = MODULE_ROUTES[module];
+                const Icon = iconMap[module];
 
                   const isActive =
                     url === "/dashboard"

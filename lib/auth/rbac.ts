@@ -4,6 +4,8 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { connectToDatabase } from "@/lib/database";
 import User, { IUser, IUserPermission } from "@/lib/database/models/user.model";
+import Project from "@/lib/database/models/project.model";
+import TeamMember from "@/lib/database/models/teamMember.model";
 import { CmsModule, CmsAction, UserRole } from "@/constants/permissions";
 import { hasPermission, canAccessModule, DashboardAccess } from "./rbac-rules";
 
@@ -95,6 +97,26 @@ export async function getCurrentDashboardAccess(): Promise<DashboardAccess | nul
     actions: p.actions,
   }));
 
+  let teamMemberId = dbUser.teamMemberId?.toString();
+  if (!teamMemberId && email) {
+    const matchedMember = await TeamMember.findOne({ email: email.toLowerCase() })
+      .select("_id")
+      .lean();
+    if (matchedMember) {
+      teamMemberId = (matchedMember as any)._id.toString();
+      await User.findByIdAndUpdate(dbUser._id, {
+        teamMemberId: (matchedMember as any)._id,
+      });
+    }
+  }
+
+  let assignedProjectsCount = 0;
+  if ((role === "worker" || role === "intern") && teamMemberId) {
+    assignedProjectsCount = await Project.countDocuments({
+      teamMemberIds: teamMemberId,
+    });
+  }
+
   return {
     userId,
     dbUserId: dbUser._id.toString(),
@@ -102,8 +124,9 @@ export async function getCurrentDashboardAccess(): Promise<DashboardAccess | nul
     name: dbUser.name,
     role,
     isSuperAdmin: role === "super_admin",
-    teamMemberId: dbUser.teamMemberId?.toString(),
+    teamMemberId,
     permissions,
+    assignedProjectsCount,
   };
 }
 

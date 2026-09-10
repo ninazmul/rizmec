@@ -1,25 +1,31 @@
-"use client";
+export const dynamic = "force-dynamic";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
-import { FolderGit2, Plus, Clock, CheckCircle2, Users, AlertCircle, ArrowUpRight } from "lucide-react";
+import { FolderGit2, Plus, ArrowUpRight } from "lucide-react";
 import { getProjects } from "@/lib/actions/project.actions";
+import { requireDashboardAccess } from "@/lib/auth/rbac";
+import { redirect } from "next/navigation";
 
-export default function ProjectManagementDashboardPage() {
-  const [projects, setProjects] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export default async function ProjectManagementDashboardPage() {
+  const access = await requireDashboardAccess("/sign-in");
 
-  useEffect(() => {
-    async function load() {
-      setLoading(true);
-      const res = await getProjects();
-      if (res.success) {
-        setProjects(res.data);
-      }
-      setLoading(false);
-    }
-    load();
-  }, []);
+  // Workers and interns without assigned projects are redirected away
+  if (
+    (access.role === "worker" || access.role === "intern") &&
+    (access.assignedProjectsCount ?? 0) <= 0
+  ) {
+    redirect("/dashboard/profile");
+  }
+
+  const canCreate =
+    access.isSuperAdmin ||
+    access.role === "super_admin" ||
+    access.role === "admin" ||
+    access.role === "moderator";
+
+  const res = await getProjects();
+  const projects = res.success ? res.data : [];
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
@@ -33,22 +39,30 @@ export default function ProjectManagementDashboardPage() {
           </h1>
         </div>
 
-        <Link
-          href="/dashboard/work"
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white text-black font-mono text-xs font-semibold uppercase tracking-wider hover:bg-neutral-200 transition-all"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>New Engineering Engagement</span>
-        </Link>
+        {canCreate && (
+          <Link
+            href="/dashboard/work"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white text-black font-mono text-xs font-semibold uppercase tracking-wider hover:bg-neutral-200 transition-all"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>New Engineering Engagement</span>
+          </Link>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {loading ? (
-          <div className="col-span-3 py-12 text-center text-neutral-500 font-mono text-xs">
-            Loading active engagements...
+        {projects.length === 0 ? (
+          <div className="col-span-1 md:col-span-2 lg:col-span-3 py-16 text-center rounded-2xl border border-white/10 bg-neutral-950 p-8 space-y-3">
+            <FolderGit2 className="w-10 h-10 text-neutral-500 mx-auto" />
+            <h3 className="text-sm font-mono uppercase tracking-wider text-white">
+              No Active Engagements
+            </h3>
+            <p className="text-xs text-neutral-400 max-w-md mx-auto">
+              There are currently no projects to display.
+            </p>
           </div>
         ) : (
-          projects.map((p) => (
+          projects.map((p: any) => (
             <div
               key={p._id}
               className="p-6 rounded-2xl border border-white/10 bg-neutral-950 flex flex-col justify-between space-y-6"

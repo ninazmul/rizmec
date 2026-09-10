@@ -14,6 +14,7 @@ export interface DashboardAccess {
   isSuperAdmin: boolean;
   teamMemberId?: string;
   permissions: { module: string; actions: string[] }[];
+  assignedProjectsCount?: number;
 }
 
 /**
@@ -26,6 +27,23 @@ export function hasPermission(
   action: CmsAction,
 ): boolean {
   if (access.isSuperAdmin || access.role === "super_admin") return true;
+
+  // Overview (dashboard) is strictly forbidden for workers and interns
+  if (
+    module === "dashboard" &&
+    (access.role === "worker" || access.role === "intern")
+  ) {
+    return false;
+  }
+
+  // Projects module is inaccessible for workers and interns if no project is assigned
+  if (
+    module === "projects" &&
+    (access.role === "worker" || access.role === "intern") &&
+    (access.assignedProjectsCount ?? 0) <= 0
+  ) {
+    return false;
+  }
 
   // Check custom explicit permissions first
   const customPerm = access.permissions?.find((p) => p.module === module);
@@ -57,6 +75,23 @@ export function canAccessModule(
   access: DashboardAccess,
   module: CmsModule,
 ): boolean {
+  // Overview (dashboard) is hidden for workers and interns
+  if (
+    module === "dashboard" &&
+    (access.role === "worker" || access.role === "intern")
+  ) {
+    return false;
+  }
+
+  // Projects is hidden for workers and interns if no projects are assigned to them
+  if (
+    module === "projects" &&
+    (access.role === "worker" || access.role === "intern") &&
+    (access.assignedProjectsCount ?? 0) <= 0
+  ) {
+    return false;
+  }
+
   return (
     hasPermission(access, module, "read") ||
     hasPermission(access, module, "all")
