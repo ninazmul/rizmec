@@ -35,6 +35,9 @@ export function ResumePrintView({ member }: ResumePrintViewProps) {
             text-decoration: none !important;
             color: inherit !important;
           }
+          footer {
+            display: none !important;
+          }
         }
       `}</style>
 
