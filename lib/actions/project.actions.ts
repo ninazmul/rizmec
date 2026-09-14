@@ -4,6 +4,7 @@ import { connectToDatabase } from "@/lib/database";
 import Project, { IProject } from "@/lib/database/models/project.model";
 import { requirePermission } from "@/lib/auth/rbac";
 import { revalidatePath } from "next/cache";
+import { notifyAdminsOnStatusChange } from "@/lib/actions/notification.actions";
 
 export async function getProjects(params?: {
   published?: boolean;
@@ -103,12 +104,71 @@ export async function updateProject(id: string, data: Partial<IProject>) {
     await requirePermission("projects", "update");
     await connectToDatabase();
 
+    const existing = await Project.findById(id);
+    if (!existing) return { success: false, error: "Project not found." };
+
+    const oldStatus = existing.status || "in_progress";
+    const statusChanged = data.status && data.status !== oldStatus;
+
     const updated = await Project.findByIdAndUpdate(id, { $set: data }, { new: true }).lean();
+
+    if (statusChanged && updated) {
+      notifyAdminsOnStatusChange({
+        type: "order",
+        entityId: id,
+        identifier: updated.title,
+        projectName: updated.title,
+        clientName: updated.clientName,
+        oldStatus,
+        newStatus: data.status!,
+        actionUrl: "/dashboard/projects",
+        details: `Work Order / Project status changed from "${oldStatus}" to "${data.status}".`,
+      }).catch((err) => console.error("Error notifying admins of project status:", err));
+    }
+
     revalidatePath("/work");
     revalidatePath("/");
+    revalidatePath("/dashboard/projects");
     return { success: true, data: JSON.parse(JSON.stringify(updated)) };
   } catch (error: any) {
     console.error("Error updating project:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateProjectStatus(
+  id: string,
+  status: "planning" | "in_progress" | "review" | "completed" | "on_hold"
+) {
+  try {
+    await requirePermission("projects", "update");
+    await connectToDatabase();
+
+    const existing = await Project.findById(id);
+    if (!existing) return { success: false, error: "Project not found." };
+
+    const oldStatus = existing.status || "in_progress";
+    existing.status = status;
+    await existing.save();
+
+    notifyAdminsOnStatusChange({
+      type: "order",
+      entityId: existing._id.toString(),
+      identifier: existing.title,
+      projectName: existing.title,
+      clientName: existing.clientName,
+      oldStatus,
+      newStatus: status,
+      actionUrl: "/dashboard/projects",
+      details: `Work Order / Project status transitioned from "${oldStatus}" to "${status}".`,
+    }).catch((err) => console.error("Error notifying admins of project status:", err));
+
+    revalidatePath("/dashboard/projects");
+    revalidatePath("/work");
+    revalidatePath("/");
+    return { success: true, data: JSON.parse(JSON.stringify(existing)) };
+  } catch (error: any) {
+    console.error("Error updating project status:", error);
     return { success: false, error: error.message };
   }
 }

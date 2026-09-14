@@ -8,6 +8,7 @@ import { requirePermission } from "@/lib/auth/rbac";
 import { revalidatePath } from "next/cache";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
+import { notifyAdminsOnStatusChange } from "@/lib/actions/notification.actions";
 
 export async function getQuotations(params?: {
   status?: string;
@@ -51,6 +52,21 @@ export async function getQuotationByToken(secureToken: string) {
     if (quotation.status === "sent") {
       await Quotation.findByIdAndUpdate(quotation._id, { status: "viewed" });
       quotation.status = "viewed";
+
+      notifyAdminsOnStatusChange({
+        type: "quote",
+        entityId: quotation._id.toString(),
+        identifier: quotation.quoteNumber || "Quotation",
+        clientName: quotation.clientName,
+        clientEmail: quotation.clientEmail,
+        projectName: quotation.projectName,
+        oldStatus: "sent",
+        newStatus: "viewed",
+        amount: quotation.totalAmount,
+        currency: quotation.currency || "USD",
+        actionUrl: "/dashboard/quotations",
+        details: "Client opened and viewed the quotation.",
+      }).catch((err) => console.error("Error notifying admins of quote viewed:", err));
     }
 
     return { success: true, data: JSON.parse(JSON.stringify(quotation)) };
@@ -192,6 +208,7 @@ export async function signAndAcceptQuotation(
       signedByEmail: payload.signedByEmail,
     };
 
+    const oldStatus = quotation.status || "viewed";
     quotation.status = "accepted";
     quotation.signedAt = new Date();
     quotation.signedByName = payload.signedByName;
@@ -202,6 +219,21 @@ export async function signAndAcceptQuotation(
     quotation.acceptedSnapshot = acceptedSnapshot;
 
     await quotation.save();
+
+    notifyAdminsOnStatusChange({
+      type: "quote",
+      entityId: quotation._id.toString(),
+      identifier: quotation.quoteNumber || "Quotation",
+      clientName: quotation.clientName,
+      clientEmail: quotation.clientEmail,
+      projectName: quotation.projectName,
+      oldStatus,
+      newStatus: "accepted",
+      amount: quotation.totalAmount,
+      currency: quotation.currency || "USD",
+      actionUrl: "/dashboard/quotations",
+      details: `Accepted and signed by ${payload.signedByName} (${payload.signedByEmail}).`,
+    }).catch((err) => console.error("Error notifying admins of quote accepted:", err));
 
     revalidatePath(`/quote/${secureToken}`);
     revalidatePath("/dashboard/quotations");
@@ -609,6 +641,21 @@ export async function sendQuotationEmail(quotationId: string) {
         await quotation.save();
         revalidatePath("/dashboard/quotations");
         revalidatePath(`/quote/${quotation.secureToken}`);
+
+        notifyAdminsOnStatusChange({
+          type: "quote",
+          entityId: quotation._id.toString(),
+          identifier: quotation.quoteNumber || "Quotation",
+          clientName: quotation.clientName,
+          clientEmail: quotation.clientEmail,
+          projectName: quotation.projectName,
+          oldStatus: "draft",
+          newStatus: "sent",
+          amount: quotation.totalAmount,
+          currency: quotation.currency || "USD",
+          actionUrl: "/dashboard/quotations",
+          details: `Quotation sent via email to ${quotation.clientEmail}.`,
+        }).catch((err) => console.error("Error notifying admins of quote sent:", err));
       }
     }
 

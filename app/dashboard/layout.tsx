@@ -4,6 +4,7 @@ import React from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { requireDashboardAccess } from "@/lib/auth/rbac";
 import AdminSidebar from "./components/AdminSidebar";
+import NotificationBell from "./components/NotificationBell";
 import { cookies } from "next/headers";
 import { Show, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
@@ -51,6 +52,8 @@ export default async function DashboardLayout({
               <span>Public Portal</span>
               <ArrowUpRight className="w-3 h-3" />
             </Link>
+
+            <NotificationBell />
 
             <div className="flex items-center gap-3 pl-3 border-l border-white/10">
               <div className="text-right hidden sm:block">

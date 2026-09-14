@@ -8,6 +8,7 @@ import { requirePermission, requireDashboardAccess, getCurrentDashboardAccess } 
 import { revalidatePath } from "next/cache";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
+import { notifyAdminsOnStatusChange } from "@/lib/actions/notification.actions";
 
 export async function getInvoices(params?: {
   status?: string;
@@ -47,6 +48,21 @@ export async function getInvoiceByToken(secureToken: string) {
     if (invoice.status === "sent") {
       await Invoice.findByIdAndUpdate(invoice._id, { status: "viewed" });
       invoice.status = "viewed";
+
+      notifyAdminsOnStatusChange({
+        type: "invoice",
+        entityId: invoice._id.toString(),
+        identifier: invoice.invoiceNumber,
+        clientName: invoice.clientName,
+        clientEmail: invoice.clientEmail,
+        projectName: invoice.projectName,
+        oldStatus: "sent",
+        newStatus: "viewed",
+        amount: invoice.totalAmount,
+        currency: invoice.currency || "USD",
+        actionUrl: "/dashboard/invoices",
+        details: "Client opened and viewed the invoice online.",
+      }).catch((err) => console.error("Error notifying admins of invoice viewed:", err));
     }
 
     const defaultPlaceholder =
@@ -180,6 +196,7 @@ export async function recordInvoicePayment(
       notes: paymentData.notes || "",
     });
 
+    const oldStatus = invoice.status;
     const newAmountPaid = (invoice.amountPaid || 0) + paymentData.amount;
     const newAmountDue = Math.max(0, invoice.totalAmount - newAmountPaid);
     const newStatus = newAmountDue === 0 ? "paid" : "partially_paid";
@@ -188,6 +205,21 @@ export async function recordInvoicePayment(
     invoice.amountDue = newAmountDue;
     invoice.status = newStatus;
     await invoice.save();
+
+    notifyAdminsOnStatusChange({
+      type: "invoice",
+      entityId: invoice._id.toString(),
+      identifier: invoice.invoiceNumber,
+      clientName: invoice.clientName,
+      clientEmail: invoice.clientEmail,
+      projectName: invoice.projectName,
+      oldStatus,
+      newStatus,
+      amount: paymentData.amount,
+      currency: invoice.currency || "USD",
+      actionUrl: "/dashboard/invoices",
+      details: `Payment of ${invoice.currency || "USD"} ${Number(paymentData.amount).toLocaleString()} recorded via ${paymentData.method || "manual"}. Remaining balance: ${invoice.currency || "USD"} ${Number(newAmountDue).toLocaleString()}.`,
+    }).catch((err) => console.error("Error notifying admins of invoice payment:", err));
 
     revalidatePath("/dashboard/invoices");
     return {
@@ -329,11 +361,27 @@ export async function markInvoicePaid(invoiceId: string, notifyClient: boolean =
     const invoice = await Invoice.findById(invoiceId);
     if (!invoice) return { success: false, error: "Invoice not found." };
 
+    const oldStatus = invoice.status;
     const fullAmount = invoice.totalAmount || 0;
     invoice.status = "paid";
     invoice.amountPaid = fullAmount;
     invoice.amountDue = 0;
     await invoice.save();
+
+    notifyAdminsOnStatusChange({
+      type: "invoice",
+      entityId: invoice._id.toString(),
+      identifier: invoice.invoiceNumber,
+      clientName: invoice.clientName,
+      clientEmail: invoice.clientEmail,
+      projectName: invoice.projectName,
+      oldStatus,
+      newStatus: "paid",
+      amount: fullAmount,
+      currency: invoice.currency || "USD",
+      actionUrl: "/dashboard/invoices",
+      details: `Marked as paid by administrator. Full amount of ${invoice.currency || "USD"} ${Number(fullAmount).toLocaleString()} recorded.`,
+    }).catch((err) => console.error("Error notifying admins of invoice paid:", err));
 
     await Payment.create({
       invoiceId: invoice._id,
@@ -391,10 +439,26 @@ export async function markInvoiceUnpaid(invoiceId: string) {
     const invoice = await Invoice.findById(invoiceId);
     if (!invoice) return { success: false, error: "Invoice not found." };
 
+    const oldStatus = invoice.status;
     invoice.status = "sent";
     invoice.amountPaid = 0;
     invoice.amountDue = invoice.totalAmount || 0;
     await invoice.save();
+
+    notifyAdminsOnStatusChange({
+      type: "invoice",
+      entityId: invoice._id.toString(),
+      identifier: invoice.invoiceNumber,
+      clientName: invoice.clientName,
+      clientEmail: invoice.clientEmail,
+      projectName: invoice.projectName,
+      oldStatus,
+      newStatus: "sent",
+      amount: invoice.totalAmount || 0,
+      currency: invoice.currency || "USD",
+      actionUrl: "/dashboard/invoices",
+      details: "Invoice status reverted back to Unpaid (sent) by administrator.",
+    }).catch((err) => console.error("Error notifying admins of invoice unpaid:", err));
 
     await Payment.deleteMany({
       invoiceId: invoice._id,

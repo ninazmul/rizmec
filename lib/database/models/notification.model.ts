@@ -5,7 +5,7 @@ export interface INotification extends Document {
   userId?: string; // If empty, visible to all admins
   title: string;
   message: string;
-  type: "lead" | "quote" | "invoice" | "system";
+  type: "lead" | "quote" | "invoice" | "order" | "system";
   link?: string;
   isRead: boolean;
   createdAt: Date;
@@ -18,7 +18,7 @@ const NotificationSchema = new Schema<INotification>(
     message: { type: String, required: true },
     type: {
       type: String,
-      enum: ["lead", "quote", "invoice", "system"],
+      enum: ["lead", "quote", "invoice", "order", "system"],
       default: "system",
     },
     link: { type: String, default: "" },

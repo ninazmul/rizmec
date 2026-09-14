@@ -35,6 +35,7 @@ export interface IProject extends Document {
   featured: boolean;
   published: boolean;
   order: number;
+  status: "planning" | "in_progress" | "review" | "completed" | "on_hold";
   seoTitle?: string;
   seoDescription?: string;
   createdAt: Date;
@@ -79,6 +80,12 @@ const ProjectSchema = new Schema<IProject>(
     featured: { type: Boolean, default: false, index: true },
     published: { type: Boolean, default: true, index: true },
     order: { type: Number, default: 0, index: true },
+    status: {
+      type: String,
+      enum: ["planning", "in_progress", "review", "completed", "on_hold"],
+      default: "in_progress",
+      index: true,
+    },
     seoTitle: { type: String, default: "" },
     seoDescription: { type: String, default: "" },
   },
