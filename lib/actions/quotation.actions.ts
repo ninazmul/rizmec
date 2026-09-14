@@ -214,7 +214,66 @@ export async function signAndAcceptQuotation(
 }
 
 /**
- * Convert Accepted Quotation to Active Invoice
+/**
+ * Helper to resolve payment milestone schedule from quotation
+ */
+function resolvePaymentSchedule(quotation: any): Array<{
+  milestone: string;
+  percent: number;
+  trigger: string;
+  dueDate?: Date;
+}> {
+  if (
+    quotation.paymentSchedule &&
+    Array.isArray(quotation.paymentSchedule) &&
+    quotation.paymentSchedule.length > 0
+  ) {
+    return quotation.paymentSchedule;
+  }
+
+  const terms = (quotation.paymentTerms || "").toLowerCase();
+
+  if (terms.includes("30/40/30") || terms.includes("30-40-30") || terms.includes("30 / 40 / 30")) {
+    return [
+      { milestone: "Advance", percent: 30, trigger: "On project start / contract signing" },
+      { milestone: "Midpoint", percent: 40, trigger: "When project is 50% complete" },
+      { milestone: "Delivery", percent: 30, trigger: "On final delivery & handover" },
+    ];
+  }
+
+  if (terms.includes("50/50") || terms.includes("50-50") || terms.includes("50 / 50") || terms.includes("50%")) {
+    return [
+      { milestone: "Advance", percent: 50, trigger: "On project start / contract signing" },
+      { milestone: "Delivery", percent: 50, trigger: "On final delivery & handover" },
+    ];
+  }
+
+  if (terms.includes("100%")) {
+    return [
+      { milestone: "Full Payment", percent: 100, trigger: "Before project commencement" },
+    ];
+  }
+
+  // Parse percentages like "20%, 30%, 50%" or "40/60"
+  const matches = [...terms.matchAll(/(\d{1,3})\s*%/g)].map((m) => Number(m[1]));
+  if (matches.length > 1 && matches.reduce((a, b) => a + b, 0) === 100) {
+    return matches.map((pct, idx) => ({
+      milestone: idx === 0 ? "Advance" : idx === matches.length - 1 ? "Delivery" : `Phase ${idx + 1}`,
+      percent: pct,
+      trigger: idx === 0 ? "On project start" : idx === matches.length - 1 ? "On final handover" : `Phase ${idx + 1} completion`,
+    }));
+  }
+
+  // Standard engineering milestone schedule (30/40/30) as fallback
+  return [
+    { milestone: "Advance", percent: 30, trigger: "On project start / contract signing" },
+    { milestone: "Midpoint", percent: 40, trigger: "When project is 50% complete" },
+    { milestone: "Delivery", percent: 30, trigger: "On final delivery & handover" },
+  ];
+}
+
+/**
+ * Convert Accepted Quotation to Active Invoices based on percentage and payment milestones
  */
 export async function convertQuotationToInvoice(quotationId: string) {
   try {
@@ -232,92 +291,73 @@ export async function convertQuotationToInvoice(quotationId: string) {
       companySetting?.paymentInstructions ||
       "Bank Wire Transfer: Account Name: RIZMEC Engineering Inc. | SWIFT: RIZMUS33 | IBAN: US34RIZM000192837465";
 
-    // Take total amount (discounted amount), not undiscounted rate, for each line item
-    const commonLineItems = quotation.lineItems.map((li: any) => {
-      const discountedTotal =
-        typeof li.total === "number" && li.total >= 0
-          ? li.total
-          : (li.quantity || 1) * (li.unitPrice || 0) * (1 - (li.discount || 0) / 100);
-      const qty = li.quantity || 1;
-      const unitPrice = Math.round((discountedTotal / qty) * 100) / 100;
-
-      return {
-        item: li.item,
-        description: li.description || "",
-        quantity: qty,
-        unitPrice,
-        total: discountedTotal,
-      };
-    });
-
     const discountedSubtotal = Math.max(
       0,
       Math.round((quotation.subtotal - (quotation.discountTotal || 0)) * 100) / 100,
     );
 
-    const schedule: Array<{ milestone: string; percent: number; trigger: string; dueDate?: Date }> =
-      quotation.paymentSchedule && quotation.paymentSchedule.length > 0
-        ? quotation.paymentSchedule
-        : [];
-
+    const schedule = resolvePaymentSchedule(quotation);
+    const defaultDueDayOffsets = [0, 45, 90];
     let createdInvoices: any[] = [];
 
-    if (schedule.length > 0) {
-      // ── Milestone-split: create one invoice per payment milestone ──
-      // Default due dates: Advance=today, Midpoint=+45d, Delivery=+90d
-      const defaultDueDayOffsets = [0, 45, 90];
+    for (let i = 0; i < schedule.length; i++) {
+      const m = schedule[i];
+      const milestoneSubtotal = Math.round(((discountedSubtotal * m.percent) / 100) * 100) / 100;
+      const milestoneTax = Math.round((((quotation.taxAmount || 0) * m.percent) / 100) * 100) / 100;
+      const milestoneAmount = Math.round((milestoneSubtotal + milestoneTax) * 100) / 100;
+      const milestoneLabel = `${m.milestone} – ${m.percent}%`;
 
-      for (let i = 0; i < schedule.length; i++) {
-        const m = schedule[i];
-        const milestoneAmount = Math.round(((quotation.totalAmount * m.percent) / 100) * 100) / 100;
-        const milestoneSubtotal = Math.round(((discountedSubtotal * m.percent) / 100) * 100) / 100;
-        const milestoneTax = Math.round((((quotation.taxAmount || 0) * m.percent) / 100) * 100) / 100;
-        const milestoneLabel = `${m.milestone} – ${m.percent}%`;
+      const dueDate = m.dueDate
+        ? new Date(m.dueDate)
+        : (() => {
+            const d = new Date();
+            d.setDate(d.getDate() + (defaultDueDayOffsets[i] ?? i * 30));
+            return d;
+          })();
 
-        const dueDate = m.dueDate
-          ? new Date(m.dueDate)
-          : (() => {
-              const d = new Date();
-              d.setDate(d.getDate() + (defaultDueDayOffsets[i] ?? i * 30));
-              return d;
-            })();
+      // Line items calculated proportionally based on this milestone percentage
+      let runningItemSum = 0;
+      const hasLineItems = quotation.lineItems && quotation.lineItems.length > 0;
+      const milestoneLineItems = hasLineItems
+        ? quotation.lineItems.map((li: any, liIdx: number) => {
+            const fullDiscountedTotal =
+              typeof li.total === "number" && li.total >= 0
+                ? li.total
+                : (li.quantity || 1) * (li.unitPrice || 0) * (1 - (li.discount || 0) / 100);
+            const qty = li.quantity || 1;
 
-        const invoiceNumber = `RIZ-INV-${year}-${String(baseCount + i + 1).padStart(4, "0")}`;
-        const secureToken = crypto.randomBytes(24).toString("hex");
+            let itemTotal = Math.round(((fullDiscountedTotal * m.percent) / 100) * 100) / 100;
+            // Reconcile rounding for the last line item with milestoneSubtotal
+            if (liIdx === quotation.lineItems.length - 1) {
+              itemTotal = Math.max(0, Math.round((milestoneSubtotal - runningItemSum) * 100) / 100);
+            } else {
+              runningItemSum += itemTotal;
+            }
 
-        const inv = await Invoice.create({
-          invoiceNumber,
-          secureToken,
-          quotationId: quotation._id,
-          clientId: quotation.clientId,
-          clientName: quotation.clientName,
-          clientEmail: quotation.clientEmail,
-          clientCompany: quotation.clientCompany,
-          projectName: quotation.projectName,
-          issueDate: new Date(),
-          dueDate,
-          currency: quotation.currency,
-          lineItems: commonLineItems,
-          subtotal: milestoneSubtotal,
-          taxAmount: milestoneTax,
-          discountAmount: 0,
-          totalAmount: milestoneAmount,
-          amountPaid: 0,
-          amountDue: milestoneAmount,
-          status: i === 0 ? "sent" : "draft", // Advance = sent immediately; others = draft
-          milestoneLabel,
-          paymentSchedule: schedule,
-          paymentInstructions,
-          notes: `Milestone: ${milestoneLabel} — from accepted quotation ${quotation.quoteNumber}. ${m.trigger}`,
-        });
-        createdInvoices.push(inv);
-      }
-    } else {
-      // ── Single invoice (no payment schedule) ──
-      const invoiceNumber = `RIZ-INV-${year}-${String(baseCount + 1).padStart(4, "0")}`;
+            const unitPrice = Math.round((itemTotal / qty) * 100) / 100;
+
+            return {
+              item: `${li.item} (${milestoneLabel})`,
+              description: li.description
+                ? `${li.description} [${m.milestone} Milestone – ${m.percent}%]`
+                : `${m.milestone} Milestone (${m.percent}%)`,
+              quantity: qty,
+              unitPrice,
+              total: itemTotal,
+            };
+          })
+        : [
+            {
+              item: `${quotation.projectName} (${milestoneLabel})`,
+              description: `${m.trigger || "Project Payment Milestone"} (${m.percent}%)`,
+              quantity: 1,
+              unitPrice: milestoneSubtotal,
+              total: milestoneSubtotal,
+            },
+          ];
+
+      const invoiceNumber = `RIZ-INV-${year}-${String(baseCount + i + 1).padStart(4, "0")}`;
       const secureToken = crypto.randomBytes(24).toString("hex");
-      const dueDate = new Date();
-      dueDate.setDate(dueDate.getDate() + 15);
 
       const inv = await Invoice.create({
         invoiceNumber,
@@ -331,16 +371,18 @@ export async function convertQuotationToInvoice(quotationId: string) {
         issueDate: new Date(),
         dueDate,
         currency: quotation.currency,
-        lineItems: commonLineItems,
-        subtotal: discountedSubtotal,
-        taxAmount: quotation.taxAmount || 0,
+        lineItems: milestoneLineItems,
+        subtotal: milestoneSubtotal,
+        taxAmount: milestoneTax,
         discountAmount: 0,
-        totalAmount: quotation.totalAmount,
+        totalAmount: milestoneAmount,
         amountPaid: 0,
-        amountDue: quotation.totalAmount,
-        status: "sent",
+        amountDue: milestoneAmount,
+        status: i === 0 ? "sent" : "draft", // Advance = sent immediately; others = draft
+        milestoneLabel,
+        paymentSchedule: schedule,
         paymentInstructions,
-        notes: `Generated from accepted quotation ${quotation.quoteNumber}`,
+        notes: `Milestone: ${milestoneLabel} — from accepted quotation ${quotation.quoteNumber}. ${m.trigger || ""}`,
       });
       createdInvoices.push(inv);
     }

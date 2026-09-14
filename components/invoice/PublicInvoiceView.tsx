@@ -227,7 +227,7 @@ export default function PublicInvoiceView({ invoice }: Props) {
                     </span>
                   </div>
                   <span className="text-[10px] text-neutral-500 print:text-neutral-600">
-                    30 / 40 / 30 Schedule
+                    {invoice.paymentSchedule.map((m: any) => `${m.percent}%`).join(" / ")} Schedule
                   </span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
