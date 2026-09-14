@@ -22,6 +22,9 @@ export default function SettingsClient({ initialSettings, access }: Props) {
     defaultCurrency: initialSettings.defaultCurrency || "USD",
     quotationTerms: initialSettings.quotationTerms || "Standard RIZMEC Master Engineering Agreement applies.",
     invoiceTerms: initialSettings.invoiceTerms || "Net 15 days. Wire and ACH preferred.",
+    paymentInstructions:
+      initialSettings.paymentInstructions ||
+      "Bank Wire Transfer: Account Name: RIZMEC Engineering Inc. | SWIFT: RIZMUS33 | IBAN: US34RIZM000192837465",
     seoTitle: initialSettings.seo?.siteTitle || "RIZMEC — Intelligence. Engineered.",
     seoDescription: initialSettings.seo?.siteMetaDescription || "Global technology engineering company.",
   });
@@ -45,6 +48,7 @@ export default function SettingsClient({ initialSettings, access }: Props) {
       defaultCurrency: form.defaultCurrency,
       quotationTerms: form.quotationTerms,
       invoiceTerms: form.invoiceTerms,
+      paymentInstructions: form.paymentInstructions,
       seo: {
         siteTitle: form.seoTitle,
         siteMetaDescription: form.seoDescription,
@@ -195,6 +199,27 @@ export default function SettingsClient({ initialSettings, access }: Props) {
               onChange={(e) => setForm({ ...form, invoiceTerms: e.target.value })}
               className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white text-xs"
             />
+          </div>
+
+          <div className="space-y-1.5 pt-2 border-t border-white/5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+              <label className="font-mono text-neutral-300 uppercase font-semibold">
+                Payment Instructions & Wire Routing (Invoice Default)
+              </label>
+              <span className="text-[10px] text-neutral-500 font-mono">
+                Appears on client invoices & payment reminder emails
+              </span>
+            </div>
+            <textarea
+              rows={4}
+              value={form.paymentInstructions}
+              onChange={(e) => setForm({ ...form, paymentInstructions: e.target.value })}
+              placeholder="e.g. Bank Wire Transfer: Account Name: RIZMEC Engineering Inc. | SWIFT: RIZMUS33 | IBAN: US34RIZM000192837465"
+              className="w-full px-3 py-2.5 bg-neutral-900 border border-white/10 rounded-lg text-white font-mono text-xs leading-relaxed focus:outline-none focus:border-white/30"
+            />
+            <p className="text-[11px] text-neutral-500 font-sans">
+              Define corporate bank account details, wire routing, SWIFT/BIC, IBAN, or payment instructions for invoices.
+            </p>
           </div>
         </div>
 

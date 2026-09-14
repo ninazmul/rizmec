@@ -58,6 +58,7 @@ const DEFAULT_FORM = {
   taxAmount: 0,
   discountAmount: 0,
   notes: "",
+  paymentInstructions: "",
   lineItems: [{ item: "", description: "", quantity: 1, unitPrice: 0 }],
 };
 
@@ -189,6 +190,7 @@ export default function InvoicesDashboardPage() {
       taxAmount: inv.taxAmount ?? 0,
       discountAmount: inv.discountAmount ?? 0,
       notes: inv.notes || "",
+      paymentInstructions: inv.paymentInstructions || "",
       lineItems:
         inv.lineItems && inv.lineItems.length > 0
           ? inv.lineItems.map((li: any) => ({
@@ -1198,14 +1200,33 @@ export default function InvoicesDashboardPage() {
                 </div>
               </div>
 
+              {/* Payment Instructions & Wire Routing */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="font-mono text-neutral-400 uppercase">
+                    Payment Instructions & Wire Routing (Override)
+                  </label>
+                  <span className="text-[10px] text-neutral-500 font-mono">
+                    Leave blank to use default from Company Settings
+                  </span>
+                </div>
+                <textarea
+                  rows={2}
+                  value={form.paymentInstructions}
+                  onChange={(e) => setForm({ ...form, paymentInstructions: e.target.value })}
+                  placeholder="Leave empty to use company settings wire details, or specify custom instructions"
+                  className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-white/30"
+                />
+              </div>
+
               {/* Notes */}
               <div className="space-y-1.5">
-                <label className="font-mono text-neutral-400 uppercase">Notes & Wiring Details</label>
+                <label className="font-mono text-neutral-400 uppercase">Invoice Notes & Terms</label>
                 <textarea
                   rows={2}
                   value={form.notes}
                   onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                  placeholder="Payment instructions, bank wire info, or invoice notes"
+                  placeholder="Additional terms, milestone conditions, or client-specific notes"
                   className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-white/30"
                 />
               </div>

@@ -360,7 +360,7 @@ export default function PublicInvoiceView({ invoice }: Props) {
               <div className="text-neutral-400 uppercase tracking-wider print:text-neutral-700 font-semibold">
                 Payment Instructions & Wire Routing:
               </div>
-              <p className="text-neutral-300 leading-relaxed font-sans print:text-neutral-800">
+              <p className="text-neutral-300 leading-relaxed font-sans print:text-neutral-800 whitespace-pre-wrap">
                 {invoice.paymentInstructions ||
                   "Bank Wire Transfer: Account Name: RIZMEC Engineering Inc. | SWIFT: RIZMUS33 | IBAN: US34RIZM000192837465"}
               </p>

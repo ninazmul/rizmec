@@ -3,6 +3,7 @@
 import { connectToDatabase } from "@/lib/database";
 import Invoice from "@/lib/database/models/invoice.model";
 import PaymentReminder from "@/lib/database/models/paymentReminder.model";
+import CompanySetting from "@/lib/database/models/companySetting.model";
 import { requirePermission } from "@/lib/auth/rbac";
 import { revalidatePath } from "next/cache";
 import nodemailer from "nodemailer";
@@ -48,6 +49,18 @@ export async function sendInvoicePaymentReminder(
         ? `[OVERDUE] Payment Reminder for Invoice ${invoice.invoiceNumber} — RIZMEC Engineering`
         : `Payment Reminder for Invoice ${invoice.invoiceNumber} — RIZMEC Engineering`;
 
+    const defaultPlaceholder =
+      "Bank Wire Transfer: Account Name: RIZMEC Engineering Inc. | SWIFT: RIZMUS33 | IBAN: US34RIZM000192837465";
+    let resolvedPaymentInstructions = invoice.paymentInstructions;
+    if (!resolvedPaymentInstructions || resolvedPaymentInstructions === defaultPlaceholder) {
+      const companySetting = await CompanySetting.findOne().lean();
+      if (companySetting?.paymentInstructions) {
+        resolvedPaymentInstructions = companySetting.paymentInstructions;
+      } else {
+        resolvedPaymentInstructions = defaultPlaceholder;
+      }
+    }
+
     const htmlContent = `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background: #09090b; color: #ffffff; padding: 40px 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
         <div style="font-family: monospace; font-size: 20px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 24px; color: #ffffff;">
@@ -89,9 +102,10 @@ export async function sendInvoicePaymentReminder(
             View & Pay Invoice
           </a>
         </div>
-        <p style="font-size: 13px; color: #71717a; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px;">
-          Wiring & Payment Instructions: ${invoice.paymentInstructions}
-        </p>
+        <div style="font-size: 13px; color: #71717a; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px; white-space: pre-line;">
+          <strong style="color: #a1a1aa; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; display: block; margin-bottom: 6px;">Payment Instructions & Wire Routing:</strong>
+          ${resolvedPaymentInstructions}
+        </div>
         <p style="font-size: 12px; color: #52525b; margin-top: 10px;">
           RIZMEC Engineering Inc. • Intelligence. Engineered.
         </p>

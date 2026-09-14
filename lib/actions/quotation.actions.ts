@@ -3,6 +3,7 @@
 import { connectToDatabase } from "@/lib/database";
 import Quotation, { IQuotation } from "@/lib/database/models/quotation.model";
 import Invoice from "@/lib/database/models/invoice.model";
+import CompanySetting from "@/lib/database/models/companySetting.model";
 import { requirePermission } from "@/lib/auth/rbac";
 import { revalidatePath } from "next/cache";
 import crypto from "crypto";
@@ -226,13 +227,33 @@ export async function convertQuotationToInvoice(quotationId: string) {
     const baseCount = await Invoice.countDocuments();
     const year = new Date().getFullYear();
 
-    const commonLineItems = quotation.lineItems.map((li: any) => ({
-      item: li.item,
-      description: li.description,
-      quantity: li.quantity,
-      unitPrice: li.unitPrice,
-      total: li.total,
-    }));
+    const companySetting = await CompanySetting.findOne().lean();
+    const paymentInstructions =
+      companySetting?.paymentInstructions ||
+      "Bank Wire Transfer: Account Name: RIZMEC Engineering Inc. | SWIFT: RIZMUS33 | IBAN: US34RIZM000192837465";
+
+    // Take total amount (discounted amount), not undiscounted rate, for each line item
+    const commonLineItems = quotation.lineItems.map((li: any) => {
+      const discountedTotal =
+        typeof li.total === "number" && li.total >= 0
+          ? li.total
+          : (li.quantity || 1) * (li.unitPrice || 0) * (1 - (li.discount || 0) / 100);
+      const qty = li.quantity || 1;
+      const unitPrice = Math.round((discountedTotal / qty) * 100) / 100;
+
+      return {
+        item: li.item,
+        description: li.description || "",
+        quantity: qty,
+        unitPrice,
+        total: discountedTotal,
+      };
+    });
+
+    const discountedSubtotal = Math.max(
+      0,
+      Math.round((quotation.subtotal - (quotation.discountTotal || 0)) * 100) / 100,
+    );
 
     const schedule: Array<{ milestone: string; percent: number; trigger: string; dueDate?: Date }> =
       quotation.paymentSchedule && quotation.paymentSchedule.length > 0
@@ -248,7 +269,9 @@ export async function convertQuotationToInvoice(quotationId: string) {
 
       for (let i = 0; i < schedule.length; i++) {
         const m = schedule[i];
-        const milestoneAmount = Math.round((quotation.totalAmount * m.percent) / 100 * 100) / 100;
+        const milestoneAmount = Math.round(((quotation.totalAmount * m.percent) / 100) * 100) / 100;
+        const milestoneSubtotal = Math.round(((discountedSubtotal * m.percent) / 100) * 100) / 100;
+        const milestoneTax = Math.round((((quotation.taxAmount || 0) * m.percent) / 100) * 100) / 100;
         const milestoneLabel = `${m.milestone} – ${m.percent}%`;
 
         const dueDate = m.dueDate
@@ -275,15 +298,16 @@ export async function convertQuotationToInvoice(quotationId: string) {
           dueDate,
           currency: quotation.currency,
           lineItems: commonLineItems,
-          subtotal: quotation.subtotal,
-          taxAmount: quotation.taxAmount,
-          discountAmount: quotation.discountTotal,
+          subtotal: milestoneSubtotal,
+          taxAmount: milestoneTax,
+          discountAmount: 0,
           totalAmount: milestoneAmount,
           amountPaid: 0,
           amountDue: milestoneAmount,
           status: i === 0 ? "sent" : "draft", // Advance = sent immediately; others = draft
           milestoneLabel,
           paymentSchedule: schedule,
+          paymentInstructions,
           notes: `Milestone: ${milestoneLabel} — from accepted quotation ${quotation.quoteNumber}. ${m.trigger}`,
         });
         createdInvoices.push(inv);
@@ -308,13 +332,14 @@ export async function convertQuotationToInvoice(quotationId: string) {
         dueDate,
         currency: quotation.currency,
         lineItems: commonLineItems,
-        subtotal: quotation.subtotal,
-        taxAmount: quotation.taxAmount,
-        discountAmount: quotation.discountTotal,
+        subtotal: discountedSubtotal,
+        taxAmount: quotation.taxAmount || 0,
+        discountAmount: 0,
         totalAmount: quotation.totalAmount,
         amountPaid: 0,
         amountDue: quotation.totalAmount,
         status: "sent",
+        paymentInstructions,
         notes: `Generated from accepted quotation ${quotation.quoteNumber}`,
       });
       createdInvoices.push(inv);

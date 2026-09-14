@@ -18,6 +18,8 @@ export async function getCompanySettings(): Promise<any> {
         contactEmail: "hello@rizmec.com",
         contactPhone: "+1 (888) 749-6320",
         address: "100 Montgomery St, Suite 2400, San Francisco, CA 94104",
+        paymentInstructions:
+          "Bank Wire Transfer: Account Name: RIZMEC Engineering Inc. | SWIFT: RIZMUS33 | IBAN: US34RIZM000192837465",
       });
       setting = JSON.parse(JSON.stringify(setting));
     }

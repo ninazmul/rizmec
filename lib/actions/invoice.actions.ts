@@ -3,6 +3,7 @@
 import { connectToDatabase } from "@/lib/database";
 import Invoice, { IInvoice } from "@/lib/database/models/invoice.model";
 import Payment from "@/lib/database/models/payment.model";
+import CompanySetting from "@/lib/database/models/companySetting.model";
 import { requirePermission } from "@/lib/auth/rbac";
 import { revalidatePath } from "next/cache";
 import crypto from "crypto";
@@ -47,6 +48,15 @@ export async function getInvoiceByToken(secureToken: string) {
       invoice.status = "viewed";
     }
 
+    const defaultPlaceholder =
+      "Bank Wire Transfer: Account Name: RIZMEC Engineering Inc. | SWIFT: RIZMUS33 | IBAN: US34RIZM000192837465";
+    if (!invoice.paymentInstructions || invoice.paymentInstructions === defaultPlaceholder) {
+      const companySetting = await CompanySetting.findOne().lean();
+      if (companySetting?.paymentInstructions) {
+        invoice.paymentInstructions = companySetting.paymentInstructions;
+      }
+    }
+
     return { success: true, data: JSON.parse(JSON.stringify(invoice)) };
   } catch (error: any) {
     console.error("Error fetching invoice by token:", error);
@@ -71,6 +81,7 @@ export async function createInvoice(data: {
   taxAmount?: number;
   discountAmount?: number;
   notes?: string;
+  paymentInstructions?: string;
 }) {
   try {
     await requirePermission("invoices", "create");
@@ -93,6 +104,14 @@ export async function createInvoice(data: {
     const discountAmount = data.discountAmount || 0;
     const totalAmount = subtotal + taxAmount - discountAmount;
 
+    let paymentInstructions = data.paymentInstructions;
+    if (!paymentInstructions) {
+      const companySetting = await CompanySetting.findOne().lean();
+      if (companySetting?.paymentInstructions) {
+        paymentInstructions = companySetting.paymentInstructions;
+      }
+    }
+
     const count = await Invoice.countDocuments();
     const year = new Date().getFullYear();
     const invoiceNumber = `RIZ-INV-${year}-${String(count + 1).padStart(4, "0")}`;
@@ -100,6 +119,7 @@ export async function createInvoice(data: {
 
     const newInvoice = await Invoice.create({
       ...data,
+      paymentInstructions,
       invoiceNumber,
       secureToken,
       lineItems: computedItems,

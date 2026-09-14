@@ -19,6 +19,7 @@ export interface ICompanySetting extends Document {
   defaultCurrency: string;
   quotationTerms: string;
   invoiceTerms: string;
+  paymentInstructions?: string;
   logoWhiteUrl?: string;
   logoBlackUrl?: string;
   seo: {
@@ -65,6 +66,11 @@ const CompanySettingSchema = new Schema<ICompanySetting>(
     invoiceTerms: {
       type: String,
       default: "Net 15 days. Late payments may incur a 1.5% monthly compound fee.",
+    },
+    paymentInstructions: {
+      type: String,
+      default:
+        "Bank Wire Transfer: Account Name: RIZMEC Engineering Inc. | SWIFT: RIZMUS33 | IBAN: US34RIZM000192837465",
     },
     logoWhiteUrl: { type: String, default: "" },
     logoBlackUrl: { type: String, default: "" },
