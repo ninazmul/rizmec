@@ -7,6 +7,7 @@ import CompanySetting from "@/lib/database/models/companySetting.model";
 import { requirePermission } from "@/lib/auth/rbac";
 import { revalidatePath } from "next/cache";
 import crypto from "crypto";
+import nodemailer from "nodemailer";
 
 export async function getInvoices(params?: {
   status?: string;
@@ -188,6 +189,181 @@ export async function recordInvoicePayment(
     };
   } catch (error: any) {
     console.error("Error recording payment:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Send Payment Confirmation Receipt Email to client
+ */
+async function sendPaymentReceiptEmail(invoice: any) {
+  try {
+    const SMTP_HOST = process.env.SMTP_HOST || "smtp.gmail.com";
+    const SMTP_PORT = Number(process.env.SMTP_PORT) || 465;
+    const SMTP_USER = process.env.SMTP_USER || process.env.EMAIL_USER;
+    const SMTP_PASS = process.env.SMTP_PASS || process.env.EMAIL_PASS;
+
+    const publicUrl = `${process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SERVER_URL || "https://rizmec.com"}/invoice/${invoice.secureToken}`;
+    const subject = `Payment Confirmed — Invoice ${invoice.invoiceNumber} | RIZMEC Engineering`;
+
+    const htmlContent = `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background: #09090b; color: #ffffff; padding: 40px 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+        <div style="font-family: monospace; font-size: 20px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 24px; color: #ffffff;">
+          RIZMEC
+        </div>
+        <div style="display: inline-block; padding: 4px 12px; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 20px; color: #4ade80; font-size: 11px; font-family: monospace; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">
+          ✓ Payment Received & Verified
+        </div>
+        <p style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; color: #a1a1aa; margin-bottom: 8px;">
+          Attention: ${invoice.clientName} (${invoice.clientCompany || "Valued Partner"})
+        </p>
+        <h2 style="font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 16px;">
+          Payment Receipt — ${invoice.invoiceNumber}
+        </h2>
+        <p style="font-size: 15px; color: #d4d4d8; line-height: 1.6; margin-bottom: 24px;">
+          We are pleased to confirm that your remittance for project <strong>${invoice.projectName}</strong> has been received and successfully recorded.
+        </p>
+        <div style="background: #18181b; padding: 20px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 24px;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <tr>
+              <td style="color: #a1a1aa; padding: 6px 0;">Invoice Number:</td>
+              <td style="color: #ffffff; text-align: right; font-weight: 600;">${invoice.invoiceNumber}</td>
+            </tr>
+            ${invoice.milestoneLabel ? `<tr><td style="color:#a1a1aa;padding:6px 0;">Milestone Phase:</td><td style="color:#ffffff;text-align:right;font-weight:600;">${invoice.milestoneLabel}</td></tr>` : ""}
+            <tr>
+              <td style="color: #a1a1aa; padding: 6px 0;">Amount Paid:</td>
+              <td style="color: #4ade80; text-align: right; font-weight: 800; font-size: 16px;">${invoice.currency} ${Number(invoice.totalAmount).toLocaleString()}</td>
+            </tr>
+            <tr style="border-top: 1px solid rgba(255,255,255,0.1);">
+              <td style="color: #ffffff; padding: 10px 0; font-weight: 700;">Remaining Balance:</td>
+              <td style="color: #ffffff; text-align: right; font-weight: 800;">${invoice.currency} 0.00</td>
+            </tr>
+            <tr>
+              <td style="color: #a1a1aa; padding: 6px 0;">Status:</td>
+              <td style="color: #4ade80; text-align: right; font-weight: 700; text-transform: uppercase; font-family: monospace;">PAID IN FULL</td>
+            </tr>
+          </table>
+        </div>
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${publicUrl}" style="background: #ffffff; color: #000000; padding: 14px 28px; border-radius: 4px; font-weight: 700; text-decoration: none; display: inline-block; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;">
+            View Official Paid Invoice
+          </a>
+        </div>
+        <p style="font-size: 12px; color: #71717a; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px;">
+          Thank you for partnering with RIZMEC Engineering Inc. • Intelligence. Engineered. • rizmec.com
+        </p>
+      </div>
+    `;
+
+    if (SMTP_USER && SMTP_PASS) {
+      const transporter = nodemailer.createTransport({
+        host: SMTP_HOST,
+        port: SMTP_PORT,
+        secure: SMTP_PORT === 465,
+        auth: { user: SMTP_USER, pass: SMTP_PASS },
+      });
+
+      await transporter.sendMail({
+        from: `"RIZMEC Engineering" <${SMTP_USER}>`,
+        to: invoice.clientEmail,
+        subject,
+        html: htmlContent,
+      });
+      return { success: true };
+    } else {
+      console.log("[MOCK EMAIL] Payment receipt confirmation sent to:", invoice.clientEmail);
+      return { success: true, mocked: true };
+    }
+  } catch (error: any) {
+    console.error("Error sending payment receipt email:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Mark an invoice as Paid and notify the client
+ */
+export async function markInvoicePaid(invoiceId: string, notifyClient: boolean = true) {
+  try {
+    await requirePermission("invoices", "update");
+    await connectToDatabase();
+
+    const invoice = await Invoice.findById(invoiceId);
+    if (!invoice) return { success: false, error: "Invoice not found." };
+
+    const fullAmount = invoice.totalAmount || 0;
+    invoice.status = "paid";
+    invoice.amountPaid = fullAmount;
+    invoice.amountDue = 0;
+    await invoice.save();
+
+    await Payment.create({
+      invoiceId: invoice._id,
+      amount: fullAmount,
+      paymentDate: new Date(),
+      method: "bank_transfer",
+      reference: `PAID-${invoice.invoiceNumber}`,
+      notes: "Marked as paid by administrator. Payment verified.",
+    });
+
+    let emailSent = false;
+    if (notifyClient && invoice.clientEmail) {
+      const emailRes = await sendPaymentReceiptEmail(invoice);
+      emailSent = Boolean(emailRes.success);
+    }
+
+    revalidatePath("/dashboard/invoices");
+    if (invoice.secureToken) {
+      revalidatePath(`/invoice/${invoice.secureToken}`);
+    }
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(invoice)),
+      emailSent,
+      message: emailSent
+        ? `Invoice marked as Paid & receipt notification emailed to ${invoice.clientEmail}!`
+        : `Invoice marked as Paid successfully!`,
+    };
+  } catch (error: any) {
+    console.error("Error marking invoice paid:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Revert an invoice back to Unpaid (due balance restored)
+ */
+export async function markInvoiceUnpaid(invoiceId: string) {
+  try {
+    await requirePermission("invoices", "update");
+    await connectToDatabase();
+
+    const invoice = await Invoice.findById(invoiceId);
+    if (!invoice) return { success: false, error: "Invoice not found." };
+
+    invoice.status = "sent";
+    invoice.amountPaid = 0;
+    invoice.amountDue = invoice.totalAmount || 0;
+    await invoice.save();
+
+    await Payment.deleteMany({
+      invoiceId: invoice._id,
+      reference: `PAID-${invoice.invoiceNumber}`,
+    });
+
+    revalidatePath("/dashboard/invoices");
+    if (invoice.secureToken) {
+      revalidatePath(`/invoice/${invoice.secureToken}`);
+    }
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(invoice)),
+      message: `Invoice marked as Unpaid (balance restored).`,
+    };
+  } catch (error: any) {
+    console.error("Error marking invoice unpaid:", error);
     return { success: false, error: error.message };
   }
 }

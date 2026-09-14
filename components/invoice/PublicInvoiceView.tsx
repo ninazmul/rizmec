@@ -1,21 +1,76 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import Link from "next/link";
 import RizmecLogo from "@/components/shared/RizmecLogo";
-import { Printer, CheckCircle2, AlertCircle, ShieldCheck, Layers } from "lucide-react";
+import {
+  Printer,
+  CheckCircle2,
+  AlertCircle,
+  ShieldCheck,
+  Layers,
+  Loader2,
+  ArrowLeft,
+} from "lucide-react";
+import { markInvoicePaid, markInvoiceUnpaid } from "@/lib/actions/invoice.actions";
+import toast from "react-hot-toast";
 
 interface Props {
   invoice: any;
+  isAdmin?: boolean;
 }
 
-export default function PublicInvoiceView({ invoice }: Props) {
+export default function PublicInvoiceView({ invoice, isAdmin = false }: Props) {
+  const [currentStatus, setCurrentStatus] = useState(invoice.status);
+  const [currentAmountDue, setCurrentAmountDue] = useState(invoice.amountDue);
+  const [currentAmountPaid, setCurrentAmountPaid] = useState(invoice.amountPaid || 0);
+  const [toggling, setToggling] = useState(false);
+
   const handlePrint = () => {
     window.print();
   };
 
-  const isPaid = invoice.status === "paid";
+  const handleMarkPaid = async () => {
+    setToggling(true);
+    try {
+      const res = await markInvoicePaid(invoice._id, true);
+      if (res.success) {
+        setCurrentStatus("paid");
+        setCurrentAmountDue(0);
+        setCurrentAmountPaid(invoice.totalAmount);
+        toast.success(res.message || "Invoice marked as Paid!");
+      } else {
+        toast.error(res.error || "Failed to mark as Paid.");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "An error occurred.");
+    } finally {
+      setToggling(false);
+    }
+  };
+
+  const handleMarkUnpaid = async () => {
+    setToggling(true);
+    try {
+      const res = await markInvoiceUnpaid(invoice._id);
+      if (res.success) {
+        setCurrentStatus("sent");
+        setCurrentAmountDue(invoice.totalAmount);
+        setCurrentAmountPaid(0);
+        toast.success(res.message || "Invoice reverted to Unpaid.");
+      } else {
+        toast.error(res.error || "Failed to revert to Unpaid.");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "An error occurred.");
+    } finally {
+      setToggling(false);
+    }
+  };
+
+  const isPaid = currentStatus === "paid";
   const isOverdue =
-    invoice.status === "overdue" ||
+    currentStatus === "overdue" ||
     (new Date(invoice.dueDate) < new Date() && !isPaid);
 
   return (
@@ -70,15 +125,52 @@ export default function PublicInvoiceView({ invoice }: Props) {
       <div className="min-h-screen bg-[#09090b] text-white py-12 px-4 sm:px-6 lg:px-8 print:bg-white print:text-black print:p-0 print:m-0 print:min-h-0">
         <div className="max-w-4xl mx-auto space-y-8 print:space-y-0 print:max-w-full">
           {/* Web-only Top Bar */}
-          <div className="no-print flex items-center justify-between">
+          <div className="no-print flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <RizmecLogo variant="white" size="md" showTagline={true} />
-            <button
-              onClick={handlePrint}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/20 text-xs font-mono font-medium text-white hover:bg-white/10 active:scale-95 transition-all shadow-sm cursor-pointer"
-            >
-              <Printer className="w-4 h-4 text-emerald-400" />
-              <span>Print Invoice</span>
-            </button>
+
+            <div className="flex flex-wrap items-center gap-2.5">
+              {isAdmin && (
+                <>
+                  <Link
+                    href="/dashboard/invoices"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-white/10 bg-white/[0.03] text-xs font-mono text-neutral-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    <span>Dashboard</span>
+                  </Link>
+
+                  {isPaid ? (
+                    <button
+                      onClick={handleMarkUnpaid}
+                      disabled={toggling}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-amber-500/30 bg-amber-500/10 text-xs font-mono font-medium text-amber-300 hover:bg-amber-500/20 active:scale-95 transition-all disabled:opacity-50 cursor-pointer shadow-sm"
+                      title="Revert invoice to Unpaid"
+                    >
+                      {toggling ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                      <span>Mark as Unpaid</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleMarkPaid}
+                      disabled={toggling}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-emerald-500/30 bg-emerald-500/15 text-xs font-mono font-medium text-emerald-300 hover:bg-emerald-500/25 active:scale-95 transition-all shadow-sm shadow-emerald-950/40 disabled:opacity-50 cursor-pointer"
+                      title="Mark invoice as Paid and notify client via email"
+                    >
+                      {toggling ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                      <span>Mark as Paid</span>
+                    </button>
+                  )}
+                </>
+              )}
+
+              <button
+                onClick={handlePrint}
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-white/20 text-xs font-mono font-medium text-white hover:bg-white/10 active:scale-95 transition-all shadow-sm cursor-pointer"
+              >
+                <Printer className="w-4 h-4 text-emerald-400" />
+                <span>Print Invoice</span>
+              </button>
+            </div>
           </div>
 
           {/* Web-only Status Notification Banner */}
@@ -109,7 +201,7 @@ export default function PublicInvoiceView({ invoice }: Props) {
                   : "bg-white/10 text-white border border-white/20"
               }`}
             >
-              {isPaid ? "PAID" : isOverdue ? "OVERDUE" : invoice.status.toUpperCase()}
+              {isPaid ? "PAID" : isOverdue ? "OVERDUE" : currentStatus.toUpperCase()}
             </span>
           </div>
 
@@ -141,7 +233,7 @@ export default function PublicInvoiceView({ invoice }: Props) {
                       : "border-white/20 text-neutral-300 bg-white/5 print:border-neutral-300 print:text-neutral-800 print:bg-neutral-50"
                   }`}
                 >
-                  {isPaid ? "PAID IN FULL" : isOverdue ? "PAYMENT OVERDUE" : `STATUS: ${invoice.status.toUpperCase()}`}
+                  {isPaid ? "PAID IN FULL" : isOverdue ? "PAYMENT OVERDUE" : `STATUS: ${currentStatus.toUpperCase()}`}
                 </span>
               </div>
             </div>
@@ -337,19 +429,19 @@ export default function PublicInvoiceView({ invoice }: Props) {
                 <div className="flex justify-between text-xs text-neutral-400 print:text-neutral-600">
                   <span>Amount Paid:</span>
                   <span className="text-white print:text-neutral-900">
-                    {invoice.currency} {(invoice.amountPaid || 0).toLocaleString()}
+                    {invoice.currency} {currentAmountPaid.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between text-base font-black text-white pt-2.5 border-t border-white/10 print:border-neutral-300 print:text-neutral-900">
                   <span>Amount Due:</span>
                   <span
                     className={
-                      invoice.amountDue > 0
+                      currentAmountDue > 0
                         ? "text-rose-400 print:text-neutral-900"
                         : "text-emerald-400 print:text-emerald-700"
                     }
                   >
-                    {invoice.currency} {invoice.amountDue?.toLocaleString()}
+                    {invoice.currency} {currentAmountDue.toLocaleString()}
                   </span>
                 </div>
               </div>

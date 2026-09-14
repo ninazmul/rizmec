@@ -29,6 +29,8 @@ import {
   getInvoices,
   createInvoice,
   recordInvoicePayment,
+  markInvoicePaid,
+  markInvoiceUnpaid,
   updateInvoice,
   deleteInvoice,
 } from "@/lib/actions/invoice.actions";
@@ -91,6 +93,36 @@ export default function InvoicesDashboardPage() {
   // Delete Confirmation Modal
   const [deleteModalInvoice, setDeleteModalInvoice] = useState<any | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  // Quick Paid / Unpaid Toggle State
+  const [togglingPaidId, setTogglingPaidId] = useState<string | null>(null);
+
+  const handleTogglePaid = async (inv: any, target: "paid" | "unpaid") => {
+    setTogglingPaidId(inv._id);
+    try {
+      if (target === "paid") {
+        const res = await markInvoicePaid(inv._id, true);
+        if (res.success) {
+          toast.success(res.message || "Invoice marked as Paid!");
+          fetchInvoices();
+        } else {
+          toast.error(res.error || "Failed to mark as Paid.");
+        }
+      } else {
+        const res = await markInvoiceUnpaid(inv._id);
+        if (res.success) {
+          toast.success(res.message || "Invoice reverted to Unpaid.");
+          fetchInvoices();
+        } else {
+          toast.error(res.error || "Failed to revert to Unpaid.");
+        }
+      }
+    } catch (err: any) {
+      toast.error(err.message || "An error occurred.");
+    } finally {
+      setTogglingPaidId(null);
+    }
+  };
 
   const fetchInvoices = async () => {
     setLoading(true);
@@ -598,13 +630,41 @@ export default function InvoicesDashboardPage() {
 
                       {/* Status */}
                       <td className="py-4 px-4 align-top">
-                        <span
-                          className={`px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold border ${
-                            STATUS_STYLES[inv.status] || STATUS_STYLES.draft
-                          }`}
-                        >
-                          {inv.status?.replace("_", " ")}
-                        </span>
+                        {inv.status === "paid" ? (
+                          <button
+                            onClick={() => handleTogglePaid(inv, "unpaid")}
+                            disabled={togglingPaidId === inv._id}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase border bg-emerald-500/15 text-emerald-400 border-emerald-500/30 hover:bg-rose-500/15 hover:text-rose-300 hover:border-rose-500/30 transition-all cursor-pointer group"
+                            title="Click to revert to Unpaid"
+                          >
+                            {togglingPaidId === inv._id ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <>
+                                <CheckCircle2 className="w-3 h-3 text-emerald-400 group-hover:hidden" />
+                                <span className="group-hover:hidden">Paid</span>
+                                <span className="hidden group-hover:inline">Set Unpaid</span>
+                              </>
+                            )}
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleTogglePaid(inv, "paid")}
+                            disabled={togglingPaidId === inv._id}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase border bg-amber-500/15 text-amber-300 border-amber-500/30 hover:bg-emerald-500/15 hover:text-emerald-300 hover:border-emerald-500/30 transition-all cursor-pointer group"
+                            title="Click to mark as Paid and notify client"
+                          >
+                            {togglingPaidId === inv._id ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <>
+                                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 group-hover:hidden" />
+                                <span className="group-hover:hidden">{inv.status?.replace("_", " ")}</span>
+                                <span className="hidden group-hover:inline">Mark Paid</span>
+                              </>
+                            )}
+                          </button>
+                        )}
                       </td>
 
                       {/* Public URL */}
@@ -635,6 +695,37 @@ export default function InvoicesDashboardPage() {
                       {/* Actions */}
                       <td className="py-4 px-4 align-top text-right">
                         <div className="flex flex-wrap justify-end items-center gap-1.5">
+                          {/* Unpaid / Paid Button */}
+                          {inv.status !== "paid" ? (
+                            <button
+                              onClick={() => handleTogglePaid(inv, "paid")}
+                              disabled={togglingPaidId === inv._id}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 font-mono text-[10px] font-bold uppercase transition-colors"
+                              title="Mark as Paid & dispatch notification to client"
+                            >
+                              {togglingPaidId === inv._id ? (
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                              ) : (
+                                <>
+                                  <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                                  <span>Paid</span>
+                                </>
+                              )}
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleTogglePaid(inv, "unpaid")}
+                              disabled={togglingPaidId === inv._id}
+                              className="inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-white/10 text-neutral-400 hover:text-white font-mono text-[10px] uppercase hover:bg-white/5 transition-colors"
+                              title="Revert status to Unpaid"
+                            >
+                              {togglingPaidId === inv._id ? (
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                              ) : (
+                                <span>Unpaid</span>
+                              )}
+                            </button>
+                          )}
                           {/* Log Payment */}
                           {inv.status !== "paid" && (
                             <button
