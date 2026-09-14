@@ -31,6 +31,10 @@ export default function PublicInvoiceView({ invoice, isAdmin = false }: Props) {
   };
 
   const handleMarkPaid = async () => {
+    if (!isAdmin) {
+      toast.error("Only administrators are authorized to mark invoices as paid.");
+      return;
+    }
     setToggling(true);
     try {
       const res = await markInvoicePaid(invoice._id, true);
@@ -50,6 +54,10 @@ export default function PublicInvoiceView({ invoice, isAdmin = false }: Props) {
   };
 
   const handleMarkUnpaid = async () => {
+    if (!isAdmin) {
+      toast.error("Only administrators are authorized to revert invoices to unpaid.");
+      return;
+    }
     setToggling(true);
     try {
       const res = await markInvoiceUnpaid(invoice._id);

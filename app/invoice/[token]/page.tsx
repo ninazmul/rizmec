@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { getInvoiceByToken } from "@/lib/actions/invoice.actions";
 import { getCurrentDashboardAccess } from "@/lib/auth/rbac";
-import { hasPermission } from "@/lib/auth/rbac-rules";
 import PublicInvoiceView from "@/components/invoice/PublicInvoiceView";
 
 interface Props {
@@ -33,13 +32,12 @@ export default async function PublicInvoicePage({ params }: Props) {
   }
 
   const access = await getCurrentDashboardAccess();
-  const canManage = Boolean(
+  const isAdmin = Boolean(
     access &&
       (access.isSuperAdmin ||
         access.role === "admin" ||
-        access.role === "super_admin" ||
-        hasPermission(access, "invoices", "update"))
+        access.role === "super_admin")
   );
 
-  return <PublicInvoiceView invoice={res.data} isAdmin={canManage} />;
+  return <PublicInvoiceView invoice={res.data} isAdmin={isAdmin} />;
 }

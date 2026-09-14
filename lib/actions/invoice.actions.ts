@@ -4,7 +4,7 @@ import { connectToDatabase } from "@/lib/database";
 import Invoice, { IInvoice } from "@/lib/database/models/invoice.model";
 import Payment from "@/lib/database/models/payment.model";
 import CompanySetting from "@/lib/database/models/companySetting.model";
-import { requirePermission } from "@/lib/auth/rbac";
+import { requirePermission, requireDashboardAccess, getCurrentDashboardAccess } from "@/lib/auth/rbac";
 import { revalidatePath } from "next/cache";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
@@ -155,7 +155,17 @@ export async function recordInvoicePayment(
   },
 ) {
   try {
-    await requirePermission("invoices", "update");
+    const access = await requireDashboardAccess("/sign-in");
+    const isAdmin =
+      access && (access.isSuperAdmin || access.role === "admin" || access.role === "super_admin");
+
+    if (!isAdmin) {
+      return {
+        success: false,
+        error: "Forbidden: Only administrators are authorized to record payments.",
+      };
+    }
+
     await connectToDatabase();
 
     const invoice = await Invoice.findById(invoiceId);
@@ -281,11 +291,39 @@ async function sendPaymentReceiptEmail(invoice: any) {
 }
 
 /**
+ * Helper to check if current logged-in user is an administrator
+ */
+export async function checkIsInvoiceAdmin(): Promise<boolean> {
+  try {
+    const access = await getCurrentDashboardAccess();
+    return Boolean(
+      access &&
+        (access.isSuperAdmin ||
+          access.role === "admin" ||
+          access.role === "super_admin")
+    );
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Mark an invoice as Paid and notify the client
+ * STRICT SECURITY: Only administrators (admin or super_admin) are authorized.
  */
 export async function markInvoicePaid(invoiceId: string, notifyClient: boolean = true) {
   try {
-    await requirePermission("invoices", "update");
+    const access = await requireDashboardAccess("/sign-in");
+    const isAdmin =
+      access && (access.isSuperAdmin || access.role === "admin" || access.role === "super_admin");
+
+    if (!isAdmin) {
+      return {
+        success: false,
+        error: "Forbidden: Only administrators are authorized to mark an invoice as paid.",
+      };
+    }
+
     await connectToDatabase();
 
     const invoice = await Invoice.findById(invoiceId);
@@ -333,10 +371,21 @@ export async function markInvoicePaid(invoiceId: string, notifyClient: boolean =
 
 /**
  * Revert an invoice back to Unpaid (due balance restored)
+ * STRICT SECURITY: Only administrators (admin or super_admin) are authorized.
  */
 export async function markInvoiceUnpaid(invoiceId: string) {
   try {
-    await requirePermission("invoices", "update");
+    const access = await requireDashboardAccess("/sign-in");
+    const isAdmin =
+      access && (access.isSuperAdmin || access.role === "admin" || access.role === "super_admin");
+
+    if (!isAdmin) {
+      return {
+        success: false,
+        error: "Forbidden: Only administrators are authorized to revert an invoice to unpaid.",
+      };
+    }
+
     await connectToDatabase();
 
     const invoice = await Invoice.findById(invoiceId);
