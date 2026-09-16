@@ -25,6 +25,7 @@ import {
 import RizmecLogo from "@/components/shared/RizmecLogo";
 import { TiltCard } from "@/components/ui/TiltCard";
 import { CyberGlowMesh } from "@/components/ui/CyberGlowMesh";
+import type { TransitionContactInfo } from "./page";
 
 const LinkedinIcon = ({ className }: { className?: string }) => (
   <svg
@@ -34,6 +35,21 @@ const LinkedinIcon = ({ className }: { className?: string }) => (
     aria-hidden="true"
   >
     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+  </svg>
+);
+
+const GithubIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    fill="currentColor"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+  >
+    <path
+      fillRule="evenodd"
+      d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+      clipRule="evenodd"
+    />
   </svg>
 );
 
@@ -305,11 +321,19 @@ const TechLine: React.FC<{ className?: string; direction?: "h" | "v" }> = ({
    TRANSITION PAGE CONTENT (CLIENT COMPONENT)
    ============================================================ */
 
-export default function TransitionPageContent() {
+export default function TransitionPageContent({
+  contactInfo,
+}: {
+  contactInfo: TransitionContactInfo;
+}) {
   const scrollToNext = () => {
     const next = document.getElementById("the-message");
     next?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
+  const siteLabel = contactInfo.siteUrl
+    .replace(/^https?:\/\//, "")
+    .replace(/\/$/, "");
 
   const transformations: { from: string; to: string }[] = [
     { from: "Web Development", to: "Software Engineering" },
@@ -1017,44 +1041,102 @@ export default function TransitionPageContent() {
               DIRECT CHANNELS
             </div>
             <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
-              <a
-                href="https://rizmec.com"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-white/10 bg-white/[0.02] text-xs font-mono text-neutral-300 hover:border-white/30 hover:bg-white/[0.05] hover:text-white transition-all"
-                aria-label="Visit rizmec.com"
-              >
-                <Globe className="w-3.5 h-3.5" />
-                <span>rizmec.com</span>
-              </a>
-              <a
-                href="mailto:hello@rizmec.com"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-white/10 bg-white/[0.02] text-xs font-mono text-neutral-300 hover:border-white/30 hover:bg-white/[0.05] hover:text-white transition-all"
-                aria-label="Email RIZMEC"
-              >
-                <Mail className="w-3.5 h-3.5" />
-                <span>hello@rizmec.com</span>
-              </a>
-              <a
-                href="https://wa.me/1"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-white/10 bg-white/[0.02] text-xs font-mono text-neutral-300 hover:border-white/30 hover:bg-white/[0.05] hover:text-white transition-all"
-                aria-label="WhatsApp RIZMEC"
-              >
-                <MessageCircle className="w-3.5 h-3.5" />
-                <span>WhatsApp</span>
-              </a>
-              <a
-                href="https://linkedin.com/company/rizmec"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-white/10 bg-white/[0.02] text-xs font-mono text-neutral-300 hover:border-white/30 hover:bg-white/[0.05] hover:text-white transition-all"
-                aria-label="RIZMEC LinkedIn"
-              >
-                <LinkedinIcon className="w-3.5 h-3.5" />
-                <span>LinkedIn</span>
-              </a>
+              {contactInfo.siteUrl && (
+                <a
+                  href={contactInfo.siteUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-white/10 bg-white/[0.02] text-xs font-mono text-neutral-300 hover:border-white/30 hover:bg-white/[0.05] hover:text-white transition-all"
+                  aria-label={`Visit ${siteLabel}`}
+                >
+                  <Globe className="w-3.5 h-3.5" />
+                  <span>{siteLabel}</span>
+                </a>
+              )}
+              {contactInfo.email && (
+                <a
+                  href={`mailto:${contactInfo.email}`}
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-white/10 bg-white/[0.02] text-xs font-mono text-neutral-300 hover:border-white/30 hover:bg-white/[0.05] hover:text-white transition-all"
+                  aria-label={`Email ${contactInfo.email}`}
+                >
+                  <Mail className="w-3.5 h-3.5" />
+                  <span>{contactInfo.email}</span>
+                </a>
+              )}
+              {contactInfo.whatsappHref && (
+                <a
+                  href={contactInfo.whatsappHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-white/10 bg-white/[0.02] text-xs font-mono text-neutral-300 hover:border-white/30 hover:bg-white/[0.05] hover:text-white transition-all"
+                  aria-label="WhatsApp RIZMEC"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  <span>WhatsApp</span>
+                </a>
+              )}
+              {contactInfo.social.linkedin && (
+                <a
+                  href={contactInfo.social.linkedin}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-white/10 bg-white/[0.02] text-xs font-mono text-neutral-300 hover:border-white/30 hover:bg-white/[0.05] hover:text-white transition-all"
+                  aria-label="RIZMEC LinkedIn"
+                >
+                  <LinkedinIcon className="w-3.5 h-3.5" />
+                  <span>LinkedIn</span>
+                </a>
+              )}
+              {contactInfo.social.github && (
+                <a
+                  href={contactInfo.social.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-white/10 bg-white/[0.02] text-xs font-mono text-neutral-300 hover:border-white/30 hover:bg-white/[0.05] hover:text-white transition-all"
+                  aria-label="RIZMEC GitHub"
+                >
+                  <GithubIcon className="w-3.5 h-3.5" />
+                  <span>GitHub</span>
+                </a>
+              )}
+              {contactInfo.social.twitter && (
+                <a
+                  href={contactInfo.social.twitter}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-white/10 bg-white/[0.02] text-xs font-mono text-neutral-300 hover:border-white/30 hover:bg-white/[0.05] hover:text-white transition-all"
+                  aria-label="RIZMEC X / Twitter"
+                >
+                  <svg
+                    className="w-3.5 h-3.5"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path d="M18.244 2H21.5l-7.52 8.604L22.75 22h-6.817l-5.34-6.99L4.56 22H1.3l8.056-9.213L1.25 2h6.972l4.834 6.372L18.244 2Zm-2.424 18h1.892L7.28 4H5.262l10.558 16Z" />
+                  </svg>
+                  <span>X</span>
+                </a>
+              )}
+              {contactInfo.social.youtube && (
+                <a
+                  href={contactInfo.social.youtube}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-white/10 bg-white/[0.02] text-xs font-mono text-neutral-300 hover:border-white/30 hover:bg-white/[0.05] hover:text-white transition-all"
+                  aria-label="RIZMEC YouTube"
+                >
+                  <svg
+                    className="w-3.5 h-3.5"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136C4.495 20.455 12 20.455 12 20.455s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.75 15.568V8.432L15.818 12l-6.069 3.568Z" />
+                  </svg>
+                  <span>YouTube</span>
+                </a>
+              )}
             </div>
           </RevealSection>
         </div>
