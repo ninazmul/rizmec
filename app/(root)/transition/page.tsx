@@ -80,23 +80,35 @@ export default async function TransitionPage() {
     process.env.NEXT_PUBLIC_APP_URL ||
     "https://rizmec.com";
   const phoneRaw = settings?.contactPhone as string | undefined;
-  const whatsappHref = phoneRaw
-    ? `https://wa.me/${String(phoneRaw).replace(/[^0-9]/g, "")}`
-    : undefined;
+  const phoneDigits = phoneRaw ? String(phoneRaw).replace(/[^0-9]/g, "") : "";
+  const whatsappHref =
+    phoneDigits.length >= 6 ? `https://wa.me/${phoneDigits}` : undefined;
+
+  const isSet = (v: unknown): v is string =>
+    typeof v === "string" && v.trim().length > 0;
 
   const contactInfo: TransitionContactInfo = {
-    siteUrl: canonical,
-    email: settings?.contactEmail as string | undefined,
-    phone: phoneRaw,
+    siteUrl: isSet(canonical) ? canonical : "https://rizmec.com",
+    email: isSet(settings?.contactEmail)
+      ? (settings.contactEmail as string).trim()
+      : undefined,
+    phone: isSet(phoneRaw) ? (phoneRaw as string).trim() : undefined,
     whatsappHref,
     social: {
-      github: settings?.socialLinks?.github,
-      linkedin: settings?.socialLinks?.linkedin,
-      twitter: settings?.socialLinks?.twitter,
-      youtube: settings?.socialLinks?.youtube,
+      github: isSet(settings?.socialLinks?.github)
+        ? (settings.socialLinks.github as string).trim()
+        : undefined,
+      linkedin: isSet(settings?.socialLinks?.linkedin)
+        ? (settings.socialLinks.linkedin as string).trim()
+        : undefined,
+      twitter: isSet(settings?.socialLinks?.twitter)
+        ? (settings.socialLinks.twitter as string).trim()
+        : undefined,
+      youtube: isSet(settings?.socialLinks?.youtube)
+        ? (settings.socialLinks.youtube as string).trim()
+        : undefined,
     },
   };
 
   return <TransitionPageContent contactInfo={contactInfo} />;
 }
-
