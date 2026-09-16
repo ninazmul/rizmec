@@ -55,6 +55,7 @@ export async function updateCompanySettings(data: Partial<ICompanySetting>) {
 
     revalidatePath("/dashboard/settings");
     revalidatePath("/");
+    revalidatePath("/transition", "page");
     return { success: true, data: JSON.parse(JSON.stringify(setting)) };
   } catch (error: any) {
     console.error("Error updating company settings:", error);
