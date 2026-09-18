@@ -70,7 +70,7 @@ export function PortfolioPublicView({ member, assignedProjects = [] }: Portfolio
   const currentBg = themeBackgroundMap[theme] || themeBackgroundMap.obsidian;
 
   return (
-    <div className={`min-h-screen ${currentBg} selection:bg-white selection:text-black relative transition-colors duration-500 overflow-hidden`}>
+    <div className={`min-h-screen ${currentBg} selection:bg-white selection:text-black relative transition-colors duration-500 overflow-hidden pt-12`}>
       {/* 3D Cyber Glow Mesh (Homepage style spatial depth) */}
       <div className="no-print">
         <CyberGlowMesh intensity="low" />
