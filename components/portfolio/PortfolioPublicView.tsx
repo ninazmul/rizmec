@@ -9,6 +9,7 @@ import { CareerTimeline } from "./CareerTimeline";
 import { DirectContactSection } from "./DirectContactSection";
 import { ParticleConstellation } from "./ParticleConstellation";
 import { ResumePrintView } from "./ResumePrintView";
+import { CyberGlowMesh } from "@/components/ui/CyberGlowMesh";
 
 interface PortfolioPublicViewProps {
   member: any;
@@ -69,7 +70,12 @@ export function PortfolioPublicView({ member, assignedProjects = [] }: Portfolio
   const currentBg = themeBackgroundMap[theme] || themeBackgroundMap.obsidian;
 
   return (
-    <div className={`min-h-screen ${currentBg} selection:bg-white selection:text-black relative transition-colors duration-500`}>
+    <div className={`min-h-screen ${currentBg} selection:bg-white selection:text-black relative transition-colors duration-500 overflow-hidden`}>
+      {/* 3D Cyber Glow Mesh (Homepage style spatial depth) */}
+      <div className="no-print">
+        <CyberGlowMesh intensity="low" />
+      </div>
+
       {/* 3D Particle Constellation (disabled during print) */}
       <div className="no-print">
         <ParticleConstellation theme={theme} />

@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Mail, Phone, Send, CheckCircle2, MessageSquare, Copy, Check, Calendar, ArrowUpRight } from "lucide-react";
 import { submitPortfolioDirectMessage } from "@/lib/actions/team.actions";
+import { TiltCard } from "@/components/ui/TiltCard";
 
 interface DirectContactSectionProps {
   memberId: string;
@@ -89,92 +90,104 @@ export function DirectContactSection({
         {/* Contact Info & Channels */}
         <div className="lg:col-span-5 space-y-6">
           {showEmail && (
-            <div className="p-6 rounded-2xl border border-white/10 bg-neutral-950/70 backdrop-blur-md space-y-3">
-              <span className="text-xs font-mono text-neutral-400 uppercase">Direct Email</span>
-              <div className="flex items-center justify-between gap-2">
-                <a
-                  href={`mailto:${email}`}
-                  className="text-sm sm:text-base font-mono text-white hover:text-cyan-300 transition-colors break-all"
-                >
-                  {email}
-                </a>
-                <button
-                  onClick={handleCopyEmail}
-                  className="p-2 rounded-lg border border-white/10 hover:border-white/30 text-neutral-400 hover:text-white transition-all shrink-0"
-                  title="Copy email address"
-                >
-                  {copiedEmail ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-                </button>
+            <TiltCard maxTilt={5} glareOpacity={0.14} glowColor="rgba(56, 189, 248, 0.2)">
+              <div className="h-full p-6 rounded-2xl border border-white/10 bg-neutral-950/70 backdrop-blur-md space-y-3">
+                <span className="text-xs font-mono text-neutral-400 uppercase">Direct Email</span>
+                <div className="flex items-center justify-between gap-2">
+                  <a
+                    href={`mailto:${email}`}
+                    className="text-sm sm:text-base font-mono text-white hover:text-cyan-300 transition-colors break-all"
+                  >
+                    {email}
+                  </a>
+                  <button
+                    onClick={handleCopyEmail}
+                    className="p-2 rounded-lg border border-white/10 hover:border-white/30 text-neutral-400 hover:text-white transition-all shrink-0"
+                    title="Copy email address"
+                  >
+                    {copiedEmail ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
-            </div>
+            </TiltCard>
           )}
 
           {calendlyUrl && (
-            <div className="p-6 rounded-2xl border border-white/10 bg-neutral-950/70 backdrop-blur-md space-y-3">
-              <span className="text-xs font-mono text-neutral-400 uppercase">Schedule Technical Discussion</span>
-              <p className="text-xs text-neutral-300 font-light">
-                Reserve 30 minutes to discuss architectural roadmaps, role alignment, or high-impact consulting.
-              </p>
-              <a
-                href={calendlyUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition-all"
-              >
-                <Calendar className="w-4 h-4" />
-                <span>Open Calendar Booking</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </a>
-            </div>
+            <TiltCard maxTilt={5} glareOpacity={0.15} glowColor="rgba(6, 182, 212, 0.25)">
+              <div className="h-full p-6 rounded-2xl border border-white/10 bg-neutral-950/70 backdrop-blur-md space-y-3">
+                <span className="text-xs font-mono text-neutral-400 uppercase">Schedule Technical Discussion</span>
+                <p className="text-xs text-neutral-300 font-light">
+                  Reserve 30 minutes to discuss architectural roadmaps, role alignment, or high-impact consulting.
+                </p>
+                <a
+                  href={calendlyUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition-all"
+                >
+                  <Calendar className="w-4 h-4" />
+                  <span>Open Calendar Booking</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </TiltCard>
           )}
 
           {/* Instant Messengers */}
           {(contactInfo?.whatsapp || contactInfo?.telegram || contactInfo?.discord || contactInfo?.phone) && (
-            <div className="p-6 rounded-2xl border border-white/10 bg-neutral-950/70 backdrop-blur-md space-y-3">
-              <span className="text-xs font-mono text-neutral-400 uppercase">Instant Direct Channels</span>
-              <div className="flex flex-wrap gap-2 pt-1">
-                {contactInfo.whatsapp && (
-                  <a
-                    href={`https://wa.me/${contactInfo.whatsapp.replace(/[^0-9]/g, "")}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-3.5 py-2 rounded-xl border border-white/10 bg-white/[0.03] text-xs font-mono text-emerald-400 hover:border-emerald-400/40 hover:bg-emerald-500/10 transition-all"
-                  >
-                    WhatsApp
-                  </a>
-                )}
-                {contactInfo.telegram && (
-                  <a
-                    href={`https://t.me/${contactInfo.telegram.replace("@", "")}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-3.5 py-2 rounded-xl border border-white/10 bg-white/[0.03] text-xs font-mono text-sky-400 hover:border-sky-400/40 hover:bg-sky-500/10 transition-all"
-                  >
-                    Telegram
-                  </a>
-                )}
-                {contactInfo.discord && (
-                  <span className="px-3.5 py-2 rounded-xl border border-white/10 bg-white/[0.03] text-xs font-mono text-indigo-400">
-                    Discord: {contactInfo.discord}
-                  </span>
-                )}
-                {contactInfo.phone && (
-                  <a
-                    href={`tel:${contactInfo.phone}`}
-                    className="px-3.5 py-2 rounded-xl border border-white/10 bg-white/[0.03] text-xs font-mono text-neutral-300 hover:border-white/30 transition-all"
-                  >
-                    Tel: {contactInfo.phone}
-                  </a>
-                )}
+            <TiltCard maxTilt={5} glareOpacity={0.12} glowColor="rgba(168, 85, 247, 0.2)">
+              <div className="h-full p-6 rounded-2xl border border-white/10 bg-neutral-950/70 backdrop-blur-md space-y-3">
+                <span className="text-xs font-mono text-neutral-400 uppercase">Instant Direct Channels</span>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {contactInfo.whatsapp && (
+                    <a
+                      href={`https://wa.me/${contactInfo.whatsapp.replace(/[^0-9]/g, "")}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-3.5 py-2 rounded-xl border border-white/10 bg-white/[0.03] text-xs font-mono text-emerald-400 hover:border-emerald-400/40 hover:bg-emerald-500/10 transition-all"
+                    >
+                      WhatsApp
+                    </a>
+                  )}
+                  {contactInfo.telegram && (
+                    <a
+                      href={`https://t.me/${contactInfo.telegram.replace("@", "")}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-3.5 py-2 rounded-xl border border-white/10 bg-white/[0.03] text-xs font-mono text-sky-400 hover:border-sky-400/40 hover:bg-sky-500/10 transition-all"
+                    >
+                      Telegram
+                    </a>
+                  )}
+                  {contactInfo.discord && (
+                    <span className="px-3.5 py-2 rounded-xl border border-white/10 bg-white/[0.03] text-xs font-mono text-indigo-400">
+                      Discord: {contactInfo.discord}
+                    </span>
+                  )}
+                  {contactInfo.phone && (
+                    <a
+                      href={`tel:${contactInfo.phone}`}
+                      className="px-3.5 py-2 rounded-xl border border-white/10 bg-white/[0.03] text-xs font-mono text-neutral-300 hover:border-white/30 transition-all"
+                    >
+                      Tel: {contactInfo.phone}
+                    </a>
+                  )}
+                </div>
               </div>
-            </div>
+            </TiltCard>
           )}
         </div>
 
         {/* Message Form */}
         <div className="lg:col-span-7">
-          <div className="p-7 sm:p-9 rounded-3xl border border-white/10 bg-neutral-900/60 backdrop-blur-xl space-y-6">
-            <h3 className="text-xl font-bold text-white tracking-tight">Send Direct Message</h3>
+          <TiltCard maxTilt={4} glareOpacity={0.12} glowColor="rgba(56, 189, 248, 0.2)" className="w-full">
+            <div className="relative p-7 sm:p-9 rounded-3xl border border-white/10 bg-neutral-900/60 backdrop-blur-xl space-y-6 overflow-hidden shadow-2xl group">
+              {/* Ambient Glow Orbs inside Form Card (Homepage style) */}
+              <div className="absolute -top-24 -right-24 w-52 h-52 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/20 transition-colors duration-500" />
+              <div className="absolute -bottom-24 -left-24 w-52 h-52 bg-purple-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-purple-500/20 transition-colors duration-500" />
+
+              <div className="relative z-10 space-y-6">
+                <h3 className="text-xl font-bold text-white tracking-tight">Send Direct Message</h3>
 
             {submitted ? (
               <div className="p-8 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 text-center space-y-3">
@@ -256,7 +269,9 @@ export function DirectContactSection({
                 </button>
               </form>
             )}
-          </div>
+              </div>
+            </div>
+          </TiltCard>
         </div>
       </div>
     </section>

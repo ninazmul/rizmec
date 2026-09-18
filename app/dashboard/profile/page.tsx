@@ -20,6 +20,7 @@ import {
   Layers,
   AlertCircle,
   Download,
+  Award,
 } from "lucide-react";
 import { getMyProfile, updateMyProfile, checkSlugAvailable } from "@/lib/actions/team.actions";
 import { getResumeDownloadUrl, isValidResumeUrl } from "@/lib/utils";
@@ -214,7 +215,7 @@ export default function MemberProfileDashboardPage() {
       experience: form.experience,
       education: form.education,
       certifications: form.certifications,
-      achievements: form.achievements,
+      achievements: form.achievements.filter((a) => a && a.trim().length > 0),
       resumeUrl: form.resumeUrl,
       contactInfo: form.contactInfo,
       socialLinks: form.socialLinks,
@@ -307,6 +308,26 @@ export default function MemberProfileDashboardPage() {
 
   const removeCertification = (index: number) => {
     setForm({ ...form, certifications: form.certifications.filter((_, i) => i !== index) });
+  };
+
+  const addAchievement = () => {
+    setForm({
+      ...form,
+      achievements: [...form.achievements, ""],
+    });
+  };
+
+  const removeAchievement = (index: number) => {
+    setForm({
+      ...form,
+      achievements: form.achievements.filter((_, i) => i !== index),
+    });
+  };
+
+  const updateAchievement = (index: number, val: string) => {
+    const updated = [...form.achievements];
+    updated[index] = val;
+    setForm({ ...form, achievements: updated });
   };
 
   if (loading) {
@@ -1081,6 +1102,69 @@ export default function MemberProfileDashboardPage() {
                 ))}
               </div>
             </div>
+          </div>
+
+          {/* Notable Engineering Honors & Milestones */}
+          <div className="p-7 rounded-3xl border border-white/10 bg-neutral-950 space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="space-y-1">
+                <h4 className="text-sm font-bold text-white font-mono uppercase flex items-center gap-2">
+                  <Award className="w-4 h-4 text-emerald-400" />
+                  <span>Notable Engineering Honors &amp; Milestones</span>
+                </h4>
+                <p className="text-xs text-neutral-400 font-light">
+                  Add career accolades, open-source milestones, research publications, awards, or verified recognition displayed on your public portfolio.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={addAchievement}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-mono font-semibold hover:bg-emerald-500/20 active:scale-95 transition-all self-start sm:self-auto shrink-0"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Milestone</span>
+              </button>
+            </div>
+
+            {form.achievements.length === 0 ? (
+              <div className="py-8 text-center border border-dashed border-white/10 rounded-2xl bg-neutral-900/30">
+                <Award className="w-8 h-8 text-neutral-600 mx-auto mb-2" />
+                <p className="text-xs font-mono text-neutral-400">No honors or milestones added yet.</p>
+                <button
+                  type="button"
+                  onClick={addAchievement}
+                  className="mt-3 text-xs font-mono text-cyan-400 hover:underline inline-flex items-center gap-1"
+                >
+                  <Plus className="w-3 h-3" /> Add your first honor or milestone
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {form.achievements.map((ach, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3 sm:p-4 rounded-xl border border-white/10 bg-neutral-900/50 flex items-center gap-3 group focus-within:border-emerald-500/40 transition-colors"
+                  >
+                    <span className="text-emerald-400 font-bold shrink-0">&bull;</span>
+                    <input
+                      type="text"
+                      value={ach}
+                      onChange={(e) => updateAchievement(idx, e.target.value)}
+                      placeholder="e.g. Lead author of distributed consensus paper (IEEE 2024), Winner of Global AI Hackathon..."
+                      className="w-full px-3 py-2 bg-neutral-950 border border-white/10 rounded-lg text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeAchievement(idx)}
+                      className="p-2 text-neutral-500 hover:text-rose-400 rounded-lg hover:bg-rose-500/10 transition-colors shrink-0"
+                      title="Remove milestone"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { Code2, Cpu, Layers, Sparkles, Search } from "lucide-react";
+import { TiltCard } from "@/components/ui/TiltCard";
 
 interface SkillItem {
   name: string;
@@ -106,39 +107,44 @@ export function TechMasteryMatrix({ skills = [], technologies = [], theme = "obs
       {/* Skills Matrix Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {filteredSkills.map((skill, index) => (
-          <div
+          <TiltCard
             key={index}
-            className="p-5 rounded-2xl border border-white/10 bg-neutral-950/60 backdrop-blur-md hover:border-white/20 transition-all space-y-3 group"
+            maxTilt={8}
+            glareOpacity={0.14}
+            glowColor="rgba(56, 189, 248, 0.2)"
+            className="w-full"
           >
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <span className="text-sm font-bold text-white group-hover:text-cyan-300 transition-colors">
-                  {skill.name}
-                </span>
-                {skill.category && (
-                  <span className="block text-[10px] font-mono text-neutral-500 uppercase">
-                    {skill.category}
+            <div className="h-full p-5 rounded-2xl border border-white/10 bg-neutral-950/60 backdrop-blur-md hover:border-white/20 transition-all space-y-3 group">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <span className="text-sm font-bold text-white group-hover:text-cyan-300 transition-colors">
+                    {skill.name}
                   </span>
-                )}
+                  {skill.category && (
+                    <span className="block text-[10px] font-mono text-neutral-500 uppercase">
+                      {skill.category}
+                    </span>
+                  )}
+                </div>
+                <div className="text-right">
+                  <span className="text-sm font-mono font-bold text-white">
+                    {skill.level}%
+                  </span>
+                  <span className="block text-[10px] font-mono text-cyan-400">
+                    {getProficiencyLabel(skill.level)}
+                  </span>
+                </div>
               </div>
-              <div className="text-right">
-                <span className="text-sm font-mono font-bold text-white">
-                  {skill.level}%
-                </span>
-                <span className="block text-[10px] font-mono text-cyan-400">
-                  {getProficiencyLabel(skill.level)}
-                </span>
-              </div>
-            </div>
 
-            {/* Proficiency Bar with Glow */}
-            <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden p-0.5 border border-white/5">
-              <div
-                className="h-full bg-gradient-to-r from-cyan-500 via-indigo-500 to-emerald-400 rounded-full transition-all duration-1000 shadow-sm"
-                style={{ width: `${Math.max(10, Math.min(100, skill.level))}%` }}
-              />
+              {/* Proficiency Bar with Glow */}
+              <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden p-0.5 border border-white/5">
+                <div
+                  className="h-full bg-gradient-to-r from-cyan-500 via-indigo-500 to-emerald-400 rounded-full transition-all duration-1000 shadow-sm"
+                  style={{ width: `${Math.max(10, Math.min(100, skill.level))}%` }}
+                />
+              </div>
             </div>
-          </div>
+          </TiltCard>
         ))}
 
         {filteredSkills.length === 0 && (
@@ -150,23 +156,25 @@ export function TechMasteryMatrix({ skills = [], technologies = [], theme = "obs
 
       {/* Technology Competency Cloud */}
       {filteredTechnologies.length > 0 && (
-        <div className="p-6 sm:p-8 rounded-2xl border border-white/10 bg-neutral-950/70 backdrop-blur-md space-y-4">
-          <div className="flex items-center gap-2 text-xs font-mono text-neutral-400 uppercase tracking-wider">
-            <Sparkles className="w-4 h-4 text-cyan-400" />
-            <span>Technology Competencies & Ecosystem</span>
-          </div>
+        <TiltCard maxTilt={4} glareOpacity={0.12} glowColor="rgba(56, 189, 248, 0.2)" className="w-full">
+          <div className="p-6 sm:p-8 rounded-2xl border border-white/10 bg-neutral-950/70 backdrop-blur-md space-y-4">
+            <div className="flex items-center gap-2 text-xs font-mono text-neutral-400 uppercase tracking-wider">
+              <Sparkles className="w-4 h-4 text-cyan-400" />
+              <span>Technology Competencies &amp; Ecosystem</span>
+            </div>
 
-          <div className="flex flex-wrap gap-2.5">
-            {filteredTechnologies.map((tech, idx) => (
-              <span
-                key={idx}
-                className="px-3.5 py-1.5 rounded-xl text-xs font-mono bg-white/[0.04] text-neutral-200 border border-white/10 hover:border-cyan-400/40 hover:bg-cyan-500/10 hover:text-white transition-all cursor-default"
-              >
-                {tech}
-              </span>
-            ))}
+            <div className="flex flex-wrap gap-2.5">
+              {filteredTechnologies.map((tech, idx) => (
+                <span
+                  key={idx}
+                  className="px-3.5 py-1.5 rounded-xl text-xs font-mono bg-white/[0.04] text-neutral-200 border border-white/10 hover:border-cyan-400/40 hover:bg-cyan-500/10 hover:text-white hover:-translate-y-0.5 hover:shadow-lg hover:shadow-cyan-500/10 transition-all cursor-default"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
+        </TiltCard>
       )}
     </section>
   );

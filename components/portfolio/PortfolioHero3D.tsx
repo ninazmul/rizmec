@@ -10,6 +10,8 @@ import {
   Mail,
   Check,
   ExternalLink,
+  Sparkles,
+  ShieldCheck,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { TiltCard } from "@/components/ui/TiltCard";
@@ -83,13 +85,49 @@ export function PortfolioHero3D({ member, theme = "obsidian", onPrintResume }: P
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14 items-center">
         {/* 3D Holographic Avatar Card */}
         <div className="lg:col-span-5 flex justify-center lg:justify-start">
-          <div className="w-full max-w-sm">
-            <TiltCard maxTilt={14} glareOpacity={0.25}>
-              <div className="relative p-3 rounded-3xl bg-neutral-900/80 border border-white/10 backdrop-blur-2xl shadow-2xl overflow-hidden group">
-                {/* Dynamic Ambient Glow Behind Avatar */}
-                <div className="absolute -inset-1 rounded-3xl bg-gradient-to-tr from-cyan-500/20 via-purple-500/10 to-emerald-500/20 opacity-40 blur-xl group-hover:opacity-70 transition-opacity duration-700 pointer-events-none" />
+          <div className="w-full max-w-sm relative perspective-2000">
+            {/* Background Animated Gradient Halo (Homepage style) */}
+            <div className="absolute -inset-2 rounded-3xl bg-gradient-to-r from-cyan-500/20 via-purple-500/15 to-emerald-500/20 blur-2xl opacity-60 pointer-events-none" />
 
-                <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-neutral-950 border border-white/10">
+            {/* Floating Top Badge overlay with 3D elevation */}
+            <motion.div
+              animate={{ y: [0, -6, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute -top-3.5 -right-2 sm:-right-3 z-40 px-3.5 py-1.5 rounded-xl border border-white/25 bg-[#121218]/95 backdrop-blur-md shadow-2xl flex items-center gap-2 pointer-events-none border-glow w-fit"
+            >
+              <Sparkles
+                className="w-3.5 h-3.5 text-amber-300 animate-spin"
+                style={{ animationDuration: "6s" }}
+              />
+              <span className="text-[10px] font-bold text-white uppercase tracking-wider font-mono">
+                {member.title ? member.title.split(" ")[0] : "Architect"} Dossier
+              </span>
+            </motion.div>
+
+            {/* Floating Bottom Badge with inverse float */}
+            <motion.div
+              animate={{ y: [0, 6, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+              className="absolute -bottom-3.5 -left-2 sm:-left-3 z-40 px-3 py-1 rounded-xl border border-emerald-500/30 bg-black/90 backdrop-blur-md shadow-xl flex items-center gap-1.5 pointer-events-none"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="text-[9px] font-mono font-semibold text-emerald-300 tracking-wider uppercase">
+                Verified Credentials
+              </span>
+            </motion.div>
+
+            <TiltCard
+              maxTilt={12}
+              glareOpacity={0.25}
+              glowColor="rgba(56, 189, 248, 0.25)"
+              className="w-full"
+            >
+              <div className="relative p-3 rounded-3xl bg-neutral-900/80 border border-white/15 backdrop-blur-2xl shadow-2xl overflow-hidden group">
+                {/* Ambient Glow Orbs inside Card (Homepage style) */}
+                <div className="absolute -top-20 -right-20 w-48 h-48 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/25 transition-colors duration-500" />
+                <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/25 transition-colors duration-500" />
+
+                <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-neutral-950 border border-white/10 shadow-inner">
                   <img
                     src={member.avatar || "/assets/images/placeholder.webp"}
                     alt={member.name}
@@ -100,7 +138,7 @@ export function PortfolioHero3D({ member, theme = "obsidian", onPrintResume }: P
                   <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent opacity-60" />
 
                   {/* Availability Badge floating inside card */}
-                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between px-3 py-2 rounded-xl bg-black/70 backdrop-blur-md border border-white/10 text-xs">
+                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between px-3 py-2 rounded-xl bg-black/75 backdrop-blur-md border border-white/10 text-xs">
                     <div className="flex items-center gap-2">
                       <span className="relative flex h-2.5 w-2.5">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />

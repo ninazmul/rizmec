@@ -50,12 +50,25 @@ export function ProjectShowcase3D({ projects = [], theme = "obsidian" }: Project
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {projects.map((project, idx) => (
-          <TiltCard key={idx} maxTilt={8} glareOpacity={0.2}>
-            <div className="h-full p-7 rounded-3xl border border-white/10 bg-neutral-900/60 backdrop-blur-xl hover:border-white/25 transition-all flex flex-col justify-between space-y-6 group">
-              <div className="space-y-4">
-                {/* Image Preview if available */}
-                {project.imageUrl && (
-                  <div className="aspect-video w-full rounded-xl overflow-hidden bg-neutral-950 border border-white/10 relative">
+          <div key={idx} className="relative group perspective-2000">
+            {/* Background Animated Gradient Halo */}
+            <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-cyan-500/15 via-purple-500/10 to-emerald-500/15 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+            <TiltCard
+              maxTilt={8}
+              glareOpacity={0.2}
+              glowColor="rgba(56, 189, 248, 0.25)"
+              className="w-full h-full"
+            >
+              <div className="relative h-full p-7 rounded-3xl border border-white/10 bg-neutral-900/60 backdrop-blur-2xl hover:border-white/25 transition-all flex flex-col justify-between space-y-6 overflow-hidden shadow-2xl">
+                {/* Ambient Glow Orbs inside Card (Homepage style) */}
+                <div className="absolute -top-20 -right-20 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/20 transition-colors duration-500" />
+                <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-indigo-500/20 transition-colors duration-500" />
+
+                <div className="space-y-4 relative z-10">
+                  {/* Image Preview if available */}
+                  {project.imageUrl && (
+                    <div className="aspect-video w-full rounded-xl overflow-hidden bg-neutral-950 border border-white/10 relative shadow-inner">
                     <img
                       src={project.imageUrl}
                       alt={project.title}
@@ -173,7 +186,8 @@ export function ProjectShowcase3D({ projects = [], theme = "obsidian" }: Project
               </div>
             </div>
           </TiltCard>
-        ))}
+        </div>
+      ))}
       </div>
     </section>
   );
