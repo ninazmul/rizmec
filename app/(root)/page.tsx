@@ -23,6 +23,7 @@ import { getProducts } from "@/lib/actions/product.actions";
 import { getProjects } from "@/lib/actions/project.actions";
 import { getTeamMembers } from "@/lib/actions/team.actions";
 import { getTestimonials } from "@/lib/actions/testimonial.actions";
+import { CopyCodeButton } from "@/components/shared/CopyCodeButton";
 
 export const revalidate = 60;
 
@@ -640,184 +641,143 @@ export default async function HomePage() {
       )}
 
       {/* ========================================================
-          8. HOSTINGER OFFICIAL PARTNER — EXCLUSIVE 20% OFF
+          8. HOSTINGER OFFICIAL PARTNER — COMPACT CTA
       ======================================================== */}
-      <section className="py-24 border-t border-white/10 bg-neutral-950 relative">
+      <section className="py-16 border-t border-white/10 bg-neutral-950 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative overflow-hidden rounded-3xl border border-white/15 bg-gradient-to-br from-[#673DE6]/20 via-[#09090b] to-[#09090b] p-8 sm:p-12 lg:p-16 shadow-2xl">
-            <div className="absolute top-0 right-0 w-[550px] h-[550px] bg-[#673DE6]/15 blur-[140px] rounded-full pointer-events-none" />
-            <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-              <div className="lg:col-span-5 space-y-6">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#673DE6]/40 bg-[#673DE6]/10 backdrop-blur-md">
-                  <span className="w-2 h-2 rounded-full bg-[#673DE6] animate-pulse" />
-                  <span className="font-mono text-[11px] tracking-widest text-[#9D80F4] uppercase font-semibold">
-                    OFFICIAL HOSTINGER PARTNER
-                  </span>
+          <div className="relative overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-r from-[#673DE6]/15 via-[#09090b] to-[#673DE6]/10 p-6 sm:p-8 shadow-xl">
+            <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#673DE6]/10 blur-[120px] rounded-full pointer-events-none" />
+            <div className="relative flex flex-col lg:flex-row items-center justify-between gap-6">
+              {/* Left: Badge + Headline */}
+              <div className="flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-5 text-center sm:text-left">
+                <a
+                  href="https://www.hostinger.com?REFERRALCODE=RIZMEC"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="shrink-0"
+                  aria-label="Hostinger Official Partner"
+                >
+                  <img
+                    src="/assets/hostinger/badge-brand-dark-640x240.webp"
+                    alt="Hostinger Official Partner Badge"
+                    width="200"
+                    height="75"
+                    className="w-32 sm:w-40 lg:w-48 h-auto hover:opacity-90 transition-opacity"
+                  />
+                </a>
+                <div className="space-y-1">
+                  <h3 className="text-lg sm:text-xl lg:text-2xl font-black text-white tracking-tight leading-tight">
+                    Deploy faster. <span className="text-[#9D80F4]">Save 20%.</span>
+                  </h3>
+                  <p className="text-xs text-neutral-400 max-w-sm">
+                    Use code <CopyCodeButton code="RIZMEC" /> for an extra 20%
+                    off any Hostinger plan.
+                  </p>
+                </div>
+              </div>
+
+              {/* Right: Stats + CTA */}
+              <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0 w-full lg:w-auto">
+                <div className="flex items-center gap-4 text-center">
+                  <div className="px-2 sm:px-3">
+                    <div className="text-base sm:text-lg font-black text-white font-mono">99.9%</div>
+                    <div className="text-[9px] text-neutral-500 font-mono uppercase tracking-wider">Uptime</div>
+                  </div>
+                  <div className="w-px h-8 bg-white/10" />
+                  <div className="px-2 sm:px-3">
+                    <div className="text-base sm:text-lg font-black text-white font-mono">24/7</div>
+                    <div className="text-[9px] text-neutral-500 font-mono uppercase tracking-wider">Support</div>
+                  </div>
+                  <div className="w-px h-8 bg-white/10" />
+                  <div className="px-2 sm:px-3">
+                    <div className="text-base sm:text-lg font-black text-white font-mono">30d</div>
+                    <div className="text-[9px] text-neutral-500 font-mono uppercase tracking-wider">Refund</div>
+                  </div>
                 </div>
                 <a
                   href="https://www.hostinger.com?REFERRALCODE=RIZMEC"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block w-fit"
-                  aria-label="Visit Hostinger Official Partner Page"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#673DE6] text-white font-semibold text-xs tracking-widest uppercase btn-shimmer btn-glow-purple group whitespace-nowrap w-full sm:w-auto"
                 >
-                  <img
-                    src="/assets/hostinger/badge-brand-dark-640x240.webp"
-                    alt="Hostinger Official Partner Badge"
-                    width="320"
-                    height="120"
-                    className="w-64 sm:w-72 h-auto opacity-100 hover:opacity-90 transition-opacity"
-                  />
+                  <span>Get 20% Off</span>
+                  <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </a>
-                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight">
-                  Deploy faster. Scale further.
-                  <br />
-                  <span className="text-[#9D80F4]">Save 20% as our guest.</span>
-                </h3>
-                <p className="text-sm sm:text-base text-neutral-400 leading-relaxed max-w-lg font-sans">
-                  RIZMEC and Hostinger have partnered to deliver
-                  enterprise-grade hosting at startup-friendly prices. Use our
-                  exclusive referral link or apply code{" "}
-                  <span className="text-white font-bold font-mono">RIZMEC</span>{" "}
-                  at checkout for an extra 20% off your first purchase.
-                </p>
-                <div className="flex flex-wrap items-center gap-3 pt-2">
-                  <a
-                    href="https://www.hostinger.com?REFERRALCODE=RIZMEC"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-[#673DE6] text-white font-semibold text-xs tracking-widest uppercase btn-shimmer btn-glow-purple group"
-                  >
-                    <span>Claim Your 20% Discount</span>
-                    <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                  </a>
-                  <div className="inline-flex items-center gap-2 px-5 py-4 rounded-full border border-white/15 bg-white/[0.03] backdrop-blur-md">
-                    <span className="font-mono text-[11px] tracking-widest text-neutral-400 uppercase">
-                      PROMO CODE
-                    </span>
-                    <span className="font-mono text-sm font-black text-white tracking-widest select-all">
-                      RIZMEC
-                    </span>
-                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================
+          8.5. VIDEO ADS SHOWCASE — YOUTUBE CONTENT GALLERY
+      ======================================================== */}
+      <section className="py-24 border-t border-white/10 relative overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-red-500/[0.06] blur-[180px] rounded-full pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left: Content */}
+            <div className="space-y-6">
+              <span className="text-xs font-mono tracking-widest text-red-400 uppercase font-semibold flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+                // Video Content
+              </span>
+              <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight text-chrome">
+                Our Video Ads &amp; Reels
+              </h2>
+              <p className="text-neutral-400 text-base sm:text-lg leading-relaxed max-w-lg">
+                Explore our curated collection of short-form reels and full-length
+                video content — engineered to captivate, convert, and scale your
+                brand&apos;s digital presence across every platform.
+              </p>
+              <div className="flex flex-wrap gap-3 pt-2">
+                <div className="px-4 py-2.5 rounded-xl border border-white/10 bg-white/[0.02] backdrop-blur-sm">
+                  <div className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest mb-0.5">Format</div>
+                  <div className="text-sm font-bold text-white">9:16 Reels + 16:9 Videos</div>
                 </div>
-                <div className="grid grid-cols-3 gap-4 pt-4 max-w-md">
-                  <div className="space-y-0.5 p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                    <div className="text-lg sm:text-xl font-black text-white font-mono tracking-tight">
-                      99.9%
-                    </div>
-                    <div className="text-[10px] sm:text-[11px] text-neutral-400 font-mono uppercase tracking-wider">
-                      Uptime SLA
-                    </div>
-                  </div>
-                  <div className="space-y-0.5 p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                    <div className="text-lg sm:text-xl font-black text-white font-mono tracking-tight">
-                      24/7
-                    </div>
-                    <div className="text-[10px] sm:text-[11px] text-neutral-400 font-mono uppercase tracking-wider">
-                      Support
-                    </div>
-                  </div>
-                  <div className="space-y-0.5 p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                    <div className="text-lg sm:text-xl font-black text-white font-mono tracking-tight">
-                      30d
-                    </div>
-                    <div className="text-[10px] sm:text-[11px] text-neutral-400 font-mono uppercase tracking-wider">
-                      Money-Back
-                    </div>
-                  </div>
+                <div className="px-4 py-2.5 rounded-xl border border-white/10 bg-white/[0.02] backdrop-blur-sm">
+                  <div className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest mb-0.5">Platform</div>
+                  <div className="text-sm font-bold text-white">YouTube Gallery</div>
                 </div>
               </div>
+              <div className="pt-2">
+                <Link
+                  href="/ads"
+                  className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white text-black font-semibold text-xs tracking-widest uppercase btn-shimmer btn-glow group"
+                >
+                  <span>Explore Full Ads Gallery</span>
+                  <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </Link>
+              </div>
+            </div>
 
-              <div className="lg:col-span-7 relative">
-                <TiltCard maxTilt={5} glareOpacity={0.15}>
-                  <div className="relative rounded-2xl border border-white/15 bg-neutral-950/80 overflow-hidden backdrop-blur-xl shadow-2xl">
-                    <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-black/60">
-                      <div className="flex gap-1.5">
-                        <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-                        <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-                        <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
-                      </div>
-                      <div className="flex-1 flex justify-center">
-                        <div className="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-[11px] font-mono text-neutral-300">
-                          hostinger.com/checkout?REFERRALCODE=
-                          <span className="text-[#9D80F4] font-semibold">RIZMEC</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="p-6 sm:p-8 space-y-5">
-                      <div className="flex items-start justify-between gap-4 pb-5 border-b border-white/10">
-                        <div>
-                          <div className="text-[11px] font-mono text-neutral-400 uppercase tracking-widest mb-1">
-                            Partner Exclusive Bundle
-                          </div>
-                          <div className="text-lg font-bold text-white">
-                            Business Web Hosting — 48 Months
-                          </div>
-                          <div className="text-xs font-mono text-neutral-400 mt-1">
-                            Free Domain • SSL • Daily Backups • CDN
-                          </div>
-                        </div>
-                        <div className="px-3 py-1 rounded-full bg-[#673DE6]/20 text-[#9D80F4] text-[10px] font-bold font-mono uppercase border border-[#673DE6]/40">
-                          Partner Deal
-                        </div>
-                      </div>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-neutral-400 font-mono text-xs">
-                            Standard Retail Price
-                          </span>
-                          <span className="text-neutral-500 line-through font-mono text-xs">
-                            $11.99/mo
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-neutral-300 font-mono text-xs">
-                            Hostinger Regular Promo
-                          </span>
-                          <span className="text-neutral-300 font-mono text-xs">
-                            $3.99/mo
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-sm p-3.5 rounded-xl border border-[#673DE6]/40 bg-[#673DE6]/15">
-                          <span className="text-white font-bold font-mono text-xs uppercase tracking-wider">
-                            RIZMEC Partner Price (code{" "}
-                            <span className="text-[#9D80F4]">RIZMEC</span>)
-                          </span>
-                          <span className="text-[#9D80F4] font-black font-mono text-lg tracking-tight">
-                            $3.19/mo
-                          </span>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3 pt-2">
-                        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4 space-y-1">
-                          <div className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest">
-                            You Save
-                          </div>
-                          <div className="text-xl sm:text-2xl font-black text-emerald-400 font-mono tracking-tight">
-                            EXTRA 20% OFF
-                          </div>
-                        </div>
-                        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4 space-y-1">
-                          <div className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest">
-                            Applies To
-                          </div>
-                          <div className="text-sm font-bold text-white font-sans">
-                            First Purchase (any plan)
-                          </div>
-                        </div>
-                      </div>
-                      <a
-                        href="https://www.hostinger.com?REFERRALCODE=RIZMEC"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-[#673DE6] text-white font-bold font-mono text-xs tracking-widest uppercase btn-shimmer btn-glow-purple group"
-                      >
-                        <span>Activate RIZMEC x Hostinger Deal</span>
-                        <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                      </a>
-                    </div>
+            {/* Right: Video Preview Cards */}
+            <div className="grid grid-cols-3 gap-3">
+              {/* Reel Preview 1 */}
+              <div className="rounded-2xl border border-white/10 bg-neutral-900/50 backdrop-blur-xl overflow-hidden aspect-[9/16] relative group hover:border-red-500/30 transition-all">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10" />
+                <div className="absolute inset-0 flex items-center justify-center z-20">
+                  <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group-hover:bg-red-500/80 group-hover:border-red-400/50 transition-all">
+                    <svg className="w-4 h-4 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                   </div>
-                </TiltCard>
+                </div>
+                <div className="absolute bottom-3 left-3 right-3 z-20">
+                  <span className="text-[10px] font-mono text-red-400 uppercase tracking-widest">Reel</span>
+                </div>
+                <div className="w-full h-full bg-gradient-to-br from-neutral-800 to-neutral-950" />
+              </div>
+              {/* Full Video Preview */}
+              <div className="col-span-2 rounded-2xl border border-white/10 bg-neutral-900/50 backdrop-blur-xl overflow-hidden aspect-video relative group hover:border-red-500/30 transition-all self-center">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10" />
+                <div className="absolute inset-0 flex items-center justify-center z-20">
+                  <div className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group-hover:bg-red-500/80 group-hover:border-red-400/50 transition-all">
+                    <svg className="w-6 h-6 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  </div>
+                </div>
+                <div className="absolute bottom-3 left-3 right-3 z-20">
+                  <span className="text-[10px] font-mono text-red-400 uppercase tracking-widest">Full Video • 16:9</span>
+                </div>
+                <div className="w-full h-full bg-gradient-to-br from-neutral-800 to-neutral-950" />
               </div>
             </div>
           </div>

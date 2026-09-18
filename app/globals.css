@@ -1,4 +1,5 @@
 @tailwind base;
+@import "./youtube-grid.css";
 @tailwind components;
 @tailwind utilities;
 

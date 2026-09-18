@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import RizmecLogo from "./RizmecLogo";
 import { ArrowUpRight, Globe, Sparkles } from "lucide-react";
+import { CopyCodeButton } from "./CopyCodeButton";
 
 // Inline SVGs for social icons not available in this lucide-react version
 const GithubIcon = ({ className }: { className?: string }) => (
@@ -49,6 +50,7 @@ export default function PublicFooter() {
     { label: "Enterprise SaaS Platforms", href: "/services/enterprise-saas" },
     { label: "Mobile Systems", href: "/services/mobile-applications" },
     { label: "Algorithmic Automation", href: "/services/automation" },
+    { label: "Video Ads", href: "/ads" },
   ];
 
   const products = [
@@ -188,60 +190,42 @@ export default function PublicFooter() {
         </div>
 
         {/* Hostinger Official Partner Tier */}
-        <div className="py-10 border-b border-white/10">
-          <div className="rounded-xl border border-white/10 bg-gradient-to-r from-[#673DE6]/10 via-neutral-950 to-[#673DE6]/10 p-6 sm:p-8">
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-              <div className="flex items-center gap-5">
+        <div className="py-6 border-b border-white/10">
+          <div className="rounded-xl border border-white/10 bg-gradient-to-r from-[#673DE6]/10 via-neutral-950 to-[#673DE6]/10 p-4 sm:px-5 sm:py-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+              <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
                 <a
                   href="https://www.hostinger.com?REFERRALCODE=RIZMEC"
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Hostinger Official Partner — Claim 20% Off"
+                  aria-label="Hostinger Official Partner"
                   className="shrink-0"
                 >
                   <img
                     src="/assets/hostinger/Badge_brand_dark_320×120.png"
                     alt="Hostinger Official Partner"
-                    width="160"
-                    height="60"
-                    className="w-40 sm:w-44 h-auto hover:opacity-90 transition-opacity"
+                    width="120"
+                    height="45"
+                    className="w-28 h-auto hover:opacity-90 transition-opacity"
                   />
                 </a>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2 text-xs font-mono tracking-widest text-[#9D80F4] uppercase font-semibold">
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>Official Hostinger Partner Program</span>
-                  </div>
-                  <p className="text-sm text-neutral-300 font-sans leading-relaxed max-w-xl">
-                    RIZMEC clients receive an exclusive{" "}
-                    <span className="text-white font-bold">EXTRA 20% OFF</span>{" "}
-                    on any Hostinger plan — auto-applied via link, or use code{" "}
-                    <span className="inline-block px-2 py-0.5 rounded bg-white/10 border border-white/15 text-white font-mono font-bold text-xs select-all">
-                      RIZMEC
-                    </span>{" "}
-                    at checkout. Valid on your first purchase.
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-3 shrink-0">
-                <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-white/10 bg-black/50">
-                  <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
-                    Promo Code
-                  </span>
-                  <span className="text-sm font-black text-white font-mono tracking-widest select-all">
-                    RIZMEC
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2 text-xs text-neutral-400">
+                  <Sparkles className="w-3.5 h-3.5 text-[#9D80F4] shrink-0" />
+                  <span>
+                    <span className="text-white font-bold">EXTRA 20% OFF</span> — use code{" "}
+                    <CopyCodeButton code="RIZMEC" />
                   </span>
                 </div>
-                <a
-                  href="https://www.hostinger.com?REFERRALCODE=RIZMEC"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#673DE6] text-white font-mono text-[11px] font-semibold tracking-widest uppercase hover:bg-[#5A32CC] active:scale-95 transition-all shadow shadow-[#673DE6]/20 group"
-                >
-                  <span>Get 20% Off Hosting</span>
-                  <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </a>
               </div>
+              <a
+                href="https://www.hostinger.com?REFERRALCODE=RIZMEC"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:py-2 rounded-full bg-[#673DE6] text-white font-mono text-[11px] sm:text-[10px] font-semibold tracking-widest uppercase hover:bg-[#5A32CC] active:scale-95 transition-all shadow shadow-[#673DE6]/20 group shrink-0"
+              >
+                <span>Get 20% Off</span>
+                <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </a>
             </div>
           </div>
         </div>
