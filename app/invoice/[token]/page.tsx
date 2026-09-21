@@ -15,11 +15,59 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { token } = await params;
   const res = await getInvoiceByToken(token);
   if (!res.success || !res.data) {
-    return { title: "Invoice Not Found" };
+    return {
+      title: "Invoice Not Found",
+      description: "The requested invoice could not be found or the link is invalid.",
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
   }
+
+  const data = res.data;
+  const client = data.clientCompany || data.clientName;
+  const title = `Invoice ${data.invoiceNumber} — ${data.projectName}`;
+  const fullTitle = `${title} | RIZMEC`;
+  const description = `Commercial invoice ${data.invoiceNumber} for ${data.projectName}${client ? ` issued to ${client}` : ""}. View billing breakdown, milestone schedules, and payment instructions.`;
+
   return {
-    title: `Invoice ${res.data.invoiceNumber} — RIZMEC Engineering`,
-    description: `Invoice for project: ${res.data.projectName}`,
+    title,
+    description,
+    robots: {
+      index: false,
+      follow: false,
+      nocache: true,
+      googleBot: {
+        index: false,
+        follow: false,
+        noimageindex: true,
+        "max-video-preview": -1,
+        "max-image-preview": "none",
+        "max-snippet": -1,
+      },
+    },
+    openGraph: {
+      title: fullTitle,
+      description,
+      url: `/invoice/${token}`,
+      siteName: "RIZMEC",
+      type: "website",
+      images: [
+        {
+          url: "/assets/images/rizmec-icon.png",
+          width: 512,
+          height: 512,
+          alt: "RIZMEC Engineering",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary",
+      title: fullTitle,
+      description,
+      images: ["/assets/images/rizmec-icon.png"],
+    },
   };
 }
 
