@@ -1,9 +1,29 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Building2, Plus, Search, Mail, Phone, Globe, Trash2, Edit2 } from "lucide-react";
-import { getClients, createClient, deleteClient, updateClient } from "@/lib/actions/client.actions";
+import {
+  Building2,
+  Plus,
+  Search,
+  Mail,
+  Phone,
+  Globe,
+  Trash2,
+  Edit2,
+  Check,
+  CheckSquare,
+  Square,
+  Send,
+  Filter,
+} from "lucide-react";
+import {
+  getClients,
+  createClient,
+  deleteClient,
+  updateClient,
+} from "@/lib/actions/client.actions";
 import toast from "react-hot-toast";
+import ClientEmailModal, { RecipientInfo } from "./ClientEmailModal";
 
 const DEFAULT_FORM = {
   company: "",
@@ -20,15 +40,25 @@ export default function ClientsPage() {
   const [clients, setClients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  // Selection & Email states
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [emailModalRecipients, setEmailModalRecipients] = useState<RecipientInfo[]>([]);
+  const [sendToAllMode, setSendToAllMode] = useState(false);
 
   const [form, setForm] = useState({ ...DEFAULT_FORM });
 
   const fetchClients = async () => {
     setLoading(true);
-    const res = await getClients({ search });
+    const res = await getClients({
+      search,
+      status: statusFilter !== "all" ? statusFilter : undefined,
+    });
     if (res.success) {
       setClients(res.data);
     }
@@ -37,7 +67,77 @@ export default function ClientsPage() {
 
   useEffect(() => {
     fetchClients();
-  }, [search]);
+  }, [search, statusFilter]);
+
+  // Client Selection Handlers
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const selectAllVisible = () => {
+    setSelectedIds(clients.map((c) => c._id));
+  };
+
+  const deselectAll = () => {
+    setSelectedIds([]);
+  };
+
+  const isAllVisibleSelected =
+    clients.length > 0 && clients.every((c) => selectedIds.includes(c._id));
+
+  // Email Trigger Handlers
+  const openEmailSelected = () => {
+    const selectedClients = clients
+      .filter((c) => selectedIds.includes(c._id))
+      .map((c) => ({
+        _id: c._id,
+        company: c.company,
+        contactPerson: c.contactPerson,
+        email: c.email,
+      }));
+
+    if (selectedClients.length === 0) {
+      toast.error("Please select at least one client to send an email.");
+      return;
+    }
+
+    setEmailModalRecipients(selectedClients);
+    setSendToAllMode(false);
+    setIsEmailModalOpen(true);
+  };
+
+  const openEmailAll = () => {
+    if (clients.length === 0) {
+      toast.error("No client records available to email.");
+      return;
+    }
+
+    setEmailModalRecipients(
+      clients.map((c) => ({
+        _id: c._id,
+        company: c.company,
+        contactPerson: c.contactPerson,
+        email: c.email,
+      }))
+    );
+    setSendToAllMode(true);
+    setIsEmailModalOpen(true);
+  };
+
+  const openEmailSingle = (c: any) => {
+    setEmailModalRecipients([
+      {
+        _id: c._id,
+        company: c.company,
+        contactPerson: c.contactPerson,
+        email: c.email,
+      },
+    ]);
+    setSendToAllMode(false);
+    setIsEmailModalOpen(true);
+  };
 
   const openCreate = () => {
     setEditingId(null);
@@ -88,12 +188,14 @@ export default function ClientsPage() {
   const handleDelete = async (id: string) => {
     if (confirm("Delete client record?")) {
       await deleteClient(id);
+      setSelectedIds((prev) => prev.filter((item) => item !== id));
       fetchClients();
     }
   };
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
+      {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
         <div>
           <span className="text-xs font-mono tracking-widest text-neutral-400 uppercase">
@@ -104,28 +206,113 @@ export default function ClientsPage() {
           </h1>
         </div>
 
-        <button
-          onClick={openCreate}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white text-black font-mono text-xs font-semibold uppercase tracking-wider hover:bg-neutral-200 transition-all"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>New Client Account</span>
-        </button>
-      </div>
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            onClick={openEmailAll}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-neutral-900 border border-white/15 text-neutral-200 font-mono text-xs font-semibold uppercase tracking-wider hover:bg-neutral-800 hover:text-white transition-all shadow-sm"
+          >
+            <Send className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Bulk Broadcast</span>
+          </button>
 
-      <div className="p-4 rounded-xl border border-white/10 bg-neutral-950">
-        <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            placeholder="Search company, contact person, email..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-neutral-900 border border-white/10 rounded-lg text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-white font-sans"
-          />
+          <button
+            onClick={openCreate}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white text-black font-mono text-xs font-semibold uppercase tracking-wider hover:bg-neutral-200 transition-all shadow-sm"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>New Client Account</span>
+          </button>
         </div>
       </div>
 
+      {/* Filter & Search Bar */}
+      <div className="p-4 rounded-xl border border-white/10 bg-neutral-950 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
+          <div className="relative w-full sm:w-80">
+            <Search className="w-4 h-4 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Search company, contact, email..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-neutral-900 border border-white/10 rounded-lg text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-white font-sans"
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Filter className="w-3.5 h-3.5 text-neutral-500" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-xs text-neutral-300 font-mono focus:outline-none focus:border-white"
+            >
+              <option value="all">All Statuses</option>
+              <option value="active">Active Only</option>
+              <option value="prospect">Prospect Only</option>
+              <option value="inactive">Inactive Only</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Quick Selection Toggle */}
+        <div className="flex items-center gap-2 font-mono text-xs">
+          {clients.length > 0 && (
+            <button
+              onClick={isAllVisibleSelected ? deselectAll : selectAllVisible}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-neutral-900 hover:bg-neutral-800 text-neutral-300 transition-colors"
+            >
+              {isAllVisibleSelected ? (
+                <>
+                  <CheckSquare className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Deselect All</span>
+                </>
+              ) : (
+                <>
+                  <Square className="w-3.5 h-3.5 text-neutral-400" />
+                  <span>Select All ({clients.length})</span>
+                </>
+              )}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Floating / Sticky Selected Action Banner */}
+      {selectedIds.length > 0 && (
+        <div className="sticky top-4 z-30 p-3.5 rounded-xl border border-emerald-500/30 bg-neutral-950/95 backdrop-blur-md shadow-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="flex items-center gap-3">
+            <div className="w-7 h-7 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-mono text-xs font-bold">
+              {selectedIds.length}
+            </div>
+            <div>
+              <span className="text-xs font-mono text-white font-semibold">
+                {selectedIds.length} client{selectedIds.length === 1 ? "" : "s"} selected
+              </span>
+              <span className="text-[11px] text-neutral-400 font-mono block sm:inline sm:ml-2">
+                Ready for customized email dispatch with attachments
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={deselectAll}
+              className="px-3 py-1.5 rounded-lg border border-white/10 text-neutral-400 hover:text-white font-mono text-xs transition-colors"
+            >
+              Clear Selection
+            </button>
+            <button
+              onClick={openEmailSelected}
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-emerald-500 text-black font-mono text-xs font-bold uppercase tracking-wider hover:bg-emerald-400 transition-all shadow-md"
+            >
+              <Mail className="w-3.5 h-3.5" />
+              <span>Send Email to Selected</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Client Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
           <div className="col-span-3 py-12 text-center text-neutral-500 font-mono text-xs">
@@ -133,97 +320,146 @@ export default function ClientsPage() {
           </div>
         ) : clients.length === 0 ? (
           <div className="col-span-3 py-12 text-center text-neutral-500 font-mono text-xs">
-            No client records found.
+            No client records found matching criteria.
           </div>
         ) : (
-          clients.map((c) => (
-          <div
-            key={c._id}
-            className="p-6 rounded-2xl border border-white/10 bg-neutral-950 flex flex-col justify-between space-y-6"
-          >
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center">
-                  <Building2 className="w-5 h-5 text-white" />
-                </div>
-                <span className={`px-2.5 py-0.5 rounded text-[10px] font-mono uppercase font-bold border ${
-                  c.status === "active"
-                    ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
-                    : c.status === "prospect"
-                    ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
-                    : "bg-neutral-500/20 text-neutral-400 border-neutral-500/30"
-                }`}>
-                  {c.status || "active"}
-                </span>
-              </div>
+          clients.map((c) => {
+            const isSelected = selectedIds.includes(c._id);
+            return (
+              <div
+                key={c._id}
+                className={`p-6 rounded-2xl border transition-all duration-200 flex flex-col justify-between space-y-6 ${
+                  isSelected
+                    ? "border-emerald-500/50 bg-neutral-950/80 shadow-[0_0_20px_rgba(16,185,129,0.08)] ring-1 ring-emerald-500/30"
+                    : "border-white/10 bg-neutral-950 hover:border-white/20"
+                }`}
+              >
+                <div className="space-y-4">
+                  {/* Card Header with Checkbox and Status */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => toggleSelect(c._id)}
+                        className={`w-6 h-6 rounded-md border flex items-center justify-center transition-all ${
+                          isSelected
+                            ? "bg-emerald-500 border-emerald-500 text-black"
+                            : "border-white/20 bg-neutral-900 hover:border-white/40 text-transparent"
+                        }`}
+                        title={isSelected ? "Deselect client" : "Select client for email"}
+                      >
+                        <Check className="w-3.5 h-3.5 stroke-[3]" />
+                      </button>
 
-              <div>
-                <h3 className="text-xl font-bold text-white tracking-tight">{c.company}</h3>
-                <p className="text-xs text-neutral-400 font-mono mt-0.5">
-                  Contact: {c.contactPerson}
-                </p>
-              </div>
+                      <div className="w-9 h-9 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center">
+                        <Building2 className="w-4 h-4 text-white" />
+                      </div>
+                    </div>
 
-              <div className="space-y-2 text-xs font-mono text-neutral-400 pt-2 border-t border-white/5">
-                <div className="flex items-center gap-2">
-                  <Mail className="w-3.5 h-3.5 text-neutral-500" />
-                  <span className="truncate">{c.email}</span>
-                </div>
-                {c.phone && (
-                  <div className="flex items-center gap-2">
-                    <Phone className="w-3.5 h-3.5 text-neutral-500" />
-                    <span>{c.phone}</span>
-                  </div>
-                )}
-                {c.country && (
-                  <div className="flex items-center gap-2">
-                    <Globe className="w-3.5 h-3.5 text-neutral-500" />
-                    <span>{c.country}</span>
-                  </div>
-                )}
-                {c.website && (
-                  <div className="flex items-center gap-2">
-                    <Globe className="w-3.5 h-3.5 text-neutral-500" />
-                    <a
-                      href={c.website.startsWith("http") ? c.website : `https://${c.website}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="hover:text-white underline underline-offset-2"
+                    <span
+                      className={`px-2.5 py-0.5 rounded text-[10px] font-mono uppercase font-bold border ${
+                        c.status === "active"
+                          ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+                          : c.status === "prospect"
+                          ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
+                          : "bg-neutral-500/20 text-neutral-400 border-neutral-500/30"
+                      }`}
                     >
-                      {c.website}
-                    </a>
+                      {c.status || "active"}
+                    </span>
                   </div>
-                )}
+
+                  {/* Company & Contact Details */}
+                  <div>
+                    <h3 className="text-xl font-bold text-white tracking-tight">
+                      {c.company}
+                    </h3>
+                    <p className="text-xs text-neutral-400 font-mono mt-0.5">
+                      Contact: {c.contactPerson}
+                    </p>
+                  </div>
+
+                  {/* Contact Info List */}
+                  <div className="space-y-2 text-xs font-mono text-neutral-400 pt-2 border-t border-white/5">
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
+                      <span className="truncate">{c.email}</span>
+                    </div>
+                    {c.phone && (
+                      <div className="flex items-center gap-2">
+                        <Phone className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
+                        <span>{c.phone}</span>
+                      </div>
+                    )}
+                    {c.country && (
+                      <div className="flex items-center gap-2">
+                        <Globe className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
+                        <span>{c.country}</span>
+                      </div>
+                    )}
+                    {c.website && (
+                      <div className="flex items-center gap-2">
+                        <Globe className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
+                        <a
+                          href={
+                            c.website.startsWith("http")
+                              ? c.website
+                              : `https://${c.website}`
+                          }
+                          target="_blank"
+                          rel="noreferrer"
+                          className="hover:text-white underline underline-offset-2 truncate"
+                        >
+                          {c.website}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+
+                  {c.notes && (
+                    <p className="text-xs text-neutral-500 leading-relaxed italic border-t border-white/5 pt-2">
+                      "{c.notes}"
+                    </p>
+                  )}
+                </div>
+
+                {/* Card Action Buttons */}
+                <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+                  <span className="text-[10px] font-mono text-neutral-500">
+                    ID: {c._id.slice(-6)}
+                  </span>
+
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => openEmailSingle(c)}
+                      className="p-1.5 rounded text-neutral-400 hover:text-sky-400 hover:bg-sky-500/10 transition-colors"
+                      title="Send email to this client"
+                    >
+                      <Mail className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => openEdit(c)}
+                      className="p-1.5 rounded text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                      title="Edit client"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(c._id)}
+                      className="p-1.5 rounded text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                      title="Delete client"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
               </div>
-
-              {c.notes && (
-                <p className="text-xs text-neutral-500 leading-relaxed italic border-t border-white/5 pt-2">
-                  "{c.notes}"
-                </p>
-              )}
-            </div>
-
-            <div className="pt-4 border-t border-white/10 flex justify-end gap-2">
-              <button
-                onClick={() => openEdit(c)}
-                className="p-1.5 rounded text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
-                title="Edit client"
-              >
-                <Edit2 className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => handleDelete(c._id)}
-                className="p-1.5 rounded text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
-                title="Delete client"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        ))
-      )}
+            );
+          })
+        )}
       </div>
 
+      {/* Edit / Create Client Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
           <div className="bg-neutral-950 border border-white/20 rounded-2xl max-w-md w-full p-6 sm:p-8 space-y-4 my-8 font-sans text-xs max-h-[90vh] overflow-y-auto">
@@ -231,65 +467,94 @@ export default function ClientsPage() {
               <h3 className="text-base font-bold text-white font-mono uppercase">
                 {editingId ? "Edit Client Account" : "Add Client Entity"}
               </h3>
-              <button onClick={closeModal} className="text-neutral-400 hover:text-white">✕</button>
+              <button
+                onClick={closeModal}
+                className="text-neutral-400 hover:text-white"
+              >
+                ✕
+              </button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1">
-                <label className="font-mono text-neutral-400 uppercase">Company Name *</label>
+                <label className="font-mono text-neutral-400 uppercase">
+                  Company Name *
+                </label>
                 <input
                   type="text"
                   required
                   value={form.company}
-                  onChange={(e) => setForm({ ...form, company: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, company: e.target.value })
+                  }
                   className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                 />
               </div>
               <div className="space-y-1">
-                <label className="font-mono text-neutral-400 uppercase">Primary Contact Person *</label>
+                <label className="font-mono text-neutral-400 uppercase">
+                  Primary Contact Person *
+                </label>
                 <input
                   type="text"
                   required
                   value={form.contactPerson}
-                  onChange={(e) => setForm({ ...form, contactPerson: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, contactPerson: e.target.value })
+                  }
                   className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="font-mono text-neutral-400 uppercase">Email Address *</label>
+                  <label className="font-mono text-neutral-400 uppercase">
+                    Email Address *
+                  </label>
                   <input
                     type="email"
                     required
                     value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, email: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-mono text-neutral-400 uppercase">Phone</label>
+                  <label className="font-mono text-neutral-400 uppercase">
+                    Phone
+                  </label>
                   <input
                     type="text"
                     value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, phone: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="font-mono text-neutral-400 uppercase">Country</label>
+                  <label className="font-mono text-neutral-400 uppercase">
+                    Country
+                  </label>
                   <input
                     type="text"
                     value={form.country}
-                    onChange={(e) => setForm({ ...form, country: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, country: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-mono text-neutral-400 uppercase">Status</label>
+                  <label className="font-mono text-neutral-400 uppercase">
+                    Status
+                  </label>
                   <select
                     value={form.status}
-                    onChange={(e) => setForm({ ...form, status: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, status: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                   >
                     <option value="active">Active</option>
@@ -299,21 +564,29 @@ export default function ClientsPage() {
                 </div>
               </div>
               <div className="space-y-1">
-                <label className="font-mono text-neutral-400 uppercase">Website</label>
+                <label className="font-mono text-neutral-400 uppercase">
+                  Website
+                </label>
                 <input
                   type="text"
                   value={form.website}
-                  onChange={(e) => setForm({ ...form, website: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, website: e.target.value })
+                  }
                   placeholder="acme-corp.com"
                   className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                 />
               </div>
               <div className="space-y-1">
-                <label className="font-mono text-neutral-400 uppercase">Notes</label>
+                <label className="font-mono text-neutral-400 uppercase">
+                  Notes
+                </label>
                 <textarea
                   rows={3}
                   value={form.notes}
-                  onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, notes: e.target.value })
+                  }
                   className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white"
                 />
               </div>
@@ -333,14 +606,26 @@ export default function ClientsPage() {
                   {saving
                     ? "Saving..."
                     : editingId
-                      ? "Update Account"
-                      : "Save Account"}
+                    ? "Update Account"
+                    : "Save Account"}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
+
+      {/* Client Email Composer Modal */}
+      <ClientEmailModal
+        isOpen={isEmailModalOpen}
+        onClose={() => setIsEmailModalOpen(false)}
+        recipients={emailModalRecipients}
+        sendToAll={sendToAllMode}
+        statusFilter={statusFilter}
+        onSuccess={() => {
+          setSelectedIds([]);
+        }}
+      />
     </div>
   );
 }
