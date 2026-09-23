@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { FolderGit2, ArrowUpRight, ExternalLink, Activity, Code2 } from "lucide-react";
+import Link from "next/link";
+import { FolderGit2, ArrowUpRight, ExternalLink, Activity } from "lucide-react";
 import { TiltCard } from "@/components/ui/TiltCard";
 
 const GithubIcon = ({ className }: { className?: string }) => (
@@ -170,16 +171,14 @@ export function ProjectShowcase3D({ projects = [], theme = "obsidian" }: Project
                   )}
                 </div>
 
-                {project.liveUrl ? (
-                  <a
-                    href={project.liveUrl}
-                    target="_blank"
-                    rel="noreferrer"
+                {project.slug ? (
+                  <Link
+                    href={`/work/${project.slug}`}
                     className="flex items-center gap-1 text-white font-bold group-hover:translate-x-0.5 transition-transform"
                   >
-                    <span>View Project</span>
+                    <span>Project Details</span>
                     <ArrowUpRight className="w-3.5 h-3.5" />
-                  </a>
+                  </Link>
                 ) : (
                   <span className="text-neutral-500">Case Study</span>
                 )}

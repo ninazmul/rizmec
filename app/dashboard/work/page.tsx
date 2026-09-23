@@ -28,6 +28,7 @@ const DEFAULT_FORM = {
   services: "Cloud Infrastructure, Distributed Systems",
   technologies: "Next.js, Go, Kubernetes, TypeScript",
   thumbnail: "",
+  liveUrl: "",
   teamMemberIds: [] as string[],
 };
 
@@ -85,6 +86,7 @@ export default function WorkCmsPage() {
       services: (p.services || []).join(", "),
       technologies: (p.technologies || []).join(", "),
       thumbnail: p.thumbnail || "",
+      liveUrl: p.liveUrl || "",
       teamMemberIds: (p.teamMemberIds || []).map((m: any) =>
         typeof m === "object" ? m._id : m
       ),
@@ -126,6 +128,7 @@ export default function WorkCmsPage() {
       services: sArray,
       technologies: tArray,
       thumbnail: form.thumbnail || undefined,
+      liveUrl: form.liveUrl || "",
       teamMemberIds: form.teamMemberIds,
     } as any;
 
@@ -406,6 +409,23 @@ export default function WorkCmsPage() {
                 aspect="video"
                 hint="16:9 hero image shown on homepage case study cards, work listing, and public case study page."
               />
+
+              {/* Live App URL */}
+              <div className="space-y-1">
+                <label className="font-mono text-neutral-400 uppercase">
+                  Live App URL <span className="normal-case text-neutral-500 font-sans font-light">(optional)</span>
+                </label>
+                <input
+                  type="url"
+                  value={form.liveUrl}
+                  onChange={(e) => setForm({ ...form, liveUrl: e.target.value })}
+                  placeholder="https://app.example.com"
+                  className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white font-mono text-xs placeholder:text-neutral-600"
+                />
+                <p className="text-[11px] text-neutral-500 font-light">
+                  If provided, a "Live App" link will appear on portfolio project cards.
+                </p>
+              </div>
 
               {/* Assign Team Members & Interns */}
               <div className="space-y-2">

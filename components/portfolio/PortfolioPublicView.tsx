@@ -37,9 +37,10 @@ export function PortfolioPublicView({ member, assignedProjects = [] }: Portfolio
       description: p.summary || p.description,
       role: p.role || "Lead Engineer",
       technologies: p.technologies || [],
-      liveUrl: p.liveUrl || `/work/${p.slug}`,
+      slug: p.slug,
+      liveUrl: p.liveUrl || "",
       githubUrl: p.githubUrl,
-      imageUrl: p.coverImage || p.images?.[0],
+      imageUrl: p.coverImage || p.thumbnail || p.images?.[0],
       metrics: (p.metrics || []).map((m: any) =>
         typeof m === "string"
           ? m
