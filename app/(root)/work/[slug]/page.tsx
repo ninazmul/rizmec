@@ -68,6 +68,18 @@ export default async function ProjectDetailPage({ params }: Props) {
         </p>
       </div>
 
+      {/* Hero Thumbnail */}
+      {project.thumbnail && (
+        <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-white/10 bg-neutral-950 shadow-2xl">
+          <img
+            src={project.thumbnail}
+            alt={project.title}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+        </div>
+      )}
+
       {/* Verified Metrics Hero Bar */}
       {project.metrics && project.metrics.length > 0 && (
         <div className="p-8 sm:p-10 rounded-2xl border border-white/10 bg-neutral-950 grid grid-cols-1 sm:grid-cols-3 gap-8">
@@ -82,6 +94,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           ))}
         </div>
       )}
+
 
       {/* Narrative Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-8 border-t border-white/10">
