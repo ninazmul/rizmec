@@ -50,94 +50,90 @@ export default async function ProjectDetailPage({ params }: Props) {
   return (
     <div className="min-h-screen bg-[#09090b] text-neutral-100">
 
-      {/* ── FULL-BLEED HERO IMAGE ── */}
-      <div className="relative w-full h-[55vh] sm:h-[70vh] overflow-hidden">
-        {project.thumbnail ? (
-          <img
-            src={project.thumbnail}
-            alt={project.title}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-neutral-900 via-neutral-950 to-black" />
-        )}
+      {/* ── BACK NAV ── */}
+      <div className="pt-8 px-4 sm:px-8 lg:px-16 max-w-7xl mx-auto">
+        <Link
+          href="/work"
+          className="inline-flex items-center gap-2 text-xs font-mono text-white/60 hover:text-white uppercase tracking-wider transition-colors backdrop-blur-sm bg-white/5 border border-white/10 px-3 py-1.5 rounded-full"
+        >
+          <ArrowLeft className="w-3 h-3" />
+          <span>All Case Studies</span>
+        </Link>
+      </div>
 
-        {/* Gradient scrim */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/60 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#09090b]/40 via-transparent to-transparent" />
+      {/* ── HERO IMAGE — full 1:1 uncropped ── */}
+      {project.thumbnail && (
+        <div className="w-full max-w-4xl mx-auto px-4 sm:px-8 lg:px-16 pt-8">
+          <div className="rounded-2xl overflow-hidden border border-white/10 bg-neutral-950 shadow-2xl">
+            <img
+              src={project.thumbnail}
+              alt={project.title}
+              className="w-full h-auto object-contain"
+            />
+          </div>
+        </div>
+      )}
 
-        {/* Back nav — pinned to top */}
-        <div className="absolute top-0 left-0 right-0 pt-8 px-4 sm:px-8 lg:px-16">
-          <Link
-            href="/work"
-            className="inline-flex items-center gap-2 text-xs font-mono text-white/60 hover:text-white uppercase tracking-wider transition-colors backdrop-blur-sm bg-white/5 border border-white/10 px-3 py-1.5 rounded-full"
-          >
-            <ArrowLeft className="w-3 h-3" />
-            <span>All Case Studies</span>
-          </Link>
+      {/* ── PROJECT HEADER ── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-16 pt-10 pb-4 space-y-4">
+        {/* Breadcrumb meta */}
+        <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono text-white/50 uppercase tracking-widest">
+          <span className="text-white/80 font-bold">{project.clientName}</span>
+          <span className="text-white/20">·</span>
+          <span>{project.industry}</span>
+          {project.completionDate && (
+            <>
+              <span className="text-white/20">·</span>
+              <span>Completed {project.completionDate}</span>
+            </>
+          )}
+          {project.status && (
+            <>
+              <span className="text-white/20">·</span>
+              <span
+                className={`px-2 py-0.5 rounded-full border text-[10px] font-bold ${
+                  project.status === "completed"
+                    ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-400"
+                    : project.status === "in_progress"
+                    ? "bg-cyan-500/15 border-cyan-500/30 text-cyan-400"
+                    : "bg-neutral-500/15 border-neutral-500/30 text-neutral-400"
+                }`}
+              >
+                {project.status.replace("_", " ")}
+              </span>
+            </>
+          )}
         </div>
 
-        {/* Header content — bottom of hero */}
-        <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-8 lg:px-16 pb-10 max-w-7xl mx-auto space-y-4">
-          {/* Breadcrumb meta */}
-          <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono text-white/50 uppercase tracking-widest">
-            <span className="text-white/80 font-bold">{project.clientName}</span>
-            <span className="text-white/20">·</span>
-            <span>{project.industry}</span>
-            {project.completionDate && (
-              <>
-                <span className="text-white/20">·</span>
-                <span>Completed {project.completionDate}</span>
-              </>
-            )}
-            {project.status && (
-              <>
-                <span className="text-white/20">·</span>
-                <span
-                  className={`px-2 py-0.5 rounded-full border text-[10px] font-bold ${
-                    project.status === "completed"
-                      ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-400"
-                      : project.status === "in_progress"
-                      ? "bg-cyan-500/15 border-cyan-500/30 text-cyan-400"
-                      : "bg-neutral-500/15 border-neutral-500/30 text-neutral-400"
-                  }`}
-                >
-                  {project.status.replace("_", " ")}
-                </span>
-              </>
-            )}
-          </div>
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight max-w-4xl">
+          {project.title}
+        </h1>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight max-w-4xl">
-            {project.title}
-          </h1>
+        <p className="text-base sm:text-lg text-white/60 font-light leading-relaxed max-w-3xl">
+          {project.summary}
+        </p>
 
-          <p className="text-base sm:text-lg text-white/60 font-light leading-relaxed max-w-3xl">
-            {project.summary}
-          </p>
-
-          {/* CTA buttons */}
-          <div className="flex flex-wrap items-center gap-3 pt-2">
-            {project.liveUrl && (
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-black font-mono text-xs font-bold uppercase tracking-widest hover:bg-neutral-100 transition-all shadow-lg shadow-white/10"
-              >
-                <Globe className="w-3.5 h-3.5" />
-                <span>Live App</span>
-                <ExternalLink className="w-3 h-3 opacity-60" />
-              </a>
-            )}
-            <Link
-              href="/contact"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-mono text-xs font-semibold uppercase tracking-widest hover:bg-white/15 transition-all"
+        {/* CTA buttons */}
+        <div className="flex flex-wrap items-center gap-3 pt-2">
+          {project.liveUrl && (
+            <a
+              href={project.liveUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-black font-mono text-xs font-bold uppercase tracking-widest hover:bg-neutral-100 transition-all shadow-lg shadow-white/10"
             >
-              <span>Start Similar Project</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
+              <Globe className="w-3.5 h-3.5" />
+              <span>Live App</span>
+              <ExternalLink className="w-3 h-3 opacity-60" />
+            </a>
+          )}
+          <Link
+            href="/contact"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-mono text-xs font-semibold uppercase tracking-widest hover:bg-white/15 transition-all"
+          >
+            <span>Start Similar Project</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
       </div>
 
@@ -236,7 +232,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                       <img
                         src={img}
                         alt={`${project.title} — Architecture view ${idx + 1}`}
-                        className="w-full h-auto object-cover"
+                        className="w-full h-auto object-contain bg-neutral-950"
                       />
                     </div>
                   ))}
@@ -252,12 +248,18 @@ export default async function ProjectDetailPage({ params }: Props) {
                   &ldquo;{project.testimonial.quote}&rdquo;
                 </p>
                 <div className="mt-6 flex items-center gap-3 relative z-10">
-                  {project.testimonial.avatar && (
+                  {project.testimonial.avatar ? (
                     <img
                       src={project.testimonial.avatar}
                       alt={project.testimonial.author}
                       className="w-9 h-9 rounded-full object-cover border border-white/10"
                     />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full border border-white/10 bg-gradient-to-br from-cyan-500/30 to-purple-500/30 flex items-center justify-center shrink-0">
+                      <span className="text-xs font-bold text-white uppercase">
+                        {project.testimonial.author?.charAt(0) ?? "?"}
+                      </span>
+                    </div>
                   )}
                   <div>
                     <div className="text-sm font-bold text-white">{project.testimonial.author}</div>

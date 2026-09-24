@@ -619,11 +619,19 @@ export default async function HomePage() {
                     "{t.content}"
                   </p>
                   <div className="flex items-center gap-3 pt-4 border-t border-white/10">
-                    <img
-                      src={t.avatar}
-                      alt={t.clientName}
-                      className="w-11 h-11 rounded-full object-cover border border-white/15 grayscale"
-                    />
+                    {t.avatar ? (
+                      <img
+                        src={t.avatar}
+                        alt={t.clientName}
+                        className="w-11 h-11 rounded-full object-cover border border-white/15 grayscale"
+                      />
+                    ) : (
+                      <div className="w-11 h-11 rounded-full border border-white/15 bg-gradient-to-br from-cyan-500/30 to-purple-500/30 flex items-center justify-center shrink-0">
+                        <span className="text-sm font-bold text-white uppercase">
+                          {t.clientName?.charAt(0) ?? "?"}
+                        </span>
+                      </div>
+                    )}
                     <div>
                       <div className="text-sm font-bold text-white">
                         {t.clientName}
