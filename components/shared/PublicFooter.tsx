@@ -182,10 +182,12 @@ export default function PublicFooter() {
             <span>GLOBAL HUBS:</span>
           </div>
           <div className="flex flex-wrap gap-6 text-neutral-400">
-            <span>SAN FRANCISCO [37.77° N, 122.41° W]</span>
-            <span>LONDON [51.50° N, 0.12° W]</span>
-            <span>TOKYO [35.67° N, 139.65° E]</span>
-            <span>SINGAPORE [1.35° N, 103.81° E]</span>
+            <span title="604 C. Hoare, San Juan, Puerto Rico 00907">
+              SAN JUAN, PUERTO RICO [18.46° N, 66.11° W]
+            </span>
+            <span title="A-1/9, Gazipur 1750, Dhaka, Bangladesh">
+              DHAKA, BANGLADESH [23.81° N, 90.41° E]
+            </span>
           </div>
         </div>
 
