@@ -23,6 +23,7 @@ import { getProducts } from "@/lib/actions/product.actions";
 import { getProjects } from "@/lib/actions/project.actions";
 import { getTeamMembers } from "@/lib/actions/team.actions";
 import { getTestimonials } from "@/lib/actions/testimonial.actions";
+import { TestimonialsMarquee } from "@/components/home/TestimonialsMarquee";
 import { CopyCodeButton } from "@/components/shared/CopyCodeButton";
 
 export const revalidate = 60;
@@ -50,7 +51,7 @@ export default async function HomePage() {
       getProducts({ published: true, limit: 4 }),
       getProjects({ published: true, featured: true, limit: 3 }),
       getTeamMembers({ published: true, featured: true, limit: 4 }),
-      getTestimonials({ published: true, featured: true, limit: 3 }),
+      getTestimonials({ published: true, featured: true, limit: 12 }),
     ]);
 
   const services = servicesRes.success ? servicesRes.data : [];
@@ -597,56 +598,9 @@ export default async function HomePage() {
       </section>
 
       {/* ========================================================
-          7. VERIFIED ENTERPRISE TESTIMONIALS (3D Tilt Cards)
+          7. VERIFIED ENTERPRISE TESTIMONIALS (Auto-Scrolling Marquee)
       ======================================================== */}
-      {testimonials.length > 0 && (
-        <section className="py-24 border-t border-white/10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="max-w-3xl mb-16 space-y-2">
-            <span className="text-xs font-mono tracking-widest text-cyan-400 uppercase font-semibold flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-              // Client Validation
-            </span>
-            <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight text-chrome">
-              Verified Partner Feedback
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((t: any) => (
-              <TiltCard key={t._id} maxTilt={6} glareOpacity={0.12}>
-                <div className="p-8 rounded-2xl border border-white/10 bg-neutral-900/40 backdrop-blur-xl flex flex-col justify-between space-y-6 h-full hover:border-white/25 transition-all">
-                  <p className="text-sm text-neutral-300 leading-relaxed italic">
-                    "{t.content}"
-                  </p>
-                  <div className="flex items-center gap-3 pt-4 border-t border-white/10">
-                    {t.avatar ? (
-                      <img
-                        src={t.avatar}
-                        alt={t.clientName}
-                        className="w-11 h-11 rounded-full object-cover border border-white/15 grayscale"
-                      />
-                    ) : (
-                      <div className="w-11 h-11 rounded-full border border-white/15 bg-gradient-to-br from-cyan-500/30 to-purple-500/30 flex items-center justify-center shrink-0">
-                        <span className="text-sm font-bold text-white uppercase">
-                          {t.clientName?.charAt(0) ?? "?"}
-                        </span>
-                      </div>
-                    )}
-                    <div>
-                      <div className="text-sm font-bold text-white">
-                        {t.clientName}
-                      </div>
-                      <div className="text-xs text-neutral-400 font-mono">
-                        {t.position}, {t.company}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </TiltCard>
-            ))}
-          </div>
-        </section>
-      )}
+      <TestimonialsMarquee testimonials={testimonials} />
 
       {/* ========================================================
           8. HOSTINGER OFFICIAL PARTNER — COMPACT CTA

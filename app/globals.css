@@ -226,6 +226,29 @@ h1, h2, h3, h4, h5, h6 {
   animation: shimmer 2.5s infinite;
 }
 
+/* Infinite Marquee Animation for Auto-Scrolling */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marquee-reverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee var(--marquee-duration, 40s) linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee:hover,
+.animate-marquee-paused {
+  animation-play-state: paused !important;
+}
+
 /* Chrome / Titanium Text Gradient */
 .text-chrome {
   background: linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 60%, #94A3B8 100%);
