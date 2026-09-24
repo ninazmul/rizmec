@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { FolderGit2, ArrowUpRight, ExternalLink, Activity } from "lucide-react";
 import { TiltCard } from "@/components/ui/TiltCard";
@@ -29,10 +29,19 @@ interface ProjectShowcase3DProps {
   theme?: string;
 }
 
+const INITIAL_VISIBLE = 4;
+const LOAD_MORE_COUNT = 4;
+
 export function ProjectShowcase3D({ projects = [], theme = "obsidian" }: ProjectShowcase3DProps) {
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+
   if (!projects || projects.length === 0) {
     return null;
   }
+
+  const visibleProjects = projects.slice(0, visibleCount);
+  const hasMore = visibleCount < projects.length;
+  const remaining = projects.length - visibleCount;
 
   return (
     <section id="projects" className="space-y-10 pt-16 border-t border-white/10">
@@ -50,7 +59,7 @@ export function ProjectShowcase3D({ projects = [], theme = "obsidian" }: Project
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {projects.map((project, idx) => (
+        {visibleProjects.map((project, idx) => (
           <div key={idx} className="relative group perspective-2000">
             {/* Background Animated Gradient Halo */}
             <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-cyan-500/15 via-purple-500/10 to-emerald-500/15 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
@@ -188,6 +197,24 @@ export function ProjectShowcase3D({ projects = [], theme = "obsidian" }: Project
         </div>
       ))}
       </div>
+
+      {/* Show More */}
+      {hasMore && (
+        <div className="flex flex-col items-center gap-2 pt-4">
+          <button
+            onClick={() => setVisibleCount((c) => c + LOAD_MORE_COUNT)}
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-white/15 bg-white/[0.04] text-white/70 hover:text-white hover:border-white/30 hover:bg-white/[0.08] transition-all font-mono text-xs uppercase tracking-widest group"
+          >
+            <span>Show More</span>
+            <span className="text-neutral-500 group-hover:text-neutral-300 transition-colors">
+              ({remaining} remaining)
+            </span>
+            <svg className="w-3.5 h-3.5 text-neutral-500 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+        </div>
+      )}
     </section>
   );
 }
