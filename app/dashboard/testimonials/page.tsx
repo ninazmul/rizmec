@@ -20,6 +20,46 @@ const DEFAULT_FORM = {
   rating: 5,
 };
 
+function TestimonialAvatar({
+  avatar,
+  name,
+}: {
+  avatar?: string;
+  name: string;
+}) {
+  const [imageError, setImageError] = useState(false);
+
+  const isInvalidAvatar =
+    !avatar ||
+    avatar.trim() === "" ||
+    avatar.includes("placeholder") ||
+    imageError;
+
+  const firstLetter = name?.trim()?.charAt(0)?.toUpperCase() || "?";
+
+  if (isInvalidAvatar) {
+    return (
+      <div
+        className="w-9 h-9 rounded-full border border-cyan-500/30 bg-gradient-to-br from-cyan-500/20 via-blue-600/20 to-purple-600/20 flex items-center justify-center shrink-0 shadow-inner"
+        title={name}
+      >
+        <span className="text-xs font-bold text-cyan-300">
+          {firstLetter}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={avatar}
+      alt={name}
+      onError={() => setImageError(true)}
+      className="w-9 h-9 rounded-full object-cover grayscale border border-white/10 shrink-0"
+    />
+  );
+}
+
 export default function TestimonialsCmsPage() {
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -149,11 +189,7 @@ export default function TestimonialsCmsPage() {
                   "{t.content}"
                 </p>
                 <div className="flex items-center gap-3 pt-3 border-t border-white/5">
-                  <img
-                    src={t.avatar}
-                    alt={t.clientName}
-                    className="w-9 h-9 rounded-full object-cover grayscale"
-                  />
+                  <TestimonialAvatar avatar={t.avatar} name={t.clientName} />
                   <div>
                     <div className="text-xs font-bold text-white">
                       {t.clientName}
