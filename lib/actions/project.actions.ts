@@ -48,6 +48,23 @@ export async function getProjects(params?: {
   }
 }
 
+export async function getPublishedProjectsForTeamMember(teamMemberId: string) {
+  try {
+    await connectToDatabase();
+    const projects = await Project.find({
+      published: true,
+      teamMemberIds: teamMemberId,
+    })
+      .populate("teamMemberIds", "name title avatar slug")
+      .sort({ order: 1, createdAt: -1 })
+      .lean();
+    return { success: true, data: JSON.parse(JSON.stringify(projects)) };
+  } catch (error: any) {
+    console.error("Error fetching published team member projects:", error);
+    return { success: false, error: error.message, data: [] };
+  }
+}
+
 export async function getProjectBySlug(slug: string) {
   // Fetch current user access to enforce project visibility restrictions
   const { getCurrentDashboardAccess } = await import("@/lib/auth/rbac");
@@ -68,7 +85,10 @@ export async function getProjectBySlug(slug: string) {
       }
     }
     const project = await Project.findOne(query)
-      .populate("teamMemberIds", "name title avatar slug bio skills socialLinks")
+      .populate(
+        "teamMemberIds",
+        "name title avatar slug bio skills socialLinks",
+      )
       .lean();
     if (!project) return { success: false, data: null };
     return { success: true, data: JSON.parse(JSON.stringify(project)) };
@@ -110,7 +130,11 @@ export async function updateProject(id: string, data: Partial<IProject>) {
     const oldStatus = existing.status || "in_progress";
     const statusChanged = data.status && data.status !== oldStatus;
 
-    const updated = await Project.findByIdAndUpdate(id, { $set: data }, { new: true }).lean();
+    const updated = await Project.findByIdAndUpdate(
+      id,
+      { $set: data },
+      { new: true },
+    ).lean();
 
     if (statusChanged && updated) {
       notifyAdminsOnStatusChange({
@@ -123,7 +147,9 @@ export async function updateProject(id: string, data: Partial<IProject>) {
         newStatus: data.status!,
         actionUrl: "/dashboard/projects",
         details: `Work Order / Project status changed from "${oldStatus}" to "${data.status}".`,
-      }).catch((err) => console.error("Error notifying admins of project status:", err));
+      }).catch((err) =>
+        console.error("Error notifying admins of project status:", err),
+      );
     }
 
     revalidatePath("/work");
@@ -138,7 +164,7 @@ export async function updateProject(id: string, data: Partial<IProject>) {
 
 export async function updateProjectStatus(
   id: string,
-  status: "planning" | "in_progress" | "review" | "completed" | "on_hold"
+  status: "planning" | "in_progress" | "review" | "completed" | "on_hold",
 ) {
   try {
     await requirePermission("projects", "update");
@@ -161,7 +187,9 @@ export async function updateProjectStatus(
       newStatus: status,
       actionUrl: "/dashboard/projects",
       details: `Work Order / Project status transitioned from "${oldStatus}" to "${status}".`,
-    }).catch((err) => console.error("Error notifying admins of project status:", err));
+    }).catch((err) =>
+      console.error("Error notifying admins of project status:", err),
+    );
 
     revalidatePath("/dashboard/projects");
     revalidatePath("/work");

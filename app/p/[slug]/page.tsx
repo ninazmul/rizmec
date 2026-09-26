@@ -2,7 +2,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { getTeamMemberBySlug } from "@/lib/actions/team.actions";
-import { getProjects } from "@/lib/actions/project.actions";
+import { getPublishedProjectsForTeamMember } from "@/lib/actions/project.actions";
 import { PortfolioPublicView } from "@/components/portfolio/PortfolioPublicView";
 
 interface Props {
@@ -23,7 +23,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const member = res.data;
   const customTitle =
-    member.seo?.customTitle || `${member.name} — ${member.title} | Portfolio & Resume`;
+    member.seo?.customTitle ||
+    `${member.name} — ${member.title} | Portfolio & Resume`;
   const description =
     member.seo?.customDescription ||
     member.tagline ||
@@ -68,12 +69,10 @@ export default async function PublicPortfolioPage({ params }: Props) {
 
   const member = res.data;
 
-  // Fetch any projects where member is credited
-  const projectsRes = await getProjects({ published: true });
-  const allProjects = projectsRes.success ? projectsRes.data : [];
-  const assignedProjects = allProjects.filter((p: any) =>
-    (p.teamMemberIds || []).some((m: any) => m.slug === slug || m._id === member._id),
-  );
+  const projectsRes = await getPublishedProjectsForTeamMember(member._id);
+  const assignedProjects = projectsRes.success ? projectsRes.data : [];
 
-  return <PortfolioPublicView member={member} assignedProjects={assignedProjects} />;
+  return (
+    <PortfolioPublicView member={member} assignedProjects={assignedProjects} />
+  );
 }
