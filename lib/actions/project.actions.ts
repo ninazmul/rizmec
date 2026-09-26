@@ -98,6 +98,26 @@ export async function getProjectBySlug(slug: string) {
   }
 }
 
+export async function getPublishedProjectBySlug(slug: string) {
+  try {
+    await connectToDatabase();
+    const project = await Project.findOne({
+      slug: slug.toLowerCase(),
+      published: true,
+    })
+      .populate(
+        "teamMemberIds",
+        "name title avatar slug bio skills socialLinks",
+      )
+      .lean();
+    if (!project) return { success: false, data: null };
+    return { success: true, data: JSON.parse(JSON.stringify(project)) };
+  } catch (error: any) {
+    console.error("Error fetching published project by slug:", error);
+    return { success: false, error: error.message, data: null };
+  }
+}
+
 export async function createProject(data: Partial<IProject>) {
   try {
     await requirePermission("projects", "create");
