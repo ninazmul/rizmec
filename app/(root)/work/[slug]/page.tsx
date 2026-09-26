@@ -453,7 +453,7 @@ export default async function ProjectDetailPage({ params }: Props) {
             )}
 
             {/* CTA Initiate Project Card */}
-            <div className="p-6 rounded-2xl border border-white/10 bg-gradient-to-b from-neutral-900/60 to-neutral-950 p-6 space-y-4">
+            <div className="rounded-2xl border border-white/10 bg-gradient-to-b from-neutral-900/60 to-neutral-950 p-6 space-y-4">
               <p className="text-xs text-neutral-400 font-light leading-relaxed">
                 Interested in a similar high-performance solution for your
                 organization?
