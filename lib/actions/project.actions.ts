@@ -65,6 +65,20 @@ export async function getPublishedProjectsForTeamMember(teamMemberId: string) {
   }
 }
 
+export async function getPublishedProjects() {
+  try {
+    await connectToDatabase();
+    const projects = await Project.find({ published: true })
+      .populate("teamMemberIds", "name title avatar slug")
+      .sort({ order: 1, createdAt: -1 })
+      .lean();
+    return { success: true, data: JSON.parse(JSON.stringify(projects)) };
+  } catch (error: any) {
+    console.error("Error fetching published projects:", error);
+    return { success: false, error: error.message, data: [] };
+  }
+}
+
 export async function getProjectBySlug(slug: string) {
   // Fetch current user access to enforce project visibility restrictions
   const { getCurrentDashboardAccess } = await import("@/lib/auth/rbac");

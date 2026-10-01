@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Metadata } from "next";
 import { ArrowUpRight } from "lucide-react";
-import { getProjects } from "@/lib/actions/project.actions";
+import { getPublishedProjects } from "@/lib/actions/project.actions";
 import { TiltCard } from "@/components/ui/TiltCard";
 import { CyberGlowMesh } from "@/components/ui/CyberGlowMesh";
 
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 export default async function WorkCatalogPage() {
-  const res = await getProjects({ published: true });
+  const res = await getPublishedProjects();
   const projects = res.success ? res.data : [];
 
   return (
@@ -63,7 +63,10 @@ export default async function WorkCatalogPage() {
                 {/* Metrics */}
                 <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/10">
                   {(project.metrics || []).map((m: any) => (
-                    <div key={m.label} className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                    <div
+                      key={m.label}
+                      className="p-3 rounded-xl bg-white/[0.02] border border-white/5"
+                    >
                       <div className="text-xl sm:text-2xl font-black text-white font-mono">
                         {m.value}
                       </div>
