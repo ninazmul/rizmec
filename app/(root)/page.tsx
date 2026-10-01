@@ -20,7 +20,7 @@ import { TiltCard } from "@/components/ui/TiltCard";
 import { CyberGlowMesh } from "@/components/ui/CyberGlowMesh";
 import { getServices } from "@/lib/actions/service.actions";
 import { getProducts } from "@/lib/actions/product.actions";
-import { getProjects } from "@/lib/actions/project.actions";
+import { getPublishedProjects } from "@/lib/actions/project.actions";
 import { getTeamMembers } from "@/lib/actions/team.actions";
 import { getTestimonials } from "@/lib/actions/testimonial.actions";
 import { TestimonialsMarquee } from "@/components/home/TestimonialsMarquee";
@@ -49,7 +49,7 @@ export default async function HomePage() {
     await Promise.all([
       getServices({ published: true, limit: 6 }),
       getProducts({ published: true, limit: 4 }),
-      getProjects({ published: true, featured: true, limit: 3 }),
+      getPublishedProjects({ featured: true, limit: 3 }),
       getTeamMembers({ published: true, featured: true, limit: 4 }),
       getTestimonials({ published: true, featured: true, limit: 12 }),
     ]);
@@ -247,8 +247,8 @@ export default async function HomePage() {
                     Distributed Resiliency
                   </h3>
                   <p className="text-xs text-neutral-400 leading-relaxed">
-                    Multi-region Kubernetes mesh topologies surviving data center
-                    outages with automated sub-3-second failover.
+                    Multi-region Kubernetes mesh topologies surviving data
+                    center outages with automated sub-3-second failover.
                   </p>
                 </div>
                 <div className="pt-4 border-t border-white/5 flex items-center gap-2 text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
@@ -427,14 +427,16 @@ export default async function HomePage() {
 
                   <div className="p-8 sm:p-10 pt-0 flex flex-wrap items-center justify-between gap-4 border-t border-white/5">
                     <div className="flex flex-wrap gap-2">
-                      {(product.techStack || []).slice(0, 3).map((t: string) => (
-                        <span
-                          key={t}
-                          className="px-3 py-1 rounded-md text-xs font-mono bg-white/5 text-neutral-300 border border-white/10"
-                        >
-                          {t}
-                        </span>
-                      ))}
+                      {(product.techStack || [])
+                        .slice(0, 3)
+                        .map((t: string) => (
+                          <span
+                            key={t}
+                            className="px-3 py-1 rounded-md text-xs font-mono bg-white/5 text-neutral-300 border border-white/10"
+                          >
+                            {t}
+                          </span>
+                        ))}
                     </div>
                     <Link
                       href={`/products/${product.slug}`}
@@ -498,7 +500,10 @@ export default async function HomePage() {
                   {/* Metrics */}
                   <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/10">
                     {(project.metrics || []).map((m: any) => (
-                      <div key={m.label} className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                      <div
+                        key={m.label}
+                        className="p-3 rounded-xl bg-white/[0.02] border border-white/5"
+                      >
                         <div className="text-xl sm:text-2xl font-black text-white font-mono">
                           {m.value}
                         </div>
@@ -629,7 +634,8 @@ export default async function HomePage() {
                 </a>
                 <div className="space-y-1">
                   <h3 className="text-lg sm:text-xl lg:text-2xl font-black text-white tracking-tight leading-tight">
-                    Deploy faster. <span className="text-[#9D80F4]">Save 20%.</span>
+                    Deploy faster.{" "}
+                    <span className="text-[#9D80F4]">Save 20%.</span>
                   </h3>
                   <p className="text-xs text-neutral-400 max-w-sm">
                     Use code <CopyCodeButton code="RIZMEC" /> for an extra 20%
@@ -642,18 +648,30 @@ export default async function HomePage() {
               <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0 w-full lg:w-auto">
                 <div className="flex items-center gap-4 text-center">
                   <div className="px-2 sm:px-3">
-                    <div className="text-base sm:text-lg font-black text-white font-mono">99.9%</div>
-                    <div className="text-[9px] text-neutral-500 font-mono uppercase tracking-wider">Uptime</div>
+                    <div className="text-base sm:text-lg font-black text-white font-mono">
+                      99.9%
+                    </div>
+                    <div className="text-[9px] text-neutral-500 font-mono uppercase tracking-wider">
+                      Uptime
+                    </div>
                   </div>
                   <div className="w-px h-8 bg-white/10" />
                   <div className="px-2 sm:px-3">
-                    <div className="text-base sm:text-lg font-black text-white font-mono">24/7</div>
-                    <div className="text-[9px] text-neutral-500 font-mono uppercase tracking-wider">Support</div>
+                    <div className="text-base sm:text-lg font-black text-white font-mono">
+                      24/7
+                    </div>
+                    <div className="text-[9px] text-neutral-500 font-mono uppercase tracking-wider">
+                      Support
+                    </div>
                   </div>
                   <div className="w-px h-8 bg-white/10" />
                   <div className="px-2 sm:px-3">
-                    <div className="text-base sm:text-lg font-black text-white font-mono">30d</div>
-                    <div className="text-[9px] text-neutral-500 font-mono uppercase tracking-wider">Refund</div>
+                    <div className="text-base sm:text-lg font-black text-white font-mono">
+                      30d
+                    </div>
+                    <div className="text-[9px] text-neutral-500 font-mono uppercase tracking-wider">
+                      Refund
+                    </div>
                   </div>
                 </div>
                 <a
@@ -688,18 +706,27 @@ export default async function HomePage() {
                 Our Video Ads &amp; Reels
               </h2>
               <p className="text-neutral-400 text-base sm:text-lg leading-relaxed max-w-lg">
-                Explore our curated collection of short-form reels and full-length
-                video content — engineered to captivate, convert, and scale your
-                brand&apos;s digital presence across every platform.
+                Explore our curated collection of short-form reels and
+                full-length video content — engineered to captivate, convert,
+                and scale your brand&apos;s digital presence across every
+                platform.
               </p>
               <div className="flex flex-wrap gap-3 pt-2">
                 <div className="px-4 py-2.5 rounded-xl border border-white/10 bg-white/[0.02] backdrop-blur-sm">
-                  <div className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest mb-0.5">Format</div>
-                  <div className="text-sm font-bold text-white">9:16 Reels + 16:9 Videos</div>
+                  <div className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest mb-0.5">
+                    Format
+                  </div>
+                  <div className="text-sm font-bold text-white">
+                    9:16 Reels + 16:9 Videos
+                  </div>
                 </div>
                 <div className="px-4 py-2.5 rounded-xl border border-white/10 bg-white/[0.02] backdrop-blur-sm">
-                  <div className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest mb-0.5">Platform</div>
-                  <div className="text-sm font-bold text-white">YouTube Gallery</div>
+                  <div className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest mb-0.5">
+                    Platform
+                  </div>
+                  <div className="text-sm font-bold text-white">
+                    YouTube Gallery
+                  </div>
                 </div>
               </div>
               <div className="pt-2">
@@ -720,11 +747,19 @@ export default async function HomePage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10" />
                 <div className="absolute inset-0 flex items-center justify-center z-20">
                   <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group-hover:bg-red-500/80 group-hover:border-red-400/50 transition-all">
-                    <svg className="w-4 h-4 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <svg
+                      className="w-4 h-4 text-white ml-0.5"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
                   </div>
                 </div>
                 <div className="absolute bottom-3 left-3 right-3 z-20">
-                  <span className="text-[10px] font-mono text-red-400 uppercase tracking-widest">Reel</span>
+                  <span className="text-[10px] font-mono text-red-400 uppercase tracking-widest">
+                    Reel
+                  </span>
                 </div>
                 <div className="w-full h-full bg-gradient-to-br from-neutral-800 to-neutral-950" />
               </div>
@@ -733,11 +768,19 @@ export default async function HomePage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10" />
                 <div className="absolute inset-0 flex items-center justify-center z-20">
                   <div className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group-hover:bg-red-500/80 group-hover:border-red-400/50 transition-all">
-                    <svg className="w-6 h-6 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <svg
+                      className="w-6 h-6 text-white ml-0.5"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
                   </div>
                 </div>
                 <div className="absolute bottom-3 left-3 right-3 z-20">
-                  <span className="text-[10px] font-mono text-red-400 uppercase tracking-widest">Full Video • 16:9</span>
+                  <span className="text-[10px] font-mono text-red-400 uppercase tracking-widest">
+                    Full Video • 16:9
+                  </span>
                 </div>
                 <div className="w-full h-full bg-gradient-to-br from-neutral-800 to-neutral-950" />
               </div>

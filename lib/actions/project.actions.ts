@@ -65,13 +65,23 @@ export async function getPublishedProjectsForTeamMember(teamMemberId: string) {
   }
 }
 
-export async function getPublishedProjects() {
+export async function getPublishedProjects(params?: {
+  featured?: boolean;
+  limit?: number;
+}) {
   try {
     await connectToDatabase();
-    const projects = await Project.find({ published: true })
+    const query: { published: boolean; featured?: boolean } = {
+      published: true,
+    };
+    if (params?.featured !== undefined) query.featured = params.featured;
+
+    let projectsQuery = Project.find(query)
       .populate("teamMemberIds", "name title avatar slug")
-      .sort({ order: 1, createdAt: -1 })
-      .lean();
+      .sort({ order: 1, createdAt: -1 });
+    if (params?.limit) projectsQuery = projectsQuery.limit(params.limit);
+
+    const projects = await projectsQuery.lean();
     return { success: true, data: JSON.parse(JSON.stringify(projects)) };
   } catch (error: any) {
     console.error("Error fetching published projects:", error);
