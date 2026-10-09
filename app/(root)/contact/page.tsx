@@ -1,13 +1,21 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowUpRight, CheckCircle2, Send, ShieldCheck, Mail, MapPin, Phone } from "lucide-react";
 import { submitContactMessage } from "@/lib/actions/contact.actions";
+import { getCompanySettings } from "@/lib/actions/setting.actions";
 
 export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
+
+  useEffect(() => {
+    getCompanySettings().then((settings) => {
+      setContactPhone(settings?.contactPhone?.trim() || "");
+    });
+  }, []);
 
   const [form, setForm] = useState({
     name: "",
@@ -238,7 +246,16 @@ export default function ContactPage() {
                 <Phone className="w-4 h-4 text-white shrink-0 mt-0.5" />
                 <div>
                   <div className="text-white font-semibold">DIRECT DESK</div>
-                  <div>+1 (888) 749-6320</div>
+                  {contactPhone ? (
+                    <a
+                      href={`tel:${contactPhone.replace(/[^\d+]/g, "")}`}
+                      className="hover:text-white transition-colors"
+                    >
+                      {contactPhone}
+                    </a>
+                  ) : (
+                    <div>Not configured</div>
+                  )}
                 </div>
               </div>
               <div className="flex items-start gap-3 text-neutral-400">
