@@ -209,7 +209,7 @@ RIZMEC implements comprehensive SEO out of the box:
 
 | Feature | Implementation |
 | :--- | :--- |
-| **Robots.txt** | `app/robots.ts` — Dynamic generation, blocks `/dashboard/`, `/api/`, `/sign-in/`, `/sign-up/`, `/invoice/`, `/quote/` |
+| **Robots.txt** | `app/robots.ts` — Dynamic generation, blocks `/dashboard/`, `/api/`, `/sign-in/`, `/sign-up/`, `/invoice/`, `/quote/`, `/maintenance/`, `/onboarding/` |
 | **XML Sitemap** | `app/sitemap.ts` — Auto-generates from all static pages + dynamic projects, services, products, team members, and CMS pages |
 | **Meta Tags** | `app/layout.tsx` — Title template, description, keywords, Open Graph, Twitter Cards |
 | **Favicon & Icons** | `app/favicon.ico` + `/assets/images/rizmec-icon.png` (512x512 PNG) |

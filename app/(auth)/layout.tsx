@@ -1,6 +1,17 @@
-"use client";
-
+import { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
+};
 
 export default function AuthLayout({
   children,

@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import React from "react";
+import { Metadata } from "next";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { requireDashboardAccess } from "@/lib/auth/rbac";
 import AdminSidebar from "./components/AdminSidebar";
@@ -10,6 +11,19 @@ import { Show, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+    },
+  },
+};
 
 export default async function DashboardLayout({
   children,
