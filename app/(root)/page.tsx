@@ -29,9 +29,28 @@ import { CopyCodeButton } from "@/components/shared/CopyCodeButton";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "RIZMEC — Intelligence. Engineered.",
+  title: "RIZMEC — Web Development Agency | Software Engineering & AI Company",
   description:
-    "RIZMEC is a premier global technology engineering company. We architect, build, and operate mission-critical software systems, autonomous AI pipelines, and distributed cloud platforms.",
+    "RIZMEC is a leading web development agency and software engineering company. We build custom web applications, autonomous AI solutions, scalable SaaS platforms, and provide expert individual developers.",
+  keywords: [
+    "RIZMEC",
+    "rizmec",
+    "rizmec.com",
+    "web development agency",
+    "software development agency",
+    "software engineering company",
+    "individual developer",
+    "hire developers",
+    "AI agency",
+    "AI development company",
+    "custom web development",
+    "full stack developer",
+    "Next.js development agency",
+    "React development agency",
+  ],
+  alternates: {
+    canonical: "https://rizmec.com",
+  },
 };
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -77,7 +96,7 @@ export default async function HomePage() {
             <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-white/15 bg-white/[0.03] backdrop-blur-xl shadow-lg border-glow">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400/50" />
               <span className="font-mono text-xs tracking-widest text-neutral-300 uppercase">
-                GLOBAL TECHNOLOGY ENGINEERING
+                RIZMEC // WEB DEVELOPMENT & SOFTWARE AGENCY
               </span>
               <span className="text-neutral-600">|</span>
               <span className="font-mono text-xs text-neutral-400">
@@ -87,16 +106,17 @@ export default async function HomePage() {
 
             {/* Editorial Headline with Chrome Titanium Gradient */}
             <h1 className="text-5xl sm:text-6xl xl:text-7xl font-black tracking-tight leading-[1.05] text-chrome">
+              <span className="sr-only">RIZMEC — Web Development Agency & Software Engineering Company: </span>
               Intelligence. <br />
               <span className="text-neutral-400">Engineered.</span>
             </h1>
 
             {/* Subtext */}
             <p className="text-lg sm:text-xl text-neutral-400 font-light max-w-2xl leading-relaxed">
-              From algorithms to intelligent systems. We architect, build, and
-              deploy mission-critical software, autonomous neural pipelines, and
-              zero-downtime distributed infrastructure for the world's most
-              demanding enterprises.
+              RIZMEC is an elite web development agency and software engineering company.
+              From bespoke web apps to autonomous AI systems, we architect, build, and deploy
+              mission-critical software, custom digital products, and high-performance cloud platforms
+              for ambitious companies worldwide.
             </p>
 
             {/* Hero CTAs with 3D Depth & Light Effects */}

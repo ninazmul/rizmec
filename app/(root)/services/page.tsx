@@ -19,9 +19,23 @@ import { CyberGlowMesh } from "@/components/ui/CyberGlowMesh";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Engineering Disciplines & Capabilities — RIZMEC",
+  title: "Engineering Services & Capabilities — Web, Software & AI Development",
   description:
-    "Explore RIZMEC's full technical capability matrix: Applied AI, Distributed Cloud Infrastructure, High-Throughput Web Apps, Enterprise SaaS, and Native Mobile Systems.",
+    "Explore RIZMEC's core engineering services: Custom Web Application Development, Software Engineering, Applied AI & Machine Learning, SaaS Platforms, and Cloud Infrastructure.",
+  keywords: [
+    "RIZMEC services",
+    "web development services",
+    "custom software development",
+    "software engineering services",
+    "AI development agency",
+    "full stack development",
+    "cloud infrastructure",
+    "SaaS development company",
+    "hire software developers",
+  ],
+  alternates: {
+    canonical: "https://rizmec.com/services",
+  },
 };
 
 const iconMap: Record<string, React.ReactNode> = {

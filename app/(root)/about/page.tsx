@@ -9,9 +9,20 @@ import { CyberGlowMesh } from "@/components/ui/CyberGlowMesh";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "About RIZMEC — Engineering Philosophy & Manifesto",
+  title: "About RIZMEC — Web & Software Engineering Agency Philosophy",
   description:
-    "Learn about RIZMEC's mission, engineering principles, leadership, and our commitment to building mission-critical technology platforms internationally.",
+    "Learn about RIZMEC's mission, engineering principles, leadership, and our commitment to building mission-critical web applications and software systems worldwide.",
+  keywords: [
+    "About RIZMEC",
+    "RIZMEC engineering",
+    "RIZMEC agency",
+    "software engineering company",
+    "web development firm",
+    "individual developer network",
+  ],
+  alternates: {
+    canonical: "https://rizmec.com/about",
+  },
 };
 
 export default async function AboutPage() {

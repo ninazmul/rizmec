@@ -9,9 +9,19 @@ import { CyberGlowMesh } from "@/components/ui/CyberGlowMesh";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Engineering Portfolio & Case Studies — RIZMEC",
+  title: "Case Studies & Portfolio — Web Apps & Software Projects",
   description:
-    "Explore RIZMEC's verified engineering case studies across quantitative finance, healthcare telemetry, global logistics, and autonomous systems.",
+    "Explore RIZMEC's verified engineering case studies, web development projects, custom software implementations, and autonomous AI systems.",
+  keywords: [
+    "RIZMEC portfolio",
+    "RIZMEC case studies",
+    "web development portfolio",
+    "software engineering projects",
+    "custom software case studies",
+  ],
+  alternates: {
+    canonical: "https://rizmec.com/work",
+  },
 };
 
 export default async function WorkCatalogPage() {

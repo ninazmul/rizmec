@@ -20,7 +20,22 @@ export default function robots(): MetadataRoute.Robots {
           "/onboarding/",
         ],
       },
+      {
+        userAgent: "Googlebot",
+        allow: "/",
+        disallow: [
+          "/dashboard/",
+          "/api/",
+          "/sign-in/",
+          "/sign-up/",
+          "/invoice/",
+          "/quote/",
+          "/maintenance/",
+          "/onboarding/",
+        ],
+      },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
+    host: baseUrl,
   };
 }

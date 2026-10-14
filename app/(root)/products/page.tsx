@@ -9,9 +9,19 @@ import { CyberGlowMesh } from "@/components/ui/CyberGlowMesh";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Proprietary Platforms & Developer Tools — RIZMEC",
+  title: "Products & Developer Infrastructure — RIZMEC Software Systems",
   description:
-    "Explore RIZMEC's suite of proprietary software engines, SaaS platforms, and developer infrastructure: VectorFlow AI, HyperEdge Orchestrator, and Synthetix.",
+    "Explore RIZMEC's suite of proprietary software engines, SaaS platforms, and developer infrastructure built by our engineering teams.",
+  keywords: [
+    "RIZMEC products",
+    "RIZMEC software tools",
+    "developer infrastructure",
+    "SaaS tools",
+    "proprietary software",
+  ],
+  alternates: {
+    canonical: "https://rizmec.com/products",
+  },
 };
 
 export default async function ProductsCatalogPage() {
