@@ -1,11 +1,25 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { ArrowUpRight, CheckCircle2, Send, ShieldCheck, Mail, MapPin, Phone } from "lucide-react";
+import {
+  ArrowUpRight,
+  CheckCircle2,
+  Send,
+  ShieldCheck,
+  Mail,
+  MapPin,
+  Phone,
+  Lock,
+  User as UserIcon,
+  Loader2,
+} from "lucide-react";
+import { useUser } from "@clerk/nextjs";
+import Link from "next/link";
 import { submitContactMessage } from "@/lib/actions/contact.actions";
 import { getCompanySettings } from "@/lib/actions/setting.actions";
 
 export default function ContactPage() {
+  const { user, isLoaded, isSignedIn } = useUser();
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
@@ -23,10 +37,30 @@ export default function ContactPage() {
     email: "",
     phone: "",
     service: "Applied AI Systems & Autonomous Agents",
-    budget: "$100k - $250k",
+    budget: "$5k - $10k",
     timeline: "1 - 3 Months",
     message: "",
   });
+
+  // Automatically take user's email and full name from Clerk session
+  useEffect(() => {
+    if (isLoaded && user) {
+      const primaryEmail =
+        user.primaryEmailAddress?.emailAddress ||
+        user.emailAddresses?.[0]?.emailAddress ||
+        "";
+      const fullName =
+        user.fullName ||
+        [user.firstName, user.lastName].filter(Boolean).join(" ") ||
+        "";
+
+      setForm((prev) => ({
+        ...prev,
+        email: primaryEmail,
+        name: prev.name ? prev.name : fullName,
+      }));
+    }
+  }, [isLoaded, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +75,29 @@ export default function ContactPage() {
     } else {
       setError(res.error || "Failed to submit inquiry. Please try again.");
     }
+  };
+
+  const handleReset = () => {
+    setSubmitted(false);
+    const primaryEmail =
+      user?.primaryEmailAddress?.emailAddress ||
+      user?.emailAddresses?.[0]?.emailAddress ||
+      "";
+    const fullName =
+      user?.fullName ||
+      [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
+      "";
+
+    setForm({
+      name: fullName,
+      company: "",
+      email: primaryEmail,
+      phone: "",
+      service: "Applied AI Systems & Autonomous Agents",
+      budget: "$5k - $10k",
+      timeline: "1 - 3 Months",
+      message: "",
+    });
   };
 
   return (
@@ -59,26 +116,114 @@ export default function ContactPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-8 border-t border-white/10">
-        {/* Contact Form */}
+        {/* Contact Form Container */}
         <div className="lg:col-span-8">
-          {submitted ? (
+          {!isLoaded ? (
+            <div className="p-16 rounded-2xl border border-white/10 bg-neutral-950 flex flex-col items-center justify-center space-y-4 text-center">
+              <Loader2 className="w-8 h-8 text-neutral-400 animate-spin" />
+              <p className="text-xs font-mono text-neutral-400 uppercase tracking-widest">
+                Verifying Clerk credentials...
+              </p>
+            </div>
+          ) : !isSignedIn ? (
+            /* Secure Authentication Gate */
+            <div className="p-8 sm:p-14 rounded-2xl border border-white/10 bg-neutral-950 space-y-8 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-neutral-900 border border-white/15 flex items-center justify-center mx-auto text-emerald-400 shadow-inner">
+                <Lock className="w-8 h-8" />
+              </div>
+              <div className="space-y-3 max-w-xl mx-auto">
+                <span className="text-xs font-mono text-emerald-400 uppercase tracking-widest font-semibold">
+                  Secure Access Required
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                  Sign in with Clerk to access the inquiry form
+                </h2>
+                <p className="text-sm text-neutral-400 leading-relaxed">
+                  To protect architectural proposals and maintain verified enterprise correspondence, you must be signed in with Clerk. Your verified email will be automatically linked to your submission.
+                </p>
+              </div>
+
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Link
+                  href={`/sign-in?redirect_url=${encodeURIComponent("/contact")}`}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-white text-black font-semibold text-xs font-mono uppercase tracking-widest hover:bg-neutral-200 transition-all shadow-lg"
+                >
+                  <Lock className="w-4 h-4" />
+                  <span>Sign In with Clerk</span>
+                </Link>
+                <Link
+                  href={`/sign-up?redirect_url=${encodeURIComponent("/contact")}`}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-white/20 text-xs font-mono text-white uppercase tracking-widest hover:bg-white/10 transition-all"
+                >
+                  <span>Create Account</span>
+                </Link>
+              </div>
+
+              <div className="pt-8 border-t border-white/10 text-left text-xs font-mono text-neutral-500 space-y-2">
+                <div className="flex items-center gap-2 text-neutral-300">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <span>Verified Identity & NDA Protocol</span>
+                </div>
+                <p className="text-[11px] leading-relaxed">
+                  All enterprise briefs are cryptographically attributed to your Clerk authentication identifier for compliance, security, and spam prevention.
+                </p>
+              </div>
+            </div>
+          ) : submitted ? (
             <div className="p-10 rounded-2xl border border-white/20 bg-neutral-950 space-y-6 text-center max-w-lg mx-auto">
               <div className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center mx-auto">
                 <CheckCircle2 className="w-6 h-6" />
               </div>
               <h2 className="text-2xl font-bold text-white">Engagement Request Received</h2>
               <p className="text-sm text-neutral-400 leading-relaxed">
-                Your architectural inquiry has been logged into our CRM pipeline. A Principal Solutions Architect will review your scope and follow up with a technical assessment.
+                Your architectural inquiry has been logged into our CRM pipeline and attributed to your verified email (<span className="text-white font-medium">{form.email}</span>). A Principal Solutions Architect will review your scope and follow up with a technical assessment.
               </p>
               <button
-                onClick={() => setSubmitted(false)}
-                className="px-6 py-2.5 rounded-full border border-white/20 text-xs font-mono text-white uppercase hover:bg-white/5"
+                onClick={handleReset}
+                className="px-6 py-2.5 rounded-full border border-white/20 text-xs font-mono text-white uppercase hover:bg-white/5 transition-colors"
               >
                 Submit Additional Brief
               </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-8 bg-neutral-950 p-8 sm:p-12 rounded-2xl border border-white/10">
+              {/* Authenticated Identity Pill */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-neutral-900/80 border border-white/10">
+                <div className="flex items-center gap-3">
+                  {user?.imageUrl ? (
+                    <img
+                      src={user.imageUrl}
+                      alt={user.fullName || "User Avatar"}
+                      className="w-10 h-10 rounded-full border border-white/20 object-cover"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-neutral-800 border border-white/20 flex items-center justify-center text-white">
+                      <UserIcon className="w-4 h-4" />
+                    </div>
+                  )}
+                  <div>
+                    <div className="text-xs font-bold text-white flex items-center gap-2">
+                      <span>{user?.fullName || "Authenticated Client"}</span>
+                      <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                        <ShieldCheck className="w-3 h-3" />
+                        Verified Account
+                      </span>
+                    </div>
+                    <div className="text-[11px] font-mono text-neutral-400 mt-0.5">
+                      {form.email || user?.primaryEmailAddress?.emailAddress}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-left sm:text-right">
+                  <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest block">
+                    Security Level
+                  </span>
+                  <span className="text-[11px] font-mono text-emerald-400 font-medium">
+                    Clerk Authenticated
+                  </span>
+                </div>
+              </div>
+
               {error && (
                 <div className="p-4 rounded-lg bg-red-950/40 border border-red-500/30 text-red-400 text-xs font-mono">
                   {error}
@@ -114,18 +259,28 @@ export default function ContactPage() {
                   />
                 </div>
 
+                {/* Email Field - Auto-filled from Clerk and Protected */}
                 <div className="space-y-2">
-                  <label className="text-xs font-mono uppercase tracking-wider text-neutral-300">
-                    Corporate Email *
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-mono uppercase tracking-wider text-neutral-300">
+                      Corporate Email *
+                    </label>
+                    <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400">
+                      <ShieldCheck className="w-3 h-3" />
+                      Auto-filled from Clerk
+                    </span>
+                  </div>
                   <input
                     type="email"
                     required
+                    readOnly
                     value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    placeholder="name@company.com"
-                    className="w-full px-4 py-3 bg-neutral-900 border border-white/10 rounded-lg text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-white transition-colors font-sans"
+                    className="w-full px-4 py-3 bg-neutral-900/60 border border-emerald-500/30 rounded-lg text-sm text-neutral-200 cursor-not-allowed focus:outline-none font-sans select-none"
+                    title="Automatically captured from your authenticated Clerk account"
                   />
+                  <p className="text-[11px] font-mono text-neutral-500">
+                    Captured automatically from your authenticated profile.
+                  </p>
                 </div>
 
                 <div className="space-y-2">
@@ -171,10 +326,15 @@ export default function ContactPage() {
                     onChange={(e) => setForm({ ...form, budget: e.target.value })}
                     className="w-full px-4 py-3 bg-neutral-900 border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:border-white transition-colors font-sans"
                   >
-                    <option value="$25k - $50k">$25k - $50k</option>
-                    <option value="$50k - $100k">$50k - $100k</option>
-                    <option value="$100k - $250k">$100k - $250k</option>
-                    <option value="$250k+">$250k+ (Enterprise Tier)</option>
+                    <option value="< $1k">&lt; $1k (Micro-Task / Consultation)</option>
+                    <option value="$1k - $5k">$1k - $5k (MVP / Prototype)</option>
+                    <option value="$5k - $10k">$5k - $10k (Small Project)</option>
+                    <option value="$10k - $25k">$10k - $25k (Standard System)</option>
+                    <option value="$25k - $50k">$25k - $50k (Growth & Scale)</option>
+                    <option value="$50k - $100k">$50k - $100k (Advanced Platform)</option>
+                    <option value="$100k - $250k">$100k - $250k (Enterprise Tier)</option>
+                    <option value="$250k+">$250k+ (Strategic Scale)</option>
+                    <option value="Flexible / Undecided">Flexible / Undecided</option>
                   </select>
                 </div>
 

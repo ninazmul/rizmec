@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { auth, currentUser } from "@clerk/nextjs/server";
 
 /**
  * Escape user-provided strings for safe insertion into HTML
@@ -15,6 +16,14 @@ function escapeHtml(unsafe: string) {
 
 export const POST = async (req: NextRequest) => {
   try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Authentication required. Please sign in to submit a message." },
+        { status: 401 }
+      );
+    }
+
     // Parse JSON body
     const body = await req.json().catch(() => null);
     if (!body) {
@@ -23,17 +32,25 @@ export const POST = async (req: NextRequest) => {
 
     const { name, email, subject, message } = body;
 
+    const clerkUser = await currentUser();
+    const verifiedEmail =
+      clerkUser?.emailAddresses?.find(
+        (e) => e.id === clerkUser.primaryEmailAddressId,
+      )?.emailAddress ||
+      clerkUser?.emailAddresses?.[0]?.emailAddress ||
+      email;
+
     // Basic validation
     if (
       !name ||
       typeof name !== "string" ||
-      !email ||
-      typeof email !== "string" ||
+      !verifiedEmail ||
+      typeof verifiedEmail !== "string" ||
       !message ||
       typeof message !== "string"
     ) {
       return NextResponse.json(
-        { error: "Name, email, and message are required" },
+        { error: "Name and message are required, along with a verified email" },
         { status: 400 },
       );
     }
@@ -70,7 +87,7 @@ export const POST = async (req: NextRequest) => {
 
     // Sanitize inputs for HTML
     const safeName = escapeHtml(name.trim());
-    const safeEmail = escapeHtml(email.trim());
+    const safeEmail = escapeHtml(verifiedEmail.trim());
     const safeSubject = escapeHtml(
       (subject || `New inquiry from ${name}`).trim(),
     );

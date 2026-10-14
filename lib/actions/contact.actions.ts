@@ -6,6 +6,7 @@ import Lead from "@/lib/database/models/lead.model";
 import { requirePermission } from "@/lib/auth/rbac";
 import { revalidatePath } from "next/cache";
 import nodemailer from "nodemailer";
+import { auth, currentUser } from "@clerk/nextjs/server";
 
 export async function submitContactMessage(data: {
   name: string;
@@ -19,25 +20,58 @@ export async function submitContactMessage(data: {
   message: string;
 }) {
   try {
-    await connectToDatabase();
-
-    if (!data.name || !data.email || !data.message) {
-      return { success: false, error: "Please provide your name, email, and project details." };
+    const { userId } = await auth();
+    if (!userId) {
+      return {
+        success: false,
+        error: "Authentication required. You must be signed in with Clerk to submit an inquiry.",
+      };
     }
 
+    const clerkUser = await currentUser();
+    const verifiedEmail =
+      clerkUser?.emailAddresses?.find(
+        (e) => e.id === clerkUser.primaryEmailAddressId,
+      )?.emailAddress ||
+      clerkUser?.emailAddresses?.[0]?.emailAddress ||
+      data.email?.trim().toLowerCase();
+
+    if (!verifiedEmail) {
+      return {
+        success: false,
+        error: "Unable to verify email address. Please ensure your Clerk account has a valid email.",
+      };
+    }
+
+    await connectToDatabase();
+
+    if (!data.name || !data.message) {
+      return { success: false, error: "Please provide your name and project details." };
+    }
+
+    const messagePayload = {
+      ...data,
+      email: verifiedEmail,
+    };
+
     // 1. Create ContactMessage record
-    const message = await ContactMessage.create(data);
+    const message = await ContactMessage.create(messagePayload);
 
     // 2. Automatically create a high-priority Lead in the CRM!
     await Lead.create({
       name: data.name,
       company: data.company || "",
-      email: data.email.toLowerCase().trim(),
+      email: verifiedEmail,
       phone: data.phone || "",
       source: "website",
       serviceInterest: data.service || "Engineering Engagement",
       budget: data.budget || "Not specified",
-      priority: data.budget?.includes("100k") || data.budget?.includes("50k") ? "high" : "medium",
+      priority:
+        data.budget?.includes("250k") || data.budget?.includes("100k") || data.budget?.includes("50k")
+          ? "high"
+          : data.budget?.includes("< $1k") || data.budget?.includes("$1k - $5k")
+          ? "low"
+          : "medium",
       status: "new",
       tags: ["Website Contact", data.service || "Digital Engineering"],
       notes: `Project Timeline: ${data.timeline || "Flexible"}\nMessage: ${data.message}`,
@@ -75,7 +109,7 @@ export async function submitContactMessage(data: {
               <h2 style="color: #ffffff; margin-bottom: 16px;">New Enterprise Engagement Request</h2>
               <p><strong>Name:</strong> ${data.name}</p>
               <p><strong>Company:</strong> ${data.company || "N/A"}</p>
-              <p><strong>Email:</strong> ${data.email}</p>
+              <p><strong>Email:</strong> ${verifiedEmail}</p>
               <p><strong>Phone:</strong> ${data.phone || "N/A"}</p>
               <p><strong>Service Focus:</strong> ${data.service || "N/A"}</p>
               <p><strong>Estimated Budget:</strong> ${data.budget || "N/A"}</p>

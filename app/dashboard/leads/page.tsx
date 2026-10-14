@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   Users2,
   Upload,
@@ -10,6 +11,18 @@ import {
   Trash2,
   Edit2,
   CheckCircle2,
+  ChevronDown,
+  ChevronRight,
+  Eye,
+  Maximize2,
+  Copy,
+  Check,
+  Mail,
+  Phone,
+  Sparkles,
+  Send,
+  X,
+  MessageSquare,
 } from "lucide-react";
 import {
   getLeads,
@@ -49,6 +62,18 @@ export default function LeadsCrmPage() {
   const [importPreview, setImportPreview] = useState<any[]>([]);
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<any>(null);
+
+  const [expandedLeadId, setExpandedLeadId] = useState<string | null>(null);
+  const [viewingLead, setViewingLead] = useState<any | null>(null);
+  const [copiedLeadNotesId, setCopiedLeadNotesId] = useState<string | null>(null);
+
+  const handleCopyLeadNotes = (text: string, id: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    navigator.clipboard.writeText(text);
+    setCopiedLeadNotesId(id);
+    toast.success("Lead description copied to clipboard!");
+    setTimeout(() => setCopiedLeadNotesId(null), 2000);
+  };
 
   const fetchLeads = async () => {
     setLoading(true);
@@ -209,6 +234,13 @@ export default function LeadsCrmPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3 font-mono text-xs">
+          <Link
+            href="/dashboard/contact-messages"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-white/20 text-neutral-300 hover:text-white uppercase tracking-wider hover:bg-white/5 transition-all"
+          >
+            <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Contact Messages</span>
+          </Link>
           <button
             onClick={() => {
               setIsImportOpen(true);
@@ -268,6 +300,7 @@ export default function LeadsCrmPage() {
           <table className="w-full text-left text-xs">
             <thead>
               <tr className="border-b border-white/10 text-neutral-400 font-mono uppercase bg-neutral-900/50">
+                <th className="py-3 px-3 w-8"></th>
                 <th className="py-3 px-4">Lead Contact</th>
                 <th className="py-3 px-4">Company / Org</th>
                 <th className="py-3 px-4">Priority</th>
@@ -281,7 +314,7 @@ export default function LeadsCrmPage() {
               {loading ? (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={8}
                     className="py-12 text-center text-neutral-500 font-mono"
                   >
                     Loading CRM telemetry...
@@ -290,83 +323,196 @@ export default function LeadsCrmPage() {
               ) : leads.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={8}
                     className="py-12 text-center text-neutral-500 font-mono"
                   >
                     No leads found matching criteria.
                   </td>
                 </tr>
               ) : (
-                leads.map((lead) => (
-                  <tr
-                    key={lead._id}
-                    className="hover:bg-white/[0.01] transition-colors"
-                  >
-                    <td className="py-4 px-4">
-                      <div className="font-bold text-white">{lead.name}</div>
-                      <div className="text-neutral-400 font-mono text-[11px]">
-                        {lead.email}
-                      </div>
-                    </td>
-                    <td className="py-4 px-4 text-neutral-300 font-mono">
-                      {lead.company || "N/A"}
-                    </td>
-                    <td className="py-4 px-4">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold border ${priorityBadge(lead.priority)}`}
-                      >
-                        {lead.priority || "medium"}
-                      </span>
-                    </td>
-                    <td className="py-4 px-4 text-neutral-300 max-w-xs truncate">
-                      {lead.serviceInterest}
-                    </td>
-                    <td className="py-4 px-4 font-mono font-semibold text-white">
-                      {lead.budget}
-                    </td>
-                    <td className="py-4 px-4">
-                      <select
-                        value={lead.status}
-                        onChange={(e) =>
-                          handleStatusChange(lead._id, e.target.value)
-                        }
-                        className={`px-2.5 py-1 rounded text-[10px] font-mono uppercase font-bold border focus:outline-none ${
-                          lead.status === "new"
-                            ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
-                            : lead.status === "won"
-                              ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
-                              : "bg-white/5 text-neutral-300 border-white/10"
+                leads.map((lead) => {
+                  const isExpanded = expandedLeadId === lead._id;
+                  return (
+                    <React.Fragment key={lead._id}>
+                      <tr
+                        onClick={() => setExpandedLeadId(isExpanded ? null : lead._id)}
+                        className={`cursor-pointer transition-colors ${
+                          isExpanded ? "bg-white/[0.03]" : "hover:bg-white/[0.01]"
                         }`}
                       >
-                        <option value="new">New</option>
-                        <option value="contacted">Contacted</option>
-                        <option value="qualified">Qualified</option>
-                        <option value="proposal">Proposal</option>
-                        <option value="negotiation">Negotiation</option>
-                        <option value="won">Won</option>
-                        <option value="lost">Lost</option>
-                      </select>
-                    </td>
-                    <td className="py-4 px-4 text-right">
-                      <div className="inline-flex items-center gap-1">
-                        <button
-                          onClick={() => openEdit(lead)}
-                          className="p-1.5 rounded text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
-                          title="Edit lead"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteLead(lead._id)}
-                          className="p-1.5 rounded text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
-                          title="Delete Lead"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                        <td className="py-4 px-3 text-center">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setExpandedLeadId(isExpanded ? null : lead._id);
+                            }}
+                            className="p-1 rounded text-neutral-400 hover:text-white transition-colors"
+                            title={isExpanded ? "Collapse description" : "Click to drop down full description"}
+                          >
+                            {isExpanded ? (
+                              <ChevronDown className="w-4 h-4 text-emerald-400" />
+                            ) : (
+                              <ChevronRight className="w-4 h-4" />
+                            )}
+                          </button>
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="font-bold text-white">{lead.name}</div>
+                          <div className="text-neutral-400 font-mono text-[11px]">
+                            {lead.email}
+                          </div>
+                        </td>
+                        <td className="py-4 px-4 text-neutral-300 font-mono">
+                          {lead.company || "N/A"}
+                        </td>
+                        <td className="py-4 px-4">
+                          <span
+                            className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold border ${priorityBadge(lead.priority)}`}
+                          >
+                            {lead.priority || "medium"}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4 text-neutral-300 max-w-xs truncate">
+                          {lead.serviceInterest}
+                        </td>
+                        <td className="py-4 px-4 font-mono font-semibold text-white">
+                          {lead.budget}
+                        </td>
+                        <td className="py-4 px-4" onClick={(e) => e.stopPropagation()}>
+                          <select
+                            value={lead.status}
+                            onChange={(e) =>
+                              handleStatusChange(lead._id, e.target.value)
+                            }
+                            className={`px-2.5 py-1 rounded text-[10px] font-mono uppercase font-bold border focus:outline-none ${
+                              lead.status === "new"
+                                ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+                                : lead.status === "won"
+                                  ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
+                                  : "bg-white/5 text-neutral-300 border-white/10"
+                            }`}
+                          >
+                            <option value="new">New</option>
+                            <option value="contacted">Contacted</option>
+                            <option value="qualified">Qualified</option>
+                            <option value="proposal">Proposal</option>
+                            <option value="negotiation">Negotiation</option>
+                            <option value="won">Won</option>
+                            <option value="lost">Lost</option>
+                          </select>
+                        </td>
+                        <td className="py-4 px-4 text-right" onClick={(e) => e.stopPropagation()}>
+                          <div className="inline-flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => setViewingLead(lead)}
+                              className="p-1.5 rounded text-neutral-400 hover:text-white hover:bg-white/10 transition-colors"
+                              title="View Full Scope & Description Modal"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => openEdit(lead)}
+                              className="p-1.5 rounded text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                              title="Edit lead"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteLead(lead._id)}
+                              className="p-1.5 rounded text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                              title="Delete Lead"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+
+                      {/* Dropdown Expandable Row Showing Full Description */}
+                      {isExpanded && (
+                        <tr className="bg-neutral-900/60 border-t border-b border-white/10 animate-in fade-in duration-200">
+                          <td colSpan={8} className="p-6">
+                            <div className="space-y-4 max-w-4xl">
+                              <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                                <span className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-300 flex items-center gap-2">
+                                  <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                                  Project Scope & Description
+                                </span>
+                                <div className="flex items-center gap-2">
+                                  {lead.notes && (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => handleCopyLeadNotes(lead.notes, lead._id, e)}
+                                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white text-[11px] font-mono transition-colors"
+                                    >
+                                      {copiedLeadNotesId === lead._id ? (
+                                        <>
+                                          <Check className="w-3 h-3 text-emerald-400" />
+                                          <span className="text-emerald-400">Copied</span>
+                                        </>
+                                      ) : (
+                                        <>
+                                          <Copy className="w-3 h-3" />
+                                          <span>Copy Scope</span>
+                                        </>
+                                      )}
+                                    </button>
+                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setViewingLead(lead);
+                                    }}
+                                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white text-[11px] font-mono transition-colors"
+                                  >
+                                    <Maximize2 className="w-3 h-3" />
+                                    <span>Open Modal</span>
+                                  </button>
+                                </div>
+                              </div>
+
+                              {lead.notes ? (
+                                <div className="p-4 rounded-xl bg-black border border-white/10">
+                                  <p className="text-neutral-200 text-xs sm:text-sm font-sans whitespace-pre-wrap leading-relaxed select-text">
+                                    {lead.notes}
+                                  </p>
+                                </div>
+                              ) : (
+                                <p className="text-neutral-500 font-mono text-xs italic">
+                                  No scope notes attached to this lead record.
+                                </p>
+                              )}
+
+                              <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-neutral-400 pt-1">
+                                <div className="flex items-center gap-4">
+                                  {lead.phone && (
+                                    <span>Phone: <strong className="text-white">{lead.phone}</strong></span>
+                                  )}
+                                  {lead.source && (
+                                    <span>Source: <strong className="text-white uppercase">{lead.source}</strong></span>
+                                  )}
+                                </div>
+                                <a
+                                  href={`mailto:${lead.email}?subject=Regarding%20your%20inquiry%20with%20RIZMEC`}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-black font-semibold uppercase tracking-wider hover:bg-neutral-200 transition-all text-[11px]"
+                                >
+                                  <Send className="w-3 h-3" />
+                                  <span>Email Lead</span>
+                                </a>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -658,6 +804,154 @@ export default function LeadsCrmPage() {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {viewingLead && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
+          onClick={() => setViewingLead(null)}
+        >
+          <div
+            className="bg-neutral-950 border border-white/20 rounded-2xl max-w-2xl w-full p-6 sm:p-8 space-y-6 my-8 max-h-[90vh] overflow-y-auto shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-start justify-between border-b border-white/10 pb-4">
+              <div>
+                <span className="text-[10px] font-mono tracking-widest text-emerald-400 uppercase font-semibold">
+                  // LEAD SCOPE & DOSSIER
+                </span>
+                <h3 className="text-xl sm:text-2xl font-bold text-white mt-1">
+                  {viewingLead.name}
+                </h3>
+                {viewingLead.company && (
+                  <p className="text-xs font-mono text-neutral-400 mt-0.5">
+                    {viewingLead.company}
+                  </p>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => setViewingLead(null)}
+                className="p-1 rounded-lg text-neutral-400 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Quick Metadata Chips */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+              <div className="p-3 rounded-xl bg-neutral-900 border border-white/10">
+                <span className="text-neutral-500 text-[10px] uppercase block">Email</span>
+                <a
+                  href={`mailto:${viewingLead.email}`}
+                  className="text-white hover:text-emerald-400 transition-colors font-medium truncate block"
+                >
+                  {viewingLead.email}
+                </a>
+              </div>
+              <div className="p-3 rounded-xl bg-neutral-900 border border-white/10">
+                <span className="text-neutral-500 text-[10px] uppercase block">Phone</span>
+                <span className="text-white block truncate">
+                  {viewingLead.phone || "Not provided"}
+                </span>
+              </div>
+              <div className="p-3 rounded-xl bg-neutral-900 border border-white/10">
+                <span className="text-neutral-500 text-[10px] uppercase block">Budget</span>
+                <span className="text-emerald-400 font-bold block truncate">
+                  {viewingLead.budget || "Not specified"}
+                </span>
+              </div>
+              <div className="p-3 rounded-xl bg-neutral-900 border border-white/10">
+                <span className="text-neutral-500 text-[10px] uppercase block">Priority</span>
+                <span className="text-white uppercase font-bold block truncate">
+                  {viewingLead.priority || "Medium"}
+                </span>
+              </div>
+            </div>
+
+            {/* Service & Pipeline Status */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+              <div className="p-3 rounded-xl bg-neutral-900/50 border border-white/10 flex items-center justify-between">
+                <span className="text-neutral-400 uppercase">Service:</span>
+                <span className="text-white font-semibold truncate ml-2">
+                  {viewingLead.serviceInterest || "General Inquiry"}
+                </span>
+              </div>
+              <div className="p-3 rounded-xl bg-neutral-900/50 border border-white/10 flex items-center justify-between">
+                <span className="text-neutral-400 uppercase">Pipeline Status:</span>
+                <span className="text-emerald-400 font-bold uppercase">
+                  {viewingLead.status || "New"}
+                </span>
+              </div>
+            </div>
+
+            {/* Scope / Notes Box */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-mono uppercase tracking-wider text-neutral-300 font-semibold flex items-center gap-2">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                  Full Description & Scope Notes
+                </label>
+                {viewingLead.notes && (
+                  <button
+                    type="button"
+                    onClick={(e) => handleCopyLeadNotes(viewingLead.notes, "modal-lead", e)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white text-xs font-mono transition-colors"
+                  >
+                    {copiedLeadNotesId === "modal-lead" ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-emerald-400">Copied to Clipboard</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Copy Scope</span>
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+              <div className="p-5 rounded-xl bg-black border border-white/15 max-h-72 overflow-y-auto">
+                <p className="text-neutral-200 text-sm whitespace-pre-wrap leading-relaxed select-text font-sans">
+                  {viewingLead.notes || "No scope notes attached to this lead."}
+                </p>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center justify-between pt-2 border-t border-white/10">
+              <button
+                type="button"
+                onClick={() => setViewingLead(null)}
+                className="px-4 py-2 rounded-lg border border-white/20 text-xs font-mono text-neutral-300 hover:text-white uppercase tracking-wider transition-all"
+              >
+                Close
+              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const l = viewingLead;
+                    setViewingLead(null);
+                    openEdit(l);
+                  }}
+                  className="px-4 py-2 rounded-lg border border-white/20 text-xs font-mono text-white hover:bg-white/10 uppercase tracking-wider transition-all"
+                >
+                  Edit Lead
+                </button>
+                <a
+                  href={`mailto:${viewingLead.email}?subject=Regarding%20your%20inquiry%20with%20RIZMEC`}
+                  className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-white text-black font-semibold text-xs font-mono uppercase tracking-wider hover:bg-neutral-200 transition-all shadow-md"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>Email Lead</span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       )}
