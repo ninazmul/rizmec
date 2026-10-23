@@ -8,6 +8,7 @@ import {
   ExternalLink,
   Plus,
   Trash2,
+  GripVertical,
   Copy,
   Check,
   Globe,
@@ -26,6 +27,13 @@ import { getMyProfile, updateMyProfile, checkSlugAvailable } from "@/lib/actions
 import { getResumeDownloadUrl, isValidResumeUrl } from "@/lib/utils";
 import ImageUploader from "@/components/shared/ImageUploader";
 
+function reorderItems<T>(items: T[], fromIndex: number, toIndex: number): T[] {
+  const reordered = [...items];
+  const [item] = reordered.splice(fromIndex, 1);
+  reordered.splice(toIndex, 0, item);
+  return reordered;
+}
+
 export default function MemberProfileDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -34,6 +42,10 @@ export default function MemberProfileDashboardPage() {
   const [activeTab, setActiveTab] = useState<"identity" | "skills" | "projects" | "career" | "contact" | "theme">("identity");
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [slugStatus, setSlugStatus] = useState<{ available?: boolean; error?: string }>({});
+  const [draggedItem, setDraggedItem] = useState<{
+    list: "experience" | "education";
+    index: number;
+  } | null>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -294,6 +306,30 @@ export default function MemberProfileDashboardPage() {
 
   const removeEducation = (index: number) => {
     setForm({ ...form, education: form.education.filter((_, i) => i !== index) });
+  };
+
+  const handleCareerItemDrop = (
+    list: "experience" | "education",
+    targetIndex: number,
+    event: React.DragEvent<HTMLDivElement>,
+  ) => {
+    event.preventDefault();
+    if (!draggedItem || draggedItem.list !== list) return;
+
+    setForm((current) => {
+      if (list === "experience") {
+        return {
+          ...current,
+          experience: reorderItems(current.experience, draggedItem.index, targetIndex),
+        };
+      }
+
+      return {
+        ...current,
+        education: reorderItems(current.education, draggedItem.index, targetIndex),
+      };
+    });
+    setDraggedItem(null);
   };
 
   const addCertification = () => {
@@ -893,10 +929,13 @@ export default function MemberProfileDashboardPage() {
           {/* Experience */}
           <div className="p-7 rounded-3xl border border-white/10 bg-neutral-950 space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-white font-mono uppercase tracking-wider flex items-center gap-2">
-                <Briefcase className="w-4 h-4 text-cyan-400" />
-                <span>Professional Work Experience</span>
-              </h3>
+              <div>
+                <h3 className="text-base font-bold text-white font-mono uppercase tracking-wider flex items-center gap-2">
+                  <Briefcase className="w-4 h-4 text-cyan-400" />
+                  <span>Professional Work Experience</span>
+                </h3>
+                <p className="mt-1 text-xs text-neutral-500">Drag the handles to set the order shown on your portfolio and resume.</p>
+              </div>
               <button
                 type="button"
                 onClick={addExperience}
@@ -909,19 +948,53 @@ export default function MemberProfileDashboardPage() {
 
             <div className="space-y-4">
               {form.experience.map((exp, idx) => (
-                <div key={idx} className="p-4 rounded-xl border border-white/10 bg-neutral-900/50 space-y-3">
+                <div
+                  key={idx}
+                  onDragOver={(event) => {
+                    if (draggedItem?.list === "experience") {
+                      event.preventDefault();
+                      event.dataTransfer.dropEffect = "move";
+                    }
+                  }}
+                  onDrop={(event) => handleCareerItemDrop("experience", idx, event)}
+                  className={`p-4 rounded-xl border bg-neutral-900/50 space-y-3 transition-colors ${
+                    draggedItem?.list === "experience" && draggedItem.index === idx
+                      ? "border-cyan-400/60 opacity-50"
+                      : "border-white/10"
+                  }`}
+                >
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <input
-                      type="text"
-                      value={exp.role}
-                      onChange={(e) => {
-                        const updated = [...form.experience];
-                        updated[idx].role = e.target.value;
-                        setForm({ ...form, experience: updated });
-                      }}
-                      placeholder="Role (e.g. Senior Software Architect)"
-                      className="px-3 py-2 bg-neutral-950 border border-white/10 rounded-lg text-white text-xs"
-                    />
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        draggable
+                        onDragStart={(event) => {
+                          event.dataTransfer.effectAllowed = "move";
+                          event.dataTransfer.setData("text/plain", String(idx));
+                          setDraggedItem({ list: "experience", index: idx });
+                        }}
+                        onDragEnd={() => setDraggedItem(null)}
+                        aria-label={`Reorder work experience ${idx + 1}`}
+                        title="Drag to reorder"
+                        className="shrink-0 cursor-grab touch-none text-neutral-500 hover:text-cyan-300 active:cursor-grabbing"
+                      >
+                        <GripVertical className="w-4 h-4" />
+                      </button>
+                      <span className="w-6 shrink-0 text-center font-mono text-[10px] text-cyan-400">
+                        {String(idx + 1).padStart(2, "0")}
+                      </span>
+                      <input
+                        type="text"
+                        value={exp.role}
+                        onChange={(e) => {
+                          const updated = [...form.experience];
+                          updated[idx].role = e.target.value;
+                          setForm({ ...form, experience: updated });
+                        }}
+                        placeholder="Role (e.g. Senior Software Architect)"
+                        className="min-w-0 flex-1 px-3 py-2 bg-neutral-950 border border-white/10 rounded-lg text-white text-xs"
+                      />
+                    </div>
                     <input
                       type="text"
                       value={exp.company}
@@ -976,7 +1049,10 @@ export default function MemberProfileDashboardPage() {
             {/* Education */}
             <div className="p-7 rounded-3xl border border-white/10 bg-neutral-950 space-y-4">
               <div className="flex items-center justify-between">
-                <h4 className="text-sm font-bold text-white font-mono uppercase">Academic Education</h4>
+                <div>
+                  <h4 className="text-sm font-bold text-white font-mono uppercase">Academic Education</h4>
+                  <p className="mt-1 text-xs text-neutral-500">Drag the handles to change the display order.</p>
+                </div>
                 <button
                   type="button"
                   onClick={addEducation}
@@ -988,19 +1064,53 @@ export default function MemberProfileDashboardPage() {
 
               <div className="space-y-3">
                 {form.education.map((edu, idx) => (
-                  <div key={idx} className="p-3 rounded-xl border border-white/10 bg-neutral-900/50 space-y-2">
+                  <div
+                    key={idx}
+                    onDragOver={(event) => {
+                      if (draggedItem?.list === "education") {
+                        event.preventDefault();
+                        event.dataTransfer.dropEffect = "move";
+                      }
+                    }}
+                    onDrop={(event) => handleCareerItemDrop("education", idx, event)}
+                    className={`p-3 rounded-xl border bg-neutral-900/50 space-y-2 transition-colors ${
+                      draggedItem?.list === "education" && draggedItem.index === idx
+                        ? "border-cyan-400/60 opacity-50"
+                        : "border-white/10"
+                    }`}
+                  >
                     <div className="flex justify-between items-center gap-2">
-                      <input
-                        type="text"
-                        value={edu.degree}
-                        onChange={(e) => {
-                          const updated = [...form.education];
-                          updated[idx].degree = e.target.value;
-                          setForm({ ...form, education: updated });
-                        }}
-                        placeholder="Degree"
-                        className="w-full px-2.5 py-1.5 bg-neutral-950 border border-white/10 rounded text-xs text-white"
-                      />
+                      <div className="flex min-w-0 flex-1 items-center gap-2">
+                        <button
+                          type="button"
+                          draggable
+                          onDragStart={(event) => {
+                            event.dataTransfer.effectAllowed = "move";
+                            event.dataTransfer.setData("text/plain", String(idx));
+                            setDraggedItem({ list: "education", index: idx });
+                          }}
+                          onDragEnd={() => setDraggedItem(null)}
+                          aria-label={`Reorder education ${idx + 1}`}
+                          title="Drag to reorder"
+                          className="shrink-0 cursor-grab touch-none text-neutral-500 hover:text-cyan-300 active:cursor-grabbing"
+                        >
+                          <GripVertical className="w-4 h-4" />
+                        </button>
+                        <span className="w-6 shrink-0 text-center font-mono text-[10px] text-cyan-400">
+                          {String(idx + 1).padStart(2, "0")}
+                        </span>
+                        <input
+                          type="text"
+                          value={edu.degree}
+                          onChange={(e) => {
+                            const updated = [...form.education];
+                            updated[idx].degree = e.target.value;
+                            setForm({ ...form, education: updated });
+                          }}
+                          placeholder="Degree"
+                          className="w-full min-w-0 px-2.5 py-1.5 bg-neutral-950 border border-white/10 rounded text-xs text-white"
+                        />
+                      </div>
                       <button
                         type="button"
                         onClick={() => removeEducation(idx)}
