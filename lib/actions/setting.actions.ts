@@ -6,27 +6,28 @@ import { requirePermission } from "@/lib/auth/rbac";
 import { revalidatePath } from "next/cache";
 
 export async function getCompanySettings(): Promise<any> {
+  const fallbackSettings = {
+    companyName: "RIZMEC",
+    tagline: "From Algorithms to Engineered Intelligence",
+    positioning: "Engineering digital infrastructure that helps businesses operate, automate, and scale.",
+    philosophy: "From Algorithms to Engineered Intelligence.",
+    contactEmail: "hello@rizmec.com",
+    contactPhone: "",
+    address: "Gazipur 1750, Dhaka, Bangladesh",
+    paymentInstructions:
+      "Bank Wire / International Transfer: Inquire with billing at hello@rizmec.com for verified account details.",
+  };
+
   try {
     await connectToDatabase();
     let setting = await CompanySetting.findOne().lean();
     if (!setting) {
-      setting = await CompanySetting.create({
-        companyName: "RIZMEC",
-        tagline: "From Algorithms to Engineered Intelligence",
-        positioning: "Engineering digital infrastructure that helps businesses operate, automate, and scale.",
-        philosophy: "From Algorithms to Engineered Intelligence.",
-        contactEmail: "hello@rizmec.com",
-        contactPhone: "",
-        address: "Gazipur 1750, Dhaka, Bangladesh",
-        paymentInstructions:
-          "Bank Wire / International Transfer: Inquire with billing at hello@rizmec.com for verified account details.",
-      });
-      setting = JSON.parse(JSON.stringify(setting));
+      return fallbackSettings;
     }
     return JSON.parse(JSON.stringify(setting));
   } catch (error) {
-    console.error("Error fetching company settings:", error);
-    return null;
+    console.warn("Error fetching company settings, using verified fallbacks:", error);
+    return fallbackSettings;
   }
 }
 

@@ -5,12 +5,16 @@ import Service from "@/lib/database/models/service.model";
 import Product from "@/lib/database/models/product.model";
 import TeamMember from "@/lib/database/models/teamMember.model";
 import PageModel from "@/lib/database/models/page.model";
+import {
+  CORE_CAPABILITIES,
+  VERIFIED_CASE_STUDIES,
+  VERIFIED_PLATFORMS,
+  FOUNDER_INFO,
+} from "@/constants/verifiedData";
 
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  await connectToDatabase();
-
   const baseUrl =
     process.env.NEXT_PUBLIC_APP_URL || "https://rizmec.com";
 
@@ -78,87 +82,136 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Dynamic: Projects / Work
-  const projects = await Project.find({ published: true })
-    .select("slug updatedAt")
-    .lean<any[]>();
+  try {
+    await connectToDatabase();
 
-  const projectUrls: MetadataRoute.Sitemap = projects.map((p) => ({
-    url: `${baseUrl}/work/${p.slug}`,
-    lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
-    changeFrequency: "weekly",
-    priority: 0.8,
-  }));
+    // Dynamic: Projects / Work
+    const projects = await Project.find({ published: true })
+      .select("slug updatedAt")
+      .lean<any[]>();
 
-  // Dynamic: Services
-  const services = await Service.find({ published: true })
-    .select("slug updatedAt")
-    .lean<any[]>();
-
-  const serviceUrls: MetadataRoute.Sitemap = services.map((s) => ({
-    url: `${baseUrl}/services/${s.slug}`,
-    lastModified: s.updatedAt ? new Date(s.updatedAt) : new Date(),
-    changeFrequency: "monthly",
-    priority: 0.75,
-  }));
-
-  // Dynamic: Products / Platforms
-  const fictionalProductSlugs = ["vectorflow-ai", "hyperedge", "synthetix", "omniledger"];
-  const products = await Product.find({ published: true })
-    .select("slug updatedAt")
-    .lean<any[]>();
-
-  const productUrls: MetadataRoute.Sitemap = products
-    .filter((p) => !fictionalProductSlugs.includes(p.slug?.toLowerCase()))
-    .map((p) => ({
-      url: `${baseUrl}/products/${p.slug}`,
+    const projectUrls: MetadataRoute.Sitemap = (projects || []).map((p) => ({
+      url: `${baseUrl}/work/${p.slug}`,
       lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    }));
+
+    // Dynamic: Services
+    const services = await Service.find({ published: true })
+      .select("slug updatedAt")
+      .lean<any[]>();
+
+    const serviceUrls: MetadataRoute.Sitemap = (services || []).map((s) => ({
+      url: `${baseUrl}/services/${s.slug}`,
+      lastModified: s.updatedAt ? new Date(s.updatedAt) : new Date(),
       changeFrequency: "monthly",
       priority: 0.75,
     }));
 
-  // Dynamic: Team Members (Verified only)
-  const fictionalTeamSlugs = ["elena-vance", "marcus-chen", "sophia-sterling"];
-  const teamMembers = await TeamMember.find({ published: true })
-    .select("slug updatedAt")
-    .lean<any[]>();
+    // Dynamic: Products / Platforms
+    const fictionalProductSlugs = [
+      "vectorflow-ai",
+      "hyperedge",
+      "synthetix",
+      "omniledger",
+    ];
+    const products = await Product.find({ published: true })
+      .select("slug updatedAt")
+      .lean<any[]>();
 
-  const teamUrls: MetadataRoute.Sitemap = teamMembers
-    .filter((t) => !fictionalTeamSlugs.includes(t.slug?.toLowerCase()))
-    .map((t) => ({
-      url: `${baseUrl}/p/${t.slug}`,
-      lastModified: t.updatedAt ? new Date(t.updatedAt) : new Date(),
-      changeFrequency: "monthly",
-      priority: 0.6,
+    const productUrls: MetadataRoute.Sitemap = (products || [])
+      .filter((p) => !fictionalProductSlugs.includes(p.slug?.toLowerCase()))
+      .map((p) => ({
+        url: `${baseUrl}/products/${p.slug}`,
+        lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
+        changeFrequency: "monthly",
+        priority: 0.75,
+      }));
+
+    // Dynamic: Team Members (Verified only)
+    const fictionalTeamSlugs = ["elena-vance", "marcus-chen", "sophia-sterling"];
+    const teamMembers = await TeamMember.find({ published: true })
+      .select("slug updatedAt")
+      .lean<any[]>();
+
+    const teamUrls: MetadataRoute.Sitemap = (teamMembers || [])
+      .filter((t) => !fictionalTeamSlugs.includes(t.slug?.toLowerCase()))
+      .map((t) => ({
+        url: `${baseUrl}/p/${t.slug}`,
+        lastModified: t.updatedAt ? new Date(t.updatedAt) : new Date(),
+        changeFrequency: "monthly",
+        priority: 0.6,
+      }));
+
+    // Dynamic: CMS pages
+    const pages = await PageModel.find({ status: "published" })
+      .populate("parentPage", "slug")
+      .select("slug updatedAt parentPage")
+      .lean<any[]>();
+
+    const pageUrls: MetadataRoute.Sitemap = (pages || []).map((page) => {
+      const parentSlug =
+        page.parentPage && typeof page.parentPage === "object"
+          ? page.parentPage.slug
+          : null;
+      return {
+        url: parentSlug
+          ? `${baseUrl}/${parentSlug}/${page.slug}`
+          : `${baseUrl}/${page.slug}`,
+        lastModified: page.updatedAt ? new Date(page.updatedAt) : new Date(),
+        changeFrequency: "monthly",
+        priority: parentSlug ? 0.5 : 0.6,
+      };
+    });
+
+    return [
+      ...staticPages,
+      ...projectUrls,
+      ...serviceUrls,
+      ...productUrls,
+      ...teamUrls,
+      ...pageUrls,
+    ];
+  } catch (error) {
+    console.warn("Database connection unavailable for sitemap, using verified fallbacks:", error);
+
+    const fallbackProjectUrls: MetadataRoute.Sitemap = VERIFIED_CASE_STUDIES.map((p) => ({
+      url: `${baseUrl}/work/${p.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
     }));
 
-  // Dynamic: CMS pages
-  const pages = await PageModel.find({ status: "published" })
-    .populate("parentPage", "slug")
-    .select("slug updatedAt parentPage")
-    .lean<any[]>();
-
-  const pageUrls: MetadataRoute.Sitemap = pages.map((page) => {
-    const parentSlug =
-      page.parentPage && typeof page.parentPage === "object"
-        ? page.parentPage.slug
-        : null;
-    return {
-      url: parentSlug
-        ? `${baseUrl}/${parentSlug}/${page.slug}`
-        : `${baseUrl}/${page.slug}`,
-      lastModified: page.updatedAt ? new Date(page.updatedAt) : new Date(),
+    const fallbackServiceUrls: MetadataRoute.Sitemap = CORE_CAPABILITIES.map((s) => ({
+      url: `${baseUrl}/services/${s.slug}`,
+      lastModified: new Date(),
       changeFrequency: "monthly",
-      priority: parentSlug ? 0.5 : 0.6,
-    };
-  });
+      priority: 0.75,
+    }));
 
-  return [
-    ...staticPages,
-    ...projectUrls,
-    ...serviceUrls,
-    ...productUrls,
-    ...teamUrls,
-    ...pageUrls,
-  ];
+    const fallbackProductUrls: MetadataRoute.Sitemap = VERIFIED_PLATFORMS.map((p) => ({
+      url: `${baseUrl}/products/${p.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.75,
+    }));
+
+    const fallbackTeamUrls: MetadataRoute.Sitemap = [
+      {
+        url: `${baseUrl}/p/${FOUNDER_INFO.slug}`,
+        lastModified: new Date(),
+        changeFrequency: "monthly",
+        priority: 0.6,
+      },
+    ];
+
+    return [
+      ...staticPages,
+      ...fallbackProjectUrls,
+      ...fallbackServiceUrls,
+      ...fallbackProductUrls,
+      ...fallbackTeamUrls,
+    ];
+  }
 }
