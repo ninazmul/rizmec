@@ -1,9 +1,9 @@
 <div align="center">
-  <img src="public/assets/images/rizmec-icon.png" alt="RIZMEC Logo" width="80" />
-  <h1>RIZMEC — Intelligence. Engineered.</h1>
-  <p><strong>Global Technology Engineering Platform</strong></p>
+  <img src="public/assets/images/rizmec-icon.png" alt="Rizmec Logo" width="80" />
+  <h1>Rizmec — From Algorithms to Engineered Intelligence</h1>
+  <p><strong>Software Engineering & Intelligent Automation</strong></p>
   <p>
-    High-performance software systems · AI architectures · Distributed platforms · Mission-critical cloud solutions
+    Custom business software · AI & workflow automation · Education technology platforms
   </p>
 
   <br />
@@ -21,12 +21,13 @@
 ## Table of Contents
 
 - [Overview](#overview)
+- [Brand](#brand)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
-- [SEO & Sitemap](#seo--sitemap)
+- [SEO & Structured Data](#seo--structured-data)
 - [Security & RBAC](#security--rbac)
 - [Scripts](#scripts)
 - [License & Authors](#license--authors)
@@ -35,7 +36,38 @@
 
 ## Overview
 
-**RIZMEC** is a full-stack enterprise technology platform built with Next.js 16 (App Router), React 19, and MongoDB. It powers the public-facing corporate website, client portals (invoices & quotations), and a comprehensive admin dashboard with CMS, CRM, and RBAC capabilities.
+**Rizmec** is a founder-led software engineering company based in Dhaka, Bangladesh, serving international businesses across the UK, Australia, UAE, and other global markets.
+
+This repository powers the complete Rizmec digital platform — the public-facing corporate website, industry-specific landing pages, product pages, client portals (invoices & quotations), and a comprehensive admin dashboard with CMS, CRM, and RBAC capabilities.
+
+Built with Next.js 16 (App Router), React 19, TypeScript 6, and MongoDB.
+
+### Core Positioning
+
+> Rizmec engineers digital infrastructure that helps businesses operate, automate, and scale.
+
+### Service Categories
+
+| Category | Description |
+| :--- | :--- |
+| **Custom Software Engineering** | Web applications, business management systems, CRM/ERP, SaaS, APIs, dashboards |
+| **AI & Intelligent Automation** | AI integration, workflow automation, document processing, intelligent data systems |
+| **Education Technology** | School management, LMS, student portals, agent management, admission workflows |
+
+---
+
+## Brand
+
+| | |
+| :--- | :--- |
+| **Name** | Rizmec (RIZ-mek) |
+| **Concept** | Inspired by al-Khwarizmi and algorithms |
+| **Philosophy** | From algorithms to engineered intelligence |
+| **Founder** | N.I. Nazmul — Founder & Chief Architect |
+| **Origin** | Dhaka, Bangladesh |
+| **Markets** | UK, Australia, UAE, US, and global |
+| **Website** | [rizmec.com](https://www.rizmec.com/) |
+| **Contact** | [hello@rizmec.com](mailto:hello@rizmec.com) |
 
 ---
 
@@ -43,12 +75,14 @@
 
 ### 🌐 Public Website
 
-- **Dynamic Homepage** — Hero, capabilities showcase, client testimonials, and technology highlights
-- **Services & Capabilities** — Detailed service pages with rich content sections
-- **Products** — Product catalog with individual detail pages
-- **Engineering / Work** — Project portfolio with case studies and technical deep-dives
-- **Team** — Team member profiles with bios and social links
-- **Contact** — Server-side contact form with Nodemailer SMTP integration
+- **Homepage** — Hero with clear value proposition, trust indicators, 3 core service categories, featured case studies, engineering process, differentiators, testimonials, and conversion CTAs
+- **Services** — Three commercial categories (Custom Software, AI & Automation, Education Technology) with individual detail pages
+- **Industries** — Industry-specific landing pages, including a flagship Education Technology page targeting recruitment agencies
+- **Products** — Product catalog featuring Rizmec PartnerOS (modular solution architecture for education businesses)
+- **Case Studies** — Verified project portfolio with business problem, solution, and technologies
+- **About** — Company origin, brand philosophy, 4-stage business evolution, engineering principles, founder-led leadership
+- **Team** — Founder and team profiles
+- **Contact** — Public inquiry form with 9 commercial qualification fields (no sign-in required), anti-spam honeypot, and Nodemailer SMTP integration
 - **Legal Pages** — Privacy policy, terms of service, and security policy
 
 ### 🔗 Client Portals
@@ -64,13 +98,20 @@
 - **Team Management** — Add and manage team member profiles
 - **Client & Lead CRM** — Track clients, leads, and business pipeline
 - **Invoicing & Quotations** — Generate, send, and track invoices and quotes
-- **Contact Messages** — View and manage contact form submissions
+- **Contact Messages** — View and manage contact form submissions and leads
 - **Email Campaigns** — Mailing system with template management
 - **Media Library** — Centralized asset management powered by UploadThing
 - **User & Role Management** — Granular RBAC permission matrix
 - **Testimonials** — Manage client testimonials
 - **Audit Logs** — Activity tracking for admin actions
 - **System Settings** — Company settings, maintenance mode toggle
+
+### 📈 SEO & Marketing
+
+- **Structured Data** — JSON-LD schemas (Organization, WebSite, ProfessionalService) with founder and service catalog
+- **Dynamic Sitemap** — Auto-generated XML sitemap covering all static and dynamic routes
+- **Open Graph & Twitter Cards** — Full social sharing metadata
+- **Industry Landing Pages** — Conversion-optimized pages for targeted verticals
 
 ---
 
@@ -95,49 +136,64 @@
 ```
 rizmec/
 ├── app/
-│   ├── (root)/               # Public pages (home, services, products, work, team, contact, about)
-│   ├── api/                  # API routes (contact, uploadthing, email, seed)
-│   ├── dashboard/            # Admin dashboard
-│   │   ├── clients/          # Client management
-│   │   ├── contact-messages/ # Contact form submissions
-│   │   ├── invoices/         # Invoice management
-│   │   ├── leads/            # Lead tracking
-│   │   ├── mailing/          # Email campaigns
-│   │   ├── media/            # Media library
-│   │   ├── pages/            # CMS page builder
-│   │   ├── products/         # Product management
-│   │   ├── projects/         # Project/case study management
-│   │   ├── quotations/       # Quote management
-│   │   ├── services/         # Service management
-│   │   ├── settings/         # System settings
-│   │   ├── team/             # Team member management
-│   │   ├── testimonials/     # Testimonial management
-│   │   └── users/            # User & RBAC management
-│   ├── robots.ts             # Dynamic robots.txt generation
-│   ├── sitemap.ts            # Dynamic XML sitemap generation
-│   ├── favicon.ico           # Site favicon
-│   ├── globals.css           # Global styles
-│   └── layout.tsx            # Root layout with SEO metadata
+│   ├── (root)/                    # Public pages
+│   │   ├── page.tsx               # Homepage
+│   │   ├── services/              # Service categories & detail pages
+│   │   ├── industries/            # Industry landing pages
+│   │   │   └── education-technology/  # Flagship EdTech landing page
+│   │   ├── products/              # Product catalog
+│   │   │   └── partneros/         # Rizmec PartnerOS product page
+│   │   ├── work/                  # Case studies & project portfolio
+│   │   ├── about/                 # Company story & philosophy
+│   │   ├── team/                  # Team profiles
+│   │   ├── contact/               # Public inquiry form
+│   │   ├── privacy/               # Privacy policy
+│   │   ├── terms/                 # Terms of service
+│   │   ├── security/              # Security policy
+│   │   └── ads/                   # Advertising & campaign landing pages
+│   ├── api/                       # API routes (contact, uploadthing, email, seed)
+│   ├── dashboard/                 # Admin dashboard
+│   │   ├── clients/               # Client management
+│   │   ├── contact-messages/      # Contact form submissions
+│   │   ├── invoices/              # Invoice management
+│   │   ├── leads/                 # Lead tracking
+│   │   ├── mailing/               # Email campaigns
+│   │   ├── media/                 # Media library
+│   │   ├── pages/                 # CMS page builder
+│   │   ├── products/              # Product management
+│   │   ├── projects/              # Project/case study management
+│   │   ├── quotations/            # Quote management
+│   │   ├── services/              # Service management
+│   │   ├── settings/              # System settings
+│   │   ├── team/                  # Team member management
+│   │   ├── testimonials/          # Testimonial management
+│   │   └── users/                 # User & RBAC management
+│   ├── robots.ts                  # Dynamic robots.txt generation
+│   ├── sitemap.ts                 # Dynamic XML sitemap generation
+│   ├── favicon.ico                # Site favicon
+│   ├── globals.css                # Global styles
+│   └── layout.tsx                 # Root layout with SEO metadata
 ├── components/
-│   ├── dashboard/            # Dashboard-specific components
-│   ├── invoice/              # Public invoice view
-│   ├── quote/                # Public quote view
-│   ├── shared/               # Shared components (Header, Footer, Logo, PageSectionRenderer)
-│   └── ui/                   # Radix UI primitives & design system
-├── constants/                # Navigation, permissions, static config
-├── hooks/                    # Custom React hooks
+│   ├── dashboard/                 # Dashboard-specific components
+│   ├── invoice/                   # Public invoice view
+│   ├── quote/                     # Public quote view
+│   ├── seo/                       # JSON-LD structured data components
+│   ├── shared/                    # Shared components (Header, Footer, Logo)
+│   └── ui/                        # Radix UI primitives & design system
+├── constants/                     # Navigation, permissions, brand constants
+├── hooks/                         # Custom React hooks
 ├── lib/
-│   ├── actions/              # Server actions (CRUD, RBAC, email)
-│   ├── auth/                 # RBAC rules & middleware
-│   ├── database/             # Mongoose connection & models
-│   └── utils.ts              # Utility helpers
+│   ├── actions/                   # Server actions (CRUD, RBAC, email, contact)
+│   ├── auth/                      # RBAC rules & middleware
+│   ├── database/                  # Mongoose connection & models
+│   └── utils.ts                   # Utility helpers
 ├── public/
-│   └── assets/images/        # Brand assets (logos, icons, favicon)
-├── scripts/                  # Database seed scripts
-├── types/                    # TypeScript type definitions
-├── next.config.ts            # Next.js configuration
-├── tailwind.config.ts        # Tailwind CSS theme
-└── package.json              # Dependencies & scripts
+│   └── assets/images/             # Brand assets (logos, icons, favicon)
+├── scripts/                       # Database seed scripts
+├── types/                         # TypeScript type definitions
+├── next.config.ts                 # Next.js configuration
+├── tailwind.config.ts             # Tailwind CSS theme
+└── package.json                   # Dependencies & scripts
 ```
 
 ---
@@ -203,26 +259,25 @@ npx tsx scripts/seed_admins.ts
 
 ---
 
-## SEO & Sitemap
+## SEO & Structured Data
 
-RIZMEC implements comprehensive SEO out of the box:
+Rizmec implements comprehensive SEO and structured data:
 
 | Feature | Implementation |
 | :--- | :--- |
+| **JSON-LD** | `components/seo/JsonLd.tsx` — Organization, WebSite, and ProfessionalService schemas with founder, origin, and service catalog |
 | **Robots.txt** | `app/robots.ts` — Dynamic generation, blocks `/dashboard/`, `/api/`, `/sign-in/`, `/sign-up/`, `/invoice/`, `/quote/`, `/maintenance/`, `/onboarding/` |
-| **XML Sitemap** | `app/sitemap.ts` — Auto-generates from all static pages + dynamic projects, services, products, team members, and CMS pages |
+| **XML Sitemap** | `app/sitemap.ts` — Auto-generates from all static pages + dynamic projects, services, products, industries, team members, and CMS pages |
 | **Meta Tags** | `app/layout.tsx` — Title template, description, keywords, Open Graph, Twitter Cards |
-| **Favicon & Icons** | `app/favicon.ico` + `/assets/images/rizmec-icon.png` (512x512 PNG) |
 | **Open Graph** | Site-wide OG tags with images for social sharing |
 | **Twitter Cards** | `summary_large_image` cards for Twitter/X |
 | **Canonical URLs** | `metadataBase` configured for proper canonical resolution |
-| **Google Bot** | Max image/video/snippet previews enabled |
 
 ---
 
 ## Security & RBAC
 
-RIZMEC implements a multi-layer security architecture:
+Rizmec implements a multi-layer security architecture:
 
 - **Authentication** — Clerk middleware protects `/dashboard` and API routes
 - **Role-Based Access Control** — Roles: `super_admin`, `admin`, `moderator`, `worker`
@@ -230,6 +285,7 @@ RIZMEC implements a multi-layer security architecture:
 - **Super Admin Protection** — Protected emails cannot be suspended, deleted, or have permissions modified
 - **Input Validation** — Zod schemas + sanitized rich text rendering (XSS prevention)
 - **Route Protection** — Middleware-level auth checks on all sensitive routes
+- **Public Contact Form** — Anti-spam honeypot field; no authentication required for inquiries
 
 ---
 
@@ -237,7 +293,7 @@ RIZMEC implements a multi-layer security architecture:
 
 | Command | Description |
 | :--- | :--- |
-| `npm run dev` | Start dev server (Turbopack) |
+| `npm run dev` | Start dev server (Webpack) |
 | `npm run build` | Production build (Webpack) |
 | `npm run start` | Start production server |
 | `npm run lint` | ESLint checks |
@@ -248,13 +304,14 @@ RIZMEC implements a multi-layer security architecture:
 
 ## License & Authors
 
-- **Author**: [Nazmul](https://github.com/ninazmul) — `nazmulsaw@gmail.com`
-- **Organization**: [RIZMEC](https://rizmec.com)
-- **Official Contact**: [hello@rizmec.com](mailto:hello@rizmec.com)
+- **Founder**: [N.I. Nazmul](https://github.com/ninazmul) — Founder & Chief Architect
+- **Organization**: [Rizmec](https://rizmec.com) — Software Engineering & Intelligent Automation
+- **Contact**: [hello@rizmec.com](mailto:hello@rizmec.com)
+- **Origin**: Dhaka, Bangladesh
 - **License**: MIT
 
 ---
 
 <div align="center">
-  <sub>Built with precision by <strong>RIZMEC Engineering</strong></sub>
+  <sub>Built with precision by <strong>Rizmec Engineering</strong> · Dhaka, Bangladesh</sub>
 </div>
