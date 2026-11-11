@@ -1,10 +1,9 @@
 import React from "react";
 import Link from "next/link";
 import RizmecLogo from "./RizmecLogo";
-import { ArrowUpRight, Globe, Sparkles } from "lucide-react";
+import { ArrowUpRight, Globe } from "lucide-react";
 import { CopyCodeButton } from "./CopyCodeButton";
 
-// Inline SVGs for social icons not available in this lucide-react version
 const GithubIcon = ({ className }: { className?: string }) => (
   <svg
     className={className}
@@ -43,35 +42,39 @@ const TwitterXIcon = ({ className }: { className?: string }) => (
 );
 
 export default function PublicFooter() {
-  const capabilities = [
-    { label: "Applied AI & Agent Swarms", href: "/services/ai-systems" },
-    { label: "Cloud Systems & Resiliency", href: "/services/cloud-systems" },
-    { label: "High-Throughput Web Apps", href: "/services/web-applications" },
-    { label: "Enterprise SaaS Platforms", href: "/services/enterprise-saas" },
-    { label: "Mobile Systems", href: "/services/mobile-applications" },
-    { label: "Algorithmic Automation", href: "/services/automation" },
-    { label: "Video Ads", href: "/ads" },
+  const serviceCategories = [
+    { label: "Custom Software Engineering", href: "/services#custom-software" },
+    { label: "AI & Intelligent Automation", href: "/services#ai-automation" },
+    { label: "Education Technology", href: "/services#edtech" },
+    { label: "Cloud & Distributed Systems", href: "/services#cloud" },
+    { label: "Video Ads & Media Production", href: "/ads" },
   ];
 
-  const products = [
-    { label: "VectorFlow AI Engine", href: "/products/vectorflow-ai" },
-    { label: "HyperEdge Orchestrator", href: "/products/hyperedge" },
-    { label: "Synthetix API Gateway", href: "/products/synthetix" },
-    { label: "OmniLedger FinTech", href: "/products/omniledger" },
+  const industryLinks = [
+    { label: "Education & Consultancies", href: "/industries/education-technology" },
+    { label: "Startups & Emerging Tech", href: "/industries#startups" },
+    { label: "Professional Services & SMEs", href: "/industries#smes" },
+    { label: "E-Commerce & Digital Platforms", href: "/industries#ecommerce" },
+  ];
+
+  const productLinks = [
+    { label: "Rizmec PartnerOS", href: "/products/partneros" },
+    { label: "Custom Business ERPs", href: "/services#custom-software" },
+    { label: "Workflow Automation Engines", href: "/services#ai-automation" },
   ];
 
   const company = [
-    { label: "Engineering Ethos", href: "/about" },
-    { label: "Technical Leadership", href: "/team" },
-    { label: "Selected Case Studies", href: "/work" },
-    { label: "Enterprise Inquiries", href: "/contact" },
+    { label: "About Rizmec", href: "/about" },
+    { label: "Case Studies & Work", href: "/work" },
+    { label: "Engineering Leadership", href: "/about#leadership" },
+    { label: "Discuss Your Project", href: "/contact" },
     { label: "Client Portal", href: "/dashboard" },
   ];
 
   const legal = [
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Engineering", href: "/terms" },
-    { label: "Security & Compliance", href: "/security" },
+    { label: "Security & Architecture", href: "/security" },
   ];
 
   return (
@@ -79,17 +82,19 @@ export default function PublicFooter() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Tier: Brand Statement & Coordinates */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-16 border-b border-white/10">
-          <div className="lg:col-span-5 space-y-6">
+          <div className="lg:col-span-4 space-y-6">
             <RizmecLogo variant="white" size="lg" showTagline={true} />
-            <p className="text-neutral-400 text-sm leading-relaxed max-w-md font-sans">
-              RIZMEC is a premier global technology engineering company. We
-              architect, build, and operate mission-critical software systems,
-              autonomous AI pipelines, and distributed cloud infrastructures
-              that power modern enterprise scale.
+            <p className="text-neutral-400 text-sm leading-relaxed max-w-sm font-sans">
+              Rizmec engineers digital infrastructure that helps businesses operate, automate, and scale.
+              From bespoke business platforms to intelligent automation, we build software designed for long-term reliability.
             </p>
-            <div className="flex items-center gap-4 text-neutral-400">
+            <div className="text-xs font-mono text-neutral-400 space-y-1">
+              <div>// RIZ-mek</div>
+              <div>From algorithms to engineered intelligence.</div>
+            </div>
+            <div className="flex items-center gap-4 text-neutral-400 pt-2">
               <a
-                href="https://github.com/rizmec"
+                href="https://github.com/ninazmul"
                 target="_blank"
                 rel="noreferrer"
                 className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center hover:text-white hover:border-white/40 transition-colors"
@@ -118,13 +123,31 @@ export default function PublicFooter() {
             </div>
           </div>
 
-          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
+          <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-8">
             <div>
               <h4 className="text-xs font-mono tracking-widest text-white uppercase mb-5 font-semibold">
-                Capabilities
+                Services
               </h4>
               <ul className="space-y-3 text-xs">
-                {capabilities.map((item) => (
+                {serviceCategories.map((item) => (
+                  <li key={item.label}>
+                    <Link
+                      href={item.href}
+                      className="hover:text-white transition-colors"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-xs font-mono tracking-widest text-white uppercase mb-5 font-semibold">
+                Industries
+              </h4>
+              <ul className="space-y-3 text-xs">
+                {industryLinks.map((item) => (
                   <li key={item.label}>
                     <Link
                       href={item.href}
@@ -142,7 +165,7 @@ export default function PublicFooter() {
                 Platforms
               </h4>
               <ul className="space-y-3 text-xs">
-                {products.map((item) => (
+                {productLinks.map((item) => (
                   <li key={item.label}>
                     <Link
                       href={item.href}
@@ -157,7 +180,7 @@ export default function PublicFooter() {
 
             <div>
               <h4 className="text-xs font-mono tracking-widest text-white uppercase mb-5 font-semibold">
-                Enterprise
+                Company
               </h4>
               <ul className="space-y-3 text-xs">
                 {company.map((item) => (
@@ -175,19 +198,22 @@ export default function PublicFooter() {
           </div>
         </div>
 
-        {/* Middle Tier: Global Locations */}
+        {/* Middle Tier: Genuine International Market Coverage */}
         <div className="py-8 border-b border-white/10 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-neutral-400">
           <div className="flex items-center gap-2">
-            <Globe className="w-3.5 h-3.5 text-neutral-400" />
-            <span>GLOBAL HUBS:</span>
+            <Globe className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="text-white font-semibold">ENGINEERING ORIGIN:</span>
+            <span>DHAKA, BANGLADESH</span>
           </div>
-          <div className="flex flex-wrap gap-6 text-neutral-400">
-            <span title="604 C. Hoare, San Juan, Puerto Rico 00907">
-              SAN JUAN, PUERTO RICO [18.46° N, 66.11° W]
-            </span>
-            <span title="A-1/9, Gazipur 1750, Dhaka, Bangladesh">
-              DHAKA, BANGLADESH [23.81° N, 90.41° E]
-            </span>
+          <div className="flex flex-wrap items-center gap-4 text-neutral-400">
+            <span className="text-neutral-500">CLIENT MARKETS SERVED:</span>
+            <span className="text-neutral-300">UNITED KINGDOM</span>
+            <span className="text-neutral-600">•</span>
+            <span className="text-neutral-300">AUSTRALIA</span>
+            <span className="text-neutral-600">•</span>
+            <span className="text-neutral-300">UNITED ARAB EMIRATES</span>
+            <span className="text-neutral-600">•</span>
+            <span className="text-neutral-300">INTERNATIONAL</span>
           </div>
         </div>
 
@@ -200,45 +226,45 @@ export default function PublicFooter() {
                   href="https://www.hostinger.com?REFERRALCODE=RIZMEC"
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Hostinger Official Partner"
                   className="shrink-0"
+                  aria-label="Hostinger Official Partner"
                 >
                   <img
-                    src="/assets/hostinger/Badge_brand_dark_320×120.png"
+                    src="/assets/hostinger/badge-brand-dark-320x120.png"
                     alt="Hostinger Official Partner"
                     width="120"
                     height="45"
-                    className="w-28 h-auto hover:opacity-90 transition-opacity"
+                    className="h-7 w-auto hover:opacity-90 transition-opacity"
                   />
                 </a>
-                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2 text-xs text-neutral-400">
-                  <Sparkles className="w-3.5 h-3.5 text-[#9D80F4] shrink-0" />
-                  <span>
-                    <span className="text-white font-bold">EXTRA 20% OFF</span> — use code{" "}
-                    <CopyCodeButton code="RIZMEC" />
-                  </span>
+                <div className="space-y-0.5">
+                  <div className="text-xs font-semibold text-white">
+                    Official Hostinger Technology Partner
+                  </div>
+                  <div className="text-[11px] text-neutral-400">
+                    Use referral promo code <CopyCodeButton code="RIZMEC" /> for an exclusive 20% discount on cloud hosting.
+                  </div>
                 </div>
               </div>
               <a
                 href="https://www.hostinger.com?REFERRALCODE=RIZMEC"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:py-2 rounded-full bg-[#673DE6] text-white font-mono text-[11px] sm:text-[10px] font-semibold tracking-widest uppercase hover:bg-[#5A32CC] active:scale-95 transition-all shadow shadow-[#673DE6]/20 group shrink-0"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#673DE6] text-white font-mono text-[11px] font-semibold tracking-wider uppercase hover:bg-[#5833c7] transition-colors shrink-0"
               >
-                <span>Get 20% Off</span>
-                <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                <span>Claim Offer</span>
+                <ArrowUpRight className="w-3 h-3" />
               </a>
             </div>
           </div>
         </div>
 
         {/* Bottom Tier: Copyright & Legal */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-400">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-neutral-500">
           <div>
-            &copy; {new Date().getFullYear()} RIZMEC Inc. All technical rights
-            reserved. "Intelligence. Engineered." is a registered mark.
+            &copy; {new Date().getFullYear()} RIZMEC. All rights reserved.
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center gap-6">
             {legal.map((item) => (
               <Link
                 key={item.label}

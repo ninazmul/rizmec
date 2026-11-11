@@ -12,27 +12,27 @@ interface Props {
 
 export default function SettingsClient({ initialSettings, access }: Props) {
   const [form, setForm] = useState({
-    companyName: initialSettings.companyName || "RIZMEC",
-    tagline: initialSettings.tagline || "Intelligence. Engineered.",
+    companyName: initialSettings.companyName || "Rizmec",
+    tagline: initialSettings.tagline || "Software Engineering & Intelligent Automation",
     positioning:
       initialSettings.positioning ||
-      "Global Technology Engineering & Mission-Critical Systems",
+      "Rizmec engineers digital infrastructure that helps businesses operate, automate, and scale.",
     philosophy:
-      initialSettings.philosophy || "From algorithms to intelligent systems.",
+      initialSettings.philosophy || "From algorithms to engineered intelligence.",
     contactEmail: initialSettings.contactEmail || "hello@rizmec.com",
-    contactPhone: initialSettings.contactPhone || "+1 (888) 749-6320",
+    contactPhone: initialSettings.contactPhone || "",
     address:
       initialSettings.address ||
-      "100 Montgomery St, Suite 2400, San Francisco, CA 94104",
+      "Dhaka, Bangladesh",
     defaultCurrency: initialSettings.defaultCurrency || "USD",
     quotationTerms:
       initialSettings.quotationTerms ||
-      "Standard RIZMEC Master Engineering Agreement applies.",
+      "Standard Master Services Agreement applies.",
     invoiceTerms:
       initialSettings.invoiceTerms || "Net 15 days. Wire and ACH preferred.",
     paymentInstructions:
       initialSettings.paymentInstructions ||
-      "Bank Wire Transfer: Account Name: RIZMEC Engineering Inc. | SWIFT: RIZMUS33 | IBAN: US34RIZM000192837465",
+      "Bank Wire Transfer: Account Name: Rizmec | Details provided on verified engineering contracts.",
     socialGithub: initialSettings.socialLinks?.github || "",
     socialLinkedin: initialSettings.socialLinks?.linkedin || "",
     socialTwitter: initialSettings.socialLinks?.twitter || "",

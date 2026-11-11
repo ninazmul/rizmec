@@ -153,7 +153,7 @@ export default async function ServiceDetailPage({ params }: Props) {
                 href={`/contact?service=${encodeURIComponent(service.title)}`}
                 className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white text-black font-mono text-xs font-bold uppercase tracking-widest hover:bg-neutral-200 transition-all"
               >
-                <span>Engage Squad</span>
+                <span>Discuss Your Project</span>
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
             </div>

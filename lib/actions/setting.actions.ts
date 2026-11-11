@@ -11,15 +11,15 @@ export async function getCompanySettings(): Promise<any> {
     let setting = await CompanySetting.findOne().lean();
     if (!setting) {
       setting = await CompanySetting.create({
-        companyName: "RIZMEC",
-        tagline: "Intelligence. Engineered.",
-        positioning: "Global Technology Engineering & Mission-Critical Systems",
-        philosophy: "From algorithms to intelligent systems.",
+        companyName: "Rizmec",
+        tagline: "Software Engineering & Intelligent Automation",
+        positioning: "Rizmec engineers digital infrastructure that helps businesses operate, automate, and scale.",
+        philosophy: "From algorithms to engineered intelligence.",
         contactEmail: "hello@rizmec.com",
-        contactPhone: "+1 (888) 749-6320",
-        address: "100 Montgomery St, Suite 2400, San Francisco, CA 94104",
+        contactPhone: "",
+        address: "Dhaka, Bangladesh",
         paymentInstructions:
-          "Bank Wire Transfer: Account Name: RIZMEC Engineering Inc. | SWIFT: RIZMUS33 | IBAN: US34RIZM000192837465",
+          "Bank Wire Transfer / ACH: Details provided on verified engineering contracts.",
       });
       setting = JSON.parse(JSON.stringify(setting));
     }

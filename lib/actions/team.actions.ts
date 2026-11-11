@@ -7,6 +7,51 @@ import { requireDashboardAccess, requirePermission } from "@/lib/auth/rbac";
 import { revalidatePath } from "next/cache";
 import nodemailer from "nodemailer";
 
+const FOUNDER_TEAM_MEMBER = {
+  _id: "founder-01",
+  name: "N.I. Nazmul",
+  slug: "nazmul-i",
+  title: "Founder & Chief Architect",
+  tagline: "Engineering digital infrastructure that helps businesses operate, automate, and scale.",
+  bio: "Senior full-stack software architect specializing in custom business applications, education technology platforms, and intelligent workflow automation.",
+  avatar:
+    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80",
+  role: "leadership",
+  email: "hello@rizmec.com",
+  location: "Dhaka, Bangladesh",
+  skills: [
+    { name: "Full-Stack Architecture", level: 96, category: "Architecture" },
+    { name: "Next.js & TypeScript", level: 95, category: "Engineering" },
+    { name: "Workflow Automation & AI", level: 92, category: "AI" },
+    { name: "Database Modeling & API Design", level: 94, category: "Backend" },
+  ],
+  technologies: ["Next.js", "TypeScript", "Node.js", "MongoDB", "PostgreSQL", "Tailwind CSS"],
+  experience: [
+    {
+      company: "Rizmec",
+      role: "Founder & Chief Architect",
+      period: "2023 — Present",
+      description: "Directs software architecture, custom platform engineering, and intelligent automation for international business clients.",
+    },
+  ],
+  education: [
+    { degree: "B.S. in Computer Science & Engineering", institution: "University of Information Technology and Sciences (UITS)", year: "2023" },
+  ],
+  certifications: [],
+  achievements: [
+    "Architected custom business operating systems and education partner portals for international clients",
+    "Pioneered modular PartnerOS configurable solution architecture",
+  ],
+  socialLinks: {
+    github: "https://github.com/ninazmul",
+    linkedin: "https://linkedin.com/company/rizmec",
+    twitter: "https://x.com/rizmec_tech",
+  },
+  order: 1,
+  featured: true,
+  published: true,
+};
+
 export async function getTeamMembers(params?: {
   published?: boolean;
   featured?: boolean;
@@ -24,10 +69,13 @@ export async function getTeamMembers(params?: {
     if (params?.limit) q = q.limit(params.limit);
 
     const members = await q.lean();
-    return { success: true, data: JSON.parse(JSON.stringify(members)) };
+    if (members && members.length > 0) {
+      return { success: true, data: JSON.parse(JSON.stringify(members)) };
+    }
+    return { success: true, data: [FOUNDER_TEAM_MEMBER] };
   } catch (error: any) {
     console.error("Error fetching team members:", error);
-    return { success: false, error: error.message, data: [] };
+    return { success: true, data: [FOUNDER_TEAM_MEMBER] };
   }
 }
 
@@ -35,10 +83,16 @@ export async function getTeamMemberBySlug(slug: string) {
   try {
     await connectToDatabase();
     const member = await TeamMember.findOne({ slug: slug.toLowerCase() }).lean();
-    if (!member) return { success: false, data: null };
-    return { success: true, data: JSON.parse(JSON.stringify(member)) };
+    if (member) return { success: true, data: JSON.parse(JSON.stringify(member)) };
+    if (slug.toLowerCase() === "nazmul-i" || slug.toLowerCase() === "founder") {
+      return { success: true, data: FOUNDER_TEAM_MEMBER };
+    }
+    return { success: false, data: null };
   } catch (error: any) {
     console.error("Error fetching team member by slug:", error);
+    if (slug.toLowerCase() === "nazmul-i" || slug.toLowerCase() === "founder") {
+      return { success: true, data: FOUNDER_TEAM_MEMBER };
+    }
     return { success: false, error: error.message, data: null };
   }
 }

@@ -261,9 +261,9 @@ export default function PublicInvoiceView({ invoice, isAdmin = false }: Props) {
               </div>
 
               <div className="sm:text-right space-y-1 text-xs font-mono text-neutral-400 print:text-neutral-600">
-                <div><strong className="text-white print:text-neutral-900">Remit To:</strong> RIZMEC Inc.</div>
-                <div>100 Montgomery St, Suite 2400</div>
-                <div>San Francisco, CA 94104</div>
+                <div><strong className="text-white print:text-neutral-900">Remit To:</strong> Rizmec</div>
+                <div>Dhaka, Bangladesh</div>
+                <div>Global Software Engineering</div>
                 <div>
                   <a href="mailto:hello@rizmec.com" className="text-neutral-300 hover:text-white print:text-neutral-900 hover:underline">
                     hello@rizmec.com

@@ -129,7 +129,7 @@ export function HeroTerminalVisual() {
             <div className="flex items-center gap-2.5 p-3 rounded-xl glass border border-white/10 bg-white/[0.03] hover:bg-white/[0.07] hover:border-white/20 transition-all duration-300">
               <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0" />
               <div className="flex flex-col">
-                <span className="text-[11px] font-bold text-white">SOC-2 Standards</span>
+                <span className="text-[11px] font-bold text-white">Zero-Trust RBAC</span>
                 <span className="text-[9px] text-white/40 uppercase tracking-wider">
                   Security First
                 </span>

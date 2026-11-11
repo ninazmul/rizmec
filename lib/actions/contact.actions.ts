@@ -11,6 +11,8 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 export async function submitContactMessage(data: {
   name: string;
   company?: string;
+  website?: string;
+  country?: string;
   email: string;
   phone?: string;
   subject?: string;
@@ -18,68 +20,89 @@ export async function submitContactMessage(data: {
   budget?: string;
   timeline?: string;
   message: string;
+  honeypot?: string;
 }) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return {
-        success: false,
-        error: "Authentication required. You must be signed in with Clerk to submit an inquiry.",
-      };
+    // 1. Anti-spam honeypot check
+    if (data.honeypot && data.honeypot.trim().length > 0) {
+      // Silently discard bot submission
+      return { success: true };
     }
 
-    const clerkUser = await currentUser();
-    const verifiedEmail =
-      clerkUser?.emailAddresses?.find(
-        (e) => e.id === clerkUser.primaryEmailAddressId,
-      )?.emailAddress ||
-      clerkUser?.emailAddresses?.[0]?.emailAddress ||
-      data.email?.trim().toLowerCase();
+    const trimmedName = data.name?.trim();
+    const rawEmail = data.email?.trim().toLowerCase();
+    const trimmedMessage = data.message?.trim();
 
-    if (!verifiedEmail) {
-      return {
-        success: false,
-        error: "Unable to verify email address. Please ensure your Clerk account has a valid email.",
-      };
+    if (!trimmedName || trimmedName.length < 2) {
+      return { success: false, error: "Please provide your full name." };
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!rawEmail || !emailRegex.test(rawEmail)) {
+      return { success: false, error: "Please provide a valid business email address." };
+    }
+
+    if (!trimmedMessage || trimmedMessage.length < 10) {
+      return { success: false, error: "Please share a few details about your project or inquiry (minimum 10 characters)." };
+    }
+
+    // Optional Clerk session detection (enrich if available, never block public visitors)
+    let authenticatedUserId: string | null = null;
+    try {
+      const { userId } = await auth();
+      authenticatedUserId = userId;
+    } catch {
+      // In public server action context if auth fails or not signed in, proceed gracefully
     }
 
     await connectToDatabase();
 
-    if (!data.name || !data.message) {
-      return { success: false, error: "Please provide your name and project details." };
-    }
-
     const messagePayload = {
-      ...data,
-      email: verifiedEmail,
+      name: trimmedName,
+      company: data.company?.trim() || "",
+      website: data.website?.trim() || "",
+      country: data.country?.trim() || "",
+      email: rawEmail,
+      phone: data.phone?.trim() || "",
+      service: data.service || "General Consultation",
+      budget: data.budget || "Not specified",
+      timeline: data.timeline || "Flexible",
+      message: trimmedMessage,
+      status: "new" as const,
     };
 
     // 1. Create ContactMessage record
     const message = await ContactMessage.create(messagePayload);
 
-    // 2. Automatically create a high-priority Lead in the CRM!
+    // 2. Automatically create a qualified Lead in the CRM
+    const budgetStr = data.budget || "";
+    const priority =
+      budgetStr.includes("$25k") || budgetStr.includes("$50k") || budgetStr.includes("$100k") || budgetStr.includes("250k")
+        ? "high"
+        : budgetStr.includes("< $2k") || budgetStr.includes("< $1k")
+        ? "low"
+        : "medium";
+
     await Lead.create({
-      name: data.name,
-      company: data.company || "",
-      email: verifiedEmail,
-      phone: data.phone || "",
+      name: trimmedName,
+      company: data.company?.trim() || "",
+      email: rawEmail,
+      phone: data.phone?.trim() || "",
+      country: data.country?.trim() || "",
       source: "website",
       serviceInterest: data.service || "Engineering Engagement",
       budget: data.budget || "Not specified",
-      priority:
-        data.budget?.includes("250k") || data.budget?.includes("100k") || data.budget?.includes("50k")
-          ? "high"
-          : data.budget?.includes("< $1k") || data.budget?.includes("$1k - $5k")
-          ? "low"
-          : "medium",
+      priority,
       status: "new",
-      tags: ["Website Contact", data.service || "Digital Engineering"],
-      notes: `Project Timeline: ${data.timeline || "Flexible"}\nMessage: ${data.message}`,
+      tags: ["Website Inquiry", data.service || "Software Engineering"],
+      notes: `Company Website: ${data.website || "N/A"}\nTarget Country: ${data.country || "International"}\nTimeline: ${data.timeline || "Flexible"}\nMessage: ${trimmedMessage}${
+        authenticatedUserId ? `\n(Submitted with authenticated Clerk account: ${authenticatedUserId})` : ""
+      }`,
       timeline: [
         {
           date: new Date(),
-          note: `Initial inquiry submitted via RIZMEC contact portal. Budget: ${data.budget || "N/A"}`,
-          author: "Inquiry Webhook",
+          note: `Project inquiry received via Rizmec website. Budget: ${data.budget || "N/A"}, Timeline: ${data.timeline || "N/A"}`,
+          author: "Website Portal",
         },
       ],
     });
@@ -101,22 +124,26 @@ export async function submitContactMessage(data: {
         });
 
         await transporter.sendMail({
-          from: `"RIZMEC Alert" <${SMTP_USER}>`,
+          from: `"Rizmec Inquiries" <${SMTP_USER}>`,
           to: CONTACT_RECEIVER,
-          subject: `[NEW INQUIRY] ${data.name} from ${data.company || "Enterprise Client"} — RIZMEC`,
+          subject: `[NEW PROJECT INQUIRY] ${trimmedName}${data.company ? ` from ${data.company}` : ""}${data.country ? ` (${data.country})` : ""} — Rizmec`,
           html: `
-            <div style="font-family: sans-serif; background: #09090b; color: #ffffff; padding: 28px; border-radius: 8px;">
-              <h2 style="color: #ffffff; margin-bottom: 16px;">New Enterprise Engagement Request</h2>
-              <p><strong>Name:</strong> ${data.name}</p>
-              <p><strong>Company:</strong> ${data.company || "N/A"}</p>
-              <p><strong>Email:</strong> ${verifiedEmail}</p>
-              <p><strong>Phone:</strong> ${data.phone || "N/A"}</p>
-              <p><strong>Service Focus:</strong> ${data.service || "N/A"}</p>
-              <p><strong>Estimated Budget:</strong> ${data.budget || "N/A"}</p>
-              <p><strong>Target Timeline:</strong> ${data.timeline || "N/A"}</p>
-              <div style="margin-top: 16px; padding: 14px; background: #18181b; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);">
-                <strong>Project Scope:</strong><br/>
-                ${data.message.replace(/\n/g, "<br/>")}
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #09090b; color: #ffffff; padding: 32px; border-radius: 12px; max-width: 600px; margin: 0 auto; border: 1px solid rgba(255,255,255,0.1);">
+              <h2 style="color: #ffffff; margin-top: 0; margin-bottom: 20px; font-size: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px;">New Business Project Inquiry</h2>
+              <table style="width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.6;">
+                <tr><td style="padding: 6px 0; color: #a1a1aa; width: 140px;"><strong>Client Name:</strong></td><td style="color: #ffffff;">${trimmedName}</td></tr>
+                <tr><td style="padding: 6px 0; color: #a1a1aa;"><strong>Business Email:</strong></td><td style="color: #ffffff;"><a href="mailto:${rawEmail}" style="color: #38bdf8; text-decoration: none;">${rawEmail}</a></td></tr>
+                <tr><td style="padding: 6px 0; color: #a1a1aa;"><strong>Company:</strong></td><td style="color: #ffffff;">${data.company || "N/A"}</td></tr>
+                <tr><td style="padding: 6px 0; color: #a1a1aa;"><strong>Website:</strong></td><td style="color: #ffffff;">${data.website || "N/A"}</td></tr>
+                <tr><td style="padding: 6px 0; color: #a1a1aa;"><strong>Country / Market:</strong></td><td style="color: #ffffff;">${data.country || "Not specified"}</td></tr>
+                <tr><td style="padding: 6px 0; color: #a1a1aa;"><strong>Phone:</strong></td><td style="color: #ffffff;">${data.phone || "N/A"}</td></tr>
+                <tr><td style="padding: 6px 0; color: #a1a1aa;"><strong>Service Category:</strong></td><td style="color: #ffffff;">${data.service || "N/A"}</td></tr>
+                <tr><td style="padding: 6px 0; color: #a1a1aa;"><strong>Estimated Budget:</strong></td><td style="color: #ffffff;">${data.budget || "N/A"}</td></tr>
+                <tr><td style="padding: 6px 0; color: #a1a1aa;"><strong>Target Timeline:</strong></td><td style="color: #ffffff;">${data.timeline || "N/A"}</td></tr>
+              </table>
+              <div style="margin-top: 24px; padding: 18px; background: #18181b; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+                <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: #a1a1aa; margin-bottom: 8px;">Project Scope & Objectives:</div>
+                <div style="font-size: 14px; color: #f4f4f5; line-height: 1.6; white-space: pre-line;">${trimmedMessage}</div>
               </div>
             </div>
           `,
@@ -127,10 +154,11 @@ export async function submitContactMessage(data: {
     }
 
     revalidatePath("/dashboard/leads");
+    revalidatePath("/dashboard/contact-messages");
     return { success: true, data: JSON.parse(JSON.stringify(message)) };
   } catch (error: any) {
     console.error("Error submitting contact message:", error);
-    return { success: false, error: error.message };
+    return { success: false, error: error.message || "Failed to submit inquiry. Please try again." };
   }
 }
 

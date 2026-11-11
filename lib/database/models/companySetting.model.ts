@@ -34,22 +34,22 @@ export interface ICompanySetting extends Document {
 
 const CompanySettingSchema = new Schema<ICompanySetting>(
   {
-    companyName: { type: String, default: "RIZMEC" },
-    tagline: { type: String, default: "Intelligence. Engineered." },
+    companyName: { type: String, default: "Rizmec" },
+    tagline: { type: String, default: "Software Engineering & Intelligent Automation" },
     positioning: {
       type: String,
-      default: "Global Technology Engineering & Mission-Critical Systems",
+      default: "Rizmec engineers digital infrastructure that helps businesses operate, automate, and scale.",
     },
     philosophy: {
       type: String,
-      default: "From algorithms to intelligent systems.",
+      default: "From algorithms to engineered intelligence.",
     },
     contactEmail: { type: String, default: "hello@rizmec.com" },
-    contactPhone: { type: String, default: "+1 (888) 749-6320" },
-    address: { type: String, default: "100 Montgomery St, Suite 2400, San Francisco, CA 94104" },
+    contactPhone: { type: String, default: "" },
+    address: { type: String, default: "Dhaka, Bangladesh" },
     globalLocations: {
       type: [String],
-      default: ["San Francisco, CA", "London, UK", "Singapore", "Tokyo, JP"],
+      default: ["Dhaka, Bangladesh", "United Kingdom", "Australia", "United Arab Emirates"],
     },
     socialLinks: {
       github: { type: String, default: "https://github.com/rizmec" },

@@ -25,7 +25,7 @@ export default function PrivacyPage() {
         <section className="space-y-3">
           <h2 className="text-xl font-bold text-white tracking-tight">1. Commitment to Enterprise Data Sovereignty</h2>
           <p>
-            RIZMEC Inc. ("RIZMEC", "we", "our") maintains an absolute commitment to data privacy, confidentiality, and technical sovereignty. We engineer software solutions designed to adhere strictly to global regulatory frameworks, including the EU General Data Protection Regulation (GDPR), the California Consumer Privacy Act (CCPA), and SOC 2 Type II controls.
+            Rizmec ("Rizmec", "we", "our") maintains an absolute commitment to data privacy, confidentiality, and technical sovereignty. We engineer software solutions designed to adhere strictly to international data privacy principles, cryptographic security standards, and strict role-based access control.
           </p>
         </section>
 

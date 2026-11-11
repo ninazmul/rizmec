@@ -9,9 +9,9 @@ import { CyberGlowMesh } from "@/components/ui/CyberGlowMesh";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Engineering Leadership & Technical Directory — RIZMEC",
+  title: "Engineering Leadership — Founder & Technical Directory | Rizmec",
   description:
-    "Meet RIZMEC's team of principal software architects, AI research scientists, and distributed systems engineers.",
+    "Meet Rizmec's engineering leadership. Guided by Founder & Chief Architect N.I. Nazmul, delivering bespoke software systems, education technology platforms, and intelligent automation.",
 };
 
 export default async function TeamDirectoryPage() {
@@ -26,15 +26,13 @@ export default async function TeamDirectoryPage() {
       <div className="max-w-3xl space-y-6 relative">
         <span className="text-xs font-mono tracking-widest text-emerald-400 uppercase font-semibold flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          // Human Capital
+          // Engineering Leadership
         </span>
         <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white text-chrome">
-          Principal architects, AI scientists, and systems engineers.
+          Founder-Led Engineering Leadership.
         </h1>
         <p className="text-lg sm:text-xl text-neutral-400 font-light leading-relaxed">
-          Every engineer at RIZMEC possesses deep algorithmic specialization.
-          Explore our team members' individual professional portfolios and verified
-          technical credentials.
+          Led directly by our Founder &amp; Chief Architect, Rizmec delivers software architecture, education technology platforms, and intelligent automation with direct technical collaboration.
         </p>
       </div>
 

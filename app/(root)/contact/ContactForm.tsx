@@ -1,24 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Send, ShieldCheck, Lock, Loader2 } from "lucide-react";
+import { Send, ShieldCheck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { submitContactMessage } from "@/lib/actions/contact.actions";
 import { useUser } from "@clerk/nextjs";
-import Link from "next/link";
 import toast from "react-hot-toast";
 
 export default function ContactForm() {
-  const { user, isLoaded, isSignedIn } = useUser();
+  const { user, isLoaded } = useUser();
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [subject, setSubject] = useState("");
+  const [company, setCompany] = useState("");
+  const [country, setCountry] = useState("");
+  const [service, setService] = useState("Custom Software Engineering");
+  const [budget, setBudget] = useState("$10k - $25k");
   const [message, setMessage] = useState("");
+  const [honeypot, setHoneypot] = useState("");
 
   useEffect(() => {
     if (isLoaded && user) {
@@ -30,48 +33,15 @@ export default function ContactForm() {
         user.fullName ||
         [user.firstName, user.lastName].filter(Boolean).join(" ") ||
         "";
-      setEmail(primaryEmail);
-      if (!name && fullName) {
-        setName(fullName);
-      }
+      if (!email && primaryEmail) setEmail(primaryEmail);
+      if (!name && fullName) setName(fullName);
     }
-  }, [isLoaded, user]);
-
-  if (!isLoaded) {
-    return (
-      <div className="p-8 text-center space-y-3">
-        <Loader2 className="w-6 h-6 animate-spin mx-auto text-neutral-400" />
-        <p className="text-xs font-mono text-neutral-400">Verifying session...</p>
-      </div>
-    );
-  }
-
-  if (!isSignedIn) {
-    return (
-      <div className="p-6 rounded-xl border border-white/10 bg-neutral-900/60 text-center space-y-4">
-        <div className="w-10 h-10 rounded-full bg-neutral-800 flex items-center justify-center mx-auto text-emerald-400">
-          <Lock className="w-5 h-5" />
-        </div>
-        <div>
-          <h4 className="text-sm font-semibold text-white">Authentication Required</h4>
-          <p className="text-xs text-neutral-400 mt-1">
-            Please sign in to send a secure message.
-          </p>
-        </div>
-        <Link
-          href={`/sign-in?redirect_url=${encodeURIComponent("/contact")}`}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-black font-semibold text-xs font-mono uppercase tracking-wider hover:bg-neutral-200 transition-all"
-        >
-          Sign In with Clerk
-        </Link>
-      </div>
-    );
-  }
+  }, [isLoaded, user, email, name]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !message) {
-      toast.error("Name, Email, and Message are required");
+      toast.error("Full name, business email, and project details are required.");
       return;
     }
     setLoading(true);
@@ -79,84 +49,147 @@ export default function ContactForm() {
       name,
       email,
       phone,
-      subject,
+      company,
+      country,
+      service,
+      budget,
       message,
+      honeypot,
     });
     setLoading(false);
     if (res.success) {
-      toast.success("Message sent successfully! We will get back to you soon.");
+      toast.success("Project inquiry sent! Our team will contact you within 24 hours.");
       setMessage("");
-      setSubject("");
+      setCompany("");
       setPhone("");
     } else {
-      toast.error(res.error || "Failed to send message");
+      toast.error(res.error || "Failed to send message. Please try again.");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Honeypot anti-spam */}
+      <div className="hidden" aria-hidden="true">
+        <input
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+        />
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <Label>Full Name *</Label>
+        <div className="space-y-1.5">
+          <Label className="text-neutral-300 text-xs">Full Name *</Label>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            required
             placeholder="Your name"
+            required
+            className="bg-neutral-900 border-white/10 text-white placeholder-neutral-500"
           />
         </div>
-        <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <Label>Email Address *</Label>
-            <span className="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
-              <ShieldCheck className="w-3 h-3" /> Auto-filled
-            </span>
-          </div>
+        <div className="space-y-1.5">
+          <Label className="text-neutral-300 text-xs">Business Email *</Label>
           <Input
             type="email"
             value={email}
-            readOnly
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@company.com"
             required
-            className="cursor-not-allowed bg-neutral-900/50 border-emerald-500/30 text-neutral-300"
-            title="Email automatically taken from your Clerk account"
+            className="bg-neutral-900 border-white/10 text-white placeholder-neutral-500"
           />
         </div>
       </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <Label>Phone Number</Label>
+        <div className="space-y-1.5">
+          <Label className="text-neutral-300 text-xs">Company Name</Label>
           <Input
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="+880..."
+            value={company}
+            onChange={(e) => setCompany(e.target.value)}
+            placeholder="Company or organization"
+            className="bg-neutral-900 border-white/10 text-white placeholder-neutral-500"
           />
         </div>
-        <div>
-          <Label>Subject</Label>
+        <div className="space-y-1.5">
+          <Label className="text-neutral-300 text-xs">Country / Market</Label>
           <Input
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            placeholder="Regarding..."
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            placeholder="United Kingdom, Australia, UAE, etc."
+            className="bg-neutral-900 border-white/10 text-white placeholder-neutral-500"
           />
         </div>
       </div>
-      <div>
-        <Label>Your Message *</Label>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-1.5">
+          <Label className="text-neutral-300 text-xs">Project Category</Label>
+          <select
+            value={service}
+            onChange={(e) => setService(e.target.value)}
+            className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-md text-sm text-white focus:outline-none focus:border-white"
+          >
+            <option value="Custom Software Engineering">Custom Software Engineering</option>
+            <option value="AI & Intelligent Automation">AI & Intelligent Automation</option>
+            <option value="Education Technology">Education Technology</option>
+            <option value="Ongoing Technology Partnership">Ongoing Technology Partnership</option>
+          </select>
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-neutral-300 text-xs">Estimated Budget (USD)</Label>
+          <select
+            value={budget}
+            onChange={(e) => setBudget(e.target.value)}
+            className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-md text-sm text-white focus:outline-none focus:border-white"
+          >
+            <option value="$3k - $5k">$3,000 – $5,000</option>
+            <option value="$5k - $10k">$5,000 – $10,000</option>
+            <option value="$10k - $25k">$10,000 – $25,000</option>
+            <option value="$25k - $50k">$25,000 – $50,000</option>
+            <option value="$50k+">$50,000+</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label className="text-neutral-300 text-xs">Project Description *</Label>
         <Textarea
-          rows={5}
+          rows={4}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+          placeholder="Tell us what you are trying to build, automate, or improve..."
           required
-          placeholder="Write your message here..."
+          className="bg-neutral-900 border-white/10 text-white placeholder-neutral-500 resize-none"
         />
       </div>
-      <Button
-        type="submit"
-        disabled={loading}
-        className="w-full bg-primary hover:bg-emerald-700 text-white py-3 flex items-center justify-center gap-2"
-      >
-        <Send size={16} /> {loading ? "Sending..." : "Send Message"}
-      </Button>
+
+      <div className="pt-2 flex items-center justify-between">
+        <Button
+          type="submit"
+          disabled={loading}
+          className="bg-white text-black hover:bg-neutral-200 font-semibold text-xs tracking-wider uppercase font-mono px-6 py-2.5 rounded-full"
+        >
+          {loading ? (
+            <>
+              <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />
+              <span>Sending...</span>
+            </>
+          ) : (
+            <>
+              <span>Discuss Your Project</span>
+              <Send className="w-3.5 h-3.5 ml-1.5" />
+            </>
+          )}
+        </Button>
+        <div className="flex items-center gap-1.5 text-[11px] font-mono text-neutral-400">
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+          <span>Confidentiality respected</span>
+        </div>
+      </div>
     </form>
   );
 }

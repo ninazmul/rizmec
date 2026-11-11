@@ -462,7 +462,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                 href="/contact"
                 className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white text-black font-mono text-xs font-bold uppercase tracking-widest hover:bg-neutral-200 transition-all shadow-lg hover:shadow-cyan-500/10"
               >
-                <span>Initiate Project</span>
+                <span>Discuss Your Project</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </Link>
             </div>

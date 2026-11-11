@@ -4,6 +4,8 @@ export interface IContactMessage extends Document {
   _id: any;
   name: string;
   company?: string;
+  website?: string;
+  country?: string;
   email: string;
   phone?: string;
   service?: string;
@@ -18,9 +20,11 @@ export interface IContactMessage extends Document {
 const ContactMessageSchema = new Schema<IContactMessage>(
   {
     name: { type: String, required: true, trim: true },
-    company: { type: String, default: "" },
+    company: { type: String, default: "", trim: true },
+    website: { type: String, default: "", trim: true },
+    country: { type: String, default: "", trim: true },
     email: { type: String, required: true, lowercase: true, trim: true, index: true },
-    phone: { type: String, default: "" },
+    phone: { type: String, default: "", trim: true },
     service: { type: String, default: "General Consultation" },
     budget: { type: String, default: "Not specified" },
     timeline: { type: String, default: "Flexible" },
