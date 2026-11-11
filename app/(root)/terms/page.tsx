@@ -2,8 +2,8 @@ import React from "react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Engineering Services — RIZMEC",
-  description: "Standard terms and conditions governing RIZMEC engineering deliverables.",
+  title: "Terms of Engineering Services — Rizmec",
+  description: "Standard terms and conditions governing Rizmec software engineering deliverables.",
 };
 
 export default function TermsPage() {
@@ -25,14 +25,14 @@ export default function TermsPage() {
         <section className="space-y-3">
           <h2 className="text-xl font-bold text-white tracking-tight">1. Scope of Engagement</h2>
           <p>
-            These Terms govern all engineering deliverables, statements of work (SOWs), quotations, and software platform licenses executed between RIZMEC Inc. and the client entity specified in the relevant agreement.
+            These Terms govern all engineering deliverables, statements of work (SOWs), quotations, and software platform deployments executed between Rizmec and the client entity specified in the relevant agreement.
           </p>
         </section>
 
         <section className="space-y-3">
           <h2 className="text-xl font-bold text-white tracking-tight">2. Electronic Quotations & Immutable Signatures</h2>
           <p>
-            Quotations generated via the RIZMEC business platform and accepted electronically by the client constitute legally binding agreements. Upon client electronic signing, an immutable cryptographic snapshot of the quotation terms, line items, and schedule is recorded.
+            Quotations generated via the Rizmec business platform and accepted electronically by the client constitute legally binding agreements. Upon client electronic signing, an immutable cryptographic snapshot of the quotation terms, line items, and schedule is recorded.
           </p>
         </section>
 
@@ -44,9 +44,9 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-bold text-white tracking-tight">4. Warranties & System SLAs</h2>
+          <h2 className="text-xl font-bold text-white tracking-tight">4. Warranties & System Standards</h2>
           <p>
-            RIZMEC warrants that software deliverables will conform to specified technical acceptance criteria. Maintenance and SLA support agreements are governed by the specific tier designated in the engagement schedule.
+            Rizmec warrants that software deliverables will conform to specified technical acceptance criteria. Ongoing maintenance, updates, and support agreements are governed by the specific tier designated in the engagement schedule.
           </p>
         </section>
       </div>
