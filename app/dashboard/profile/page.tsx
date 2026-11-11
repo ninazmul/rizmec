@@ -568,7 +568,7 @@ export default function MemberProfileDashboardPage() {
                 type="text"
                 value={form.tagline}
                 onChange={(e) => setForm({ ...form, tagline: e.target.value })}
-                placeholder="Architecting high-throughput distributed engines, sub-millisecond pipelines, and AI systems."
+                placeholder="Architecting reliable business software, full-stack platforms, and intelligent automation."
                 className="w-full px-3.5 py-2.5 bg-neutral-900 border border-white/10 rounded-xl text-white text-xs focus:outline-none focus:border-cyan-500/50"
               />
             </div>

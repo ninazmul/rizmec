@@ -29,10 +29,21 @@ export default function JsonLd() {
     },
     image: `${baseUrl}/assets/images/rizmec-icon.png`,
     description:
-      "RIZMEC is a leading web development agency and software engineering company specializing in custom web apps, AI solutions, SaaS platforms, mobile apps, cloud infrastructure, and full-stack development.",
-    slogan: "Intelligence. Engineered.",
+      "Rizmec engineers digital infrastructure that helps businesses operate, automate, and scale. We build custom software, business platforms, and practical intelligent automation systems.",
+    slogan: "From Algorithms to Engineered Intelligence.",
     foundingDate: "2024",
     email: "hello@rizmec.com",
+    founder: {
+      "@type": "Person",
+      name: "N.I. Nazmul",
+      jobTitle: "Founder & Chief Architect",
+      url: `${baseUrl}/p/ninazmul`,
+    },
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Dhaka",
+      addressCountry: "BD",
+    },
     contactPoint: [
       {
         "@type": "ContactPoint",
@@ -44,81 +55,81 @@ export default function JsonLd() {
     ],
     sameAs: [
       "https://github.com/ninazmul",
+      "https://github.com/rizmec",
       "https://www.linkedin.com/company/rizmec",
     ],
     knowsAbout: [
-      "Web Development",
-      "Software Engineering",
-      "Artificial Intelligence",
-      "Machine Learning",
-      "SaaS Development",
-      "Cloud Computing",
-      "Mobile App Development",
-      "Full Stack Development",
-      "UI/UX Design",
-      "DevOps",
+      "Custom Software Engineering",
+      "Business Web Applications",
+      "ERP and CRM Systems",
+      "Education Technology",
+      "Workflow Automation",
+      "Artificial Intelligence Integration",
+      "API Development",
       "Next.js",
       "React",
       "Node.js",
       "TypeScript",
       "Python",
+      "MongoDB",
+      "PostgreSQL",
     ],
     hasOfferCatalog: {
       "@type": "OfferCatalog",
-      name: "RIZMEC Services",
+      name: "RIZMEC Engineering Services",
       itemListElement: [
         {
           "@type": "Offer",
           itemOffered: {
             "@type": "Service",
-            name: "Web Application Development",
+            name: "Custom Software Engineering",
             description:
-              "Custom web application development using React, Next.js, and modern frameworks.",
+              "Bespoke web applications, client portals, and administrative software built for scale.",
           },
         },
         {
           "@type": "Offer",
           itemOffered: {
             "@type": "Service",
-            name: "AI & Machine Learning Solutions",
+            name: "Business Platforms (ERP & CRM)",
             description:
-              "Custom AI systems, machine learning models, autonomous agents, and intelligent automation.",
+              "Unified operations platforms, quotation engines, client management, and role-based access.",
           },
         },
         {
           "@type": "Offer",
           itemOffered: {
             "@type": "Service",
-            name: "SaaS Platform Development",
+            name: "Education Technology & Portals",
             description:
-              "End-to-end SaaS product development from MVP to enterprise scale.",
+              "Student admission tracking, agent management networks, and education consultancy portals.",
           },
         },
         {
           "@type": "Offer",
           itemOffered: {
             "@type": "Service",
-            name: "Mobile App Development",
+            name: "AI & Workflow Automation",
             description:
-              "Cross-platform and native mobile application development.",
+              "Document extraction, process automation, AI-powered customer support, and system integrations.",
           },
         },
         {
           "@type": "Offer",
           itemOffered: {
             "@type": "Service",
-            name: "Cloud Infrastructure & DevOps",
+            name: "API Development & System Integration",
             description:
-              "Cloud architecture, deployment pipelines, and infrastructure automation.",
+              "Connecting ERPs, payment gateways, third-party APIs, and legacy databases.",
           },
         },
         {
           "@type": "Offer",
           itemOffered: {
             "@type": "Service",
-            name: "UI/UX Design",
+            name: "Ongoing Software Maintenance",
             description:
-              "User interface design, user experience research, and design systems.",
+              "Dedicated technical maintenance, security patches, backups, and iterative feature development.",
           },
         },
       ],

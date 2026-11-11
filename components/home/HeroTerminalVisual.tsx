@@ -34,7 +34,7 @@ export function HeroTerminalVisual() {
           style={{ animationDuration: "6s" }}
         />
         <span className="text-[11px] font-bold text-white uppercase tracking-wider">
-          AI & Cloud Ecosystems
+          Software &amp; AI Systems
         </span>
       </motion.div>
 
@@ -73,11 +73,11 @@ export function HeroTerminalVisual() {
           <div className="relative font-mono text-xs text-white/80 space-y-2.5 leading-relaxed overflow-x-auto py-2">
             <p className="text-white/40 flex items-center gap-2">
               <Code2 className="w-3 h-3 text-neutral-500" />
-              <span>// Enterprise Architecture Blueprint</span>
+              <span>// Architecture Blueprint</span>
             </p>
             <p>
               <span className="text-purple-400 font-semibold">import</span>{" "}
-              {"{"} <span className="text-cyan-300">Studio</span> {"}"}{" "}
+              {"{"} <span className="text-cyan-300">Platform</span> {"}"}{" "}
               <span className="text-purple-400 font-semibold">from</span>{" "}
               <span className="text-emerald-300">&quot;@rizmec/core&quot;</span>;
             </p>
@@ -86,31 +86,31 @@ export function HeroTerminalVisual() {
               <span className="text-purple-400 font-semibold">export const</span>{" "}
               <span className="text-yellow-300 font-semibold">app</span> ={" "}
               <span className="text-purple-400 font-semibold">new</span>{" "}
-              <span className="text-cyan-300">Studio</span>({"{"}
+              <span className="text-cyan-300">Platform</span>({"{"}
             </p>
             <p className="pl-4">
               <span className="text-white/60">architecture:</span>{" "}
-              <span className="text-emerald-300">&quot;Cloud Native&quot;</span>,
+              <span className="text-emerald-300">&quot;Full-Stack Modern&quot;</span>,
             </p>
             <p className="pl-4">
               <span className="text-white/60">stack:</span> [
               <span className="text-emerald-300">&quot;Next.js&quot;</span>,{" "}
               <span className="text-emerald-300">&quot;TypeScript&quot;</span>,{" "}
-              <span className="text-emerald-300">&quot;AI&quot;</span>],
+              <span className="text-emerald-300">&quot;Automation&quot;</span>],
             </p>
             <p className="pl-4">
-              <span className="text-white/60">performance:</span>{" "}
-              <span className="text-yellow-300 font-semibold">100</span>,
+              <span className="text-white/60">reliability:</span>{" "}
+              <span className="text-emerald-300">&quot;Monitored &amp; Backed Up&quot;</span>,
             </p>
             <p className="pl-4">
               <span className="text-white/60">security:</span>{" "}
-              <span className="text-emerald-300">&quot;Enterprise Grade&quot;</span>,
+              <span className="text-emerald-300">&quot;Role-Based &amp; Encrypted&quot;</span>,
             </p>
             <p>{"}"});</p>
             <br />
             <p className="text-emerald-400 flex items-center gap-2 font-medium">
               <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-              <span>await app.deploy(); // Deployed to Global Edge</span>
+              <span>await app.deploy(); // Production Deployment</span>
             </p>
           </div>
 
@@ -119,9 +119,9 @@ export function HeroTerminalVisual() {
             <div className="flex items-center gap-2.5 p-3 rounded-xl glass border border-white/10 bg-white/[0.03] hover:bg-white/[0.07] hover:border-white/20 transition-all duration-300">
               <Zap className="w-4 h-4 text-emerald-400 shrink-0" />
               <div className="flex flex-col">
-                <span className="text-[11px] font-bold text-white">100/100 Score</span>
+                <span className="text-[11px] font-bold text-white">Fast Vitals</span>
                 <span className="text-[9px] text-white/40 uppercase tracking-wider">
-                  Lighthouse CWV
+                  Core Web Vitals
                 </span>
               </div>
             </div>
@@ -129,9 +129,9 @@ export function HeroTerminalVisual() {
             <div className="flex items-center gap-2.5 p-3 rounded-xl glass border border-white/10 bg-white/[0.03] hover:bg-white/[0.07] hover:border-white/20 transition-all duration-300">
               <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0" />
               <div className="flex flex-col">
-                <span className="text-[11px] font-bold text-white">SOC-2 Standards</span>
+                <span className="text-[11px] font-bold text-white">Security First</span>
                 <span className="text-[9px] text-white/40 uppercase tracking-wider">
-                  Security First
+                  Best Practices
                 </span>
               </div>
             </div>

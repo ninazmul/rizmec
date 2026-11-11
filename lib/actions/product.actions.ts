@@ -22,21 +22,52 @@ export async function getProducts(params?: {
     if (params?.limit) q = q.limit(params.limit);
 
     const products = await q.lean();
-    return { success: true, data: JSON.parse(JSON.stringify(products)) };
+    const fictionalSlugs = ["vectorflow-ai", "hyperedge", "synthetix", "omniledger"];
+    const verified = (products || []).filter(
+      (p: any) => !fictionalSlugs.includes(p.slug?.toLowerCase())
+    );
+
+    if (verified.length === 0) {
+      const { VERIFIED_PLATFORMS } = await import("@/constants/verifiedData");
+      return { success: true, data: VERIFIED_PLATFORMS };
+    }
+
+    return { success: true, data: JSON.parse(JSON.stringify(verified)) };
   } catch (error: any) {
     console.error("Error fetching products:", error);
-    return { success: false, error: error.message, data: [] };
+    try {
+      const { VERIFIED_PLATFORMS } = await import("@/constants/verifiedData");
+      return { success: true, data: VERIFIED_PLATFORMS };
+    } catch {
+      return { success: false, error: error.message, data: [] };
+    }
   }
 }
 
 export async function getProductBySlug(slug: string) {
   try {
+    const cleanSlug = slug.toLowerCase().trim();
+    const fictionalSlugs = ["vectorflow-ai", "hyperedge", "synthetix", "omniledger"];
+    if (fictionalSlugs.includes(cleanSlug)) {
+      return { success: false, data: null };
+    }
+
     await connectToDatabase();
-    const product = await Product.findOne({ slug: slug.toLowerCase() }).lean();
-    if (!product) return { success: false, data: null };
+    const product = await Product.findOne({ slug: cleanSlug }).lean();
+    if (!product) {
+      const { VERIFIED_PLATFORMS } = await import("@/constants/verifiedData");
+      const fallback = VERIFIED_PLATFORMS.find((p) => p.slug === cleanSlug);
+      if (fallback) return { success: true, data: fallback };
+      return { success: false, data: null };
+    }
     return { success: true, data: JSON.parse(JSON.stringify(product)) };
   } catch (error: any) {
     console.error("Error fetching product by slug:", error);
+    try {
+      const { VERIFIED_PLATFORMS } = await import("@/constants/verifiedData");
+      const fallback = VERIFIED_PLATFORMS.find((p) => p.slug === slug.toLowerCase().trim());
+      if (fallback) return { success: true, data: fallback };
+    } catch {}
     return { success: false, error: error.message, data: null };
   }
 }

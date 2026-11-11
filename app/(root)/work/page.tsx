@@ -39,12 +39,10 @@ export default async function WorkCatalogPage() {
           // Production Case Studies
         </span>
         <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white text-chrome">
-          Verified systems engineered for real-world impact.
+          Engineering case studies &amp; real-world projects.
         </h1>
-        <p className="text-lg sm:text-xl text-neutral-400 font-light leading-relaxed">
-          Explore our architectural engagements across Tier-1 financial
-          institutions, healthcare research consortia, and aerospace logistics
-          leaders.
+        <p className="text-lg sm:text-xl text-neutral-400 font-light leading-relaxed font-sans">
+          Explore our custom software implementations, education technology platforms, and operational systems engineered for real-world reliability.
         </p>
       </div>
 

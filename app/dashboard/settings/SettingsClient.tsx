@@ -18,21 +18,21 @@ export default function SettingsClient({ initialSettings, access }: Props) {
       initialSettings.positioning ||
       "Global Technology Engineering & Mission-Critical Systems",
     philosophy:
-      initialSettings.philosophy || "From algorithms to intelligent systems.",
+      initialSettings.philosophy || "From Algorithms to Engineered Intelligence.",
     contactEmail: initialSettings.contactEmail || "hello@rizmec.com",
-    contactPhone: initialSettings.contactPhone || "+1 (888) 749-6320",
+    contactPhone: initialSettings.contactPhone || "",
     address:
       initialSettings.address ||
-      "100 Montgomery St, Suite 2400, San Francisco, CA 94104",
+      "Gazipur 1750, Dhaka, Bangladesh",
     defaultCurrency: initialSettings.defaultCurrency || "USD",
     quotationTerms:
       initialSettings.quotationTerms ||
       "Standard RIZMEC Master Engineering Agreement applies.",
     invoiceTerms:
-      initialSettings.invoiceTerms || "Net 15 days. Wire and ACH preferred.",
+      initialSettings.invoiceTerms || "Net 15 days.",
     paymentInstructions:
       initialSettings.paymentInstructions ||
-      "Bank Wire Transfer: Account Name: RIZMEC Engineering Inc. | SWIFT: RIZMUS33 | IBAN: US34RIZM000192837465",
+      "Bank Wire / International Transfer: Inquire with billing at hello@rizmec.com for verified account details.",
     socialGithub: initialSettings.socialLinks?.github || "",
     socialLinkedin: initialSettings.socialLinks?.linkedin || "",
     socialTwitter: initialSettings.socialLinks?.twitter || "",

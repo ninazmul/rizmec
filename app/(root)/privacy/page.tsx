@@ -23,23 +23,23 @@ export default function PrivacyPage() {
 
       <div className="prose prose-invert prose-neutral max-w-none text-neutral-400 text-sm leading-relaxed space-y-8 font-sans">
         <section className="space-y-3">
-          <h2 className="text-xl font-bold text-white tracking-tight">1. Commitment to Enterprise Data Sovereignty</h2>
+          <h2 className="text-xl font-bold text-white tracking-tight">1. Commitment to Client Data Sovereignty</h2>
           <p>
-            RIZMEC Inc. ("RIZMEC", "we", "our") maintains an absolute commitment to data privacy, confidentiality, and technical sovereignty. We engineer software solutions designed to adhere strictly to global regulatory frameworks, including the EU General Data Protection Regulation (GDPR), the California Consumer Privacy Act (CCPA), and SOC 2 Type II controls.
+            RIZMEC (&quot;RIZMEC&quot;, &quot;we&quot;, &quot;our&quot;) maintains a strict commitment to data privacy, confidentiality, and technical integrity. We engineer custom software solutions designed with security-conscious practices, adhering to international data protection principles including GDPR and CCPA requirements where applicable.
           </p>
         </section>
 
         <section className="space-y-3">
           <h2 className="text-xl font-bold text-white tracking-tight">2. Information Collection & Usage</h2>
           <p>
-            We collect information provided directly by enterprise clients and prospective partners solely for the purpose of architectural scoping, contractual execution, and technical support. This includes corporate contact details, technical specifications, and telemetry data transmitted during platform utilization.
+            We collect information provided directly by clients and prospective partners solely for the purpose of architectural scoping, project execution, and technical communication. This includes business contact details, technical specifications, and project briefs.
           </p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-bold text-white tracking-tight">3. Neural Data & AI Model Training</h2>
+          <h2 className="text-xl font-bold text-white tracking-tight">3. Client Data & AI Integrations</h2>
           <p>
-            RIZMEC enforces a strict zero-leakage policy regarding customer proprietary data. Client data ingested through VectorFlow, neural endpoints, or custom agent swarms is never used to train generalized foundation models without explicit, written cryptographic consent.
+            RIZMEC enforces a strict confidentiality policy regarding client proprietary data. Client data processed through custom software, AI integration pipelines, or automated workflows is never used to train generalized foundation models without explicit authorization.
           </p>
         </section>
 

@@ -44,34 +44,34 @@ const TwitterXIcon = ({ className }: { className?: string }) => (
 
 export default function PublicFooter() {
   const capabilities = [
-    { label: "Applied AI & Agent Swarms", href: "/services/ai-systems" },
-    { label: "Cloud Systems & Resiliency", href: "/services/cloud-systems" },
-    { label: "High-Throughput Web Apps", href: "/services/web-applications" },
-    { label: "Enterprise SaaS Platforms", href: "/services/enterprise-saas" },
-    { label: "Mobile Systems", href: "/services/mobile-applications" },
-    { label: "Algorithmic Automation", href: "/services/automation" },
+    { label: "Custom Software Engineering", href: "/services" },
+    { label: "Business Platforms & ERP", href: "/services" },
+    { label: "AI & Workflow Automation", href: "/services" },
+    { label: "Education Technology", href: "/services" },
+    { label: "API & System Integration", href: "/services" },
+    { label: "Software Maintenance", href: "/services" },
     { label: "Video Ads", href: "/ads" },
   ];
 
   const products = [
-    { label: "VectorFlow AI Engine", href: "/products/vectorflow-ai" },
-    { label: "HyperEdge Orchestrator", href: "/products/hyperedge" },
-    { label: "Synthetix API Gateway", href: "/products/synthetix" },
-    { label: "OmniLedger FinTech", href: "/products/omniledger" },
+    { label: "Business Operations Core", href: "/products" },
+    { label: "Education Partner Platform", href: "/products" },
+    { label: "Workflow Integration Gateway", href: "/products" },
+    { label: "All Solution Blueprints", href: "/products" },
   ];
 
   const company = [
-    { label: "Engineering Ethos", href: "/about" },
-    { label: "Technical Leadership", href: "/team" },
+    { label: "About Rizmec", href: "/about" },
+    { label: "Founder & Leadership", href: "/team" },
     { label: "Selected Case Studies", href: "/work" },
-    { label: "Enterprise Inquiries", href: "/contact" },
+    { label: "Project Inquiries", href: "/contact" },
     { label: "Client Portal", href: "/dashboard" },
   ];
 
   const legal = [
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Engineering", href: "/terms" },
-    { label: "Security & Compliance", href: "/security" },
+    { label: "Security & Governance", href: "/security" },
   ];
 
   return (
@@ -82,14 +82,14 @@ export default function PublicFooter() {
           <div className="lg:col-span-5 space-y-6">
             <RizmecLogo variant="white" size="lg" showTagline={true} />
             <p className="text-neutral-400 text-sm leading-relaxed max-w-md font-sans">
-              RIZMEC is a premier global technology engineering company. We
-              architect, build, and operate mission-critical software systems,
-              autonomous AI pipelines, and distributed cloud infrastructures
-              that power modern enterprise scale.
+              RIZMEC engineers digital infrastructure that helps businesses
+              operate, automate, and scale. We build custom software, business
+              platforms, and intelligent automation systems for international
+              clients.
             </p>
             <div className="flex items-center gap-4 text-neutral-400">
               <a
-                href="https://github.com/rizmec"
+                href="https://github.com/ninazmul"
                 target="_blank"
                 rel="noreferrer"
                 className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center hover:text-white hover:border-white/40 transition-colors"
@@ -139,7 +139,7 @@ export default function PublicFooter() {
 
             <div>
               <h4 className="text-xs font-mono tracking-widest text-white uppercase mb-5 font-semibold">
-                Platforms
+                Platforms &amp; Blueprints
               </h4>
               <ul className="space-y-3 text-xs">
                 {products.map((item) => (
@@ -157,7 +157,7 @@ export default function PublicFooter() {
 
             <div>
               <h4 className="text-xs font-mono tracking-widest text-white uppercase mb-5 font-semibold">
-                Enterprise
+                Company
               </h4>
               <ul className="space-y-3 text-xs">
                 {company.map((item) => (
@@ -179,14 +179,11 @@ export default function PublicFooter() {
         <div className="py-8 border-b border-white/10 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-neutral-400">
           <div className="flex items-center gap-2">
             <Globe className="w-3.5 h-3.5 text-neutral-400" />
-            <span>GLOBAL HUBS:</span>
+            <span>OPERATING BASE:</span>
           </div>
           <div className="flex flex-wrap gap-6 text-neutral-400">
-            <span title="604 C. Hoare, San Juan, Puerto Rico 00907">
-              SAN JUAN, PUERTO RICO [18.46° N, 66.11° W]
-            </span>
-            <span title="A-1/9, Gazipur 1750, Dhaka, Bangladesh">
-              DHAKA, BANGLADESH [23.81° N, 90.41° E]
+            <span title="Gazipur 1750, Dhaka, Bangladesh">
+              DHAKA, BANGLADESH [23.81° N, 90.41° E] // SERVING CLIENTS GLOBALLY
             </span>
           </div>
         </div>
@@ -235,8 +232,8 @@ export default function PublicFooter() {
         {/* Bottom Tier: Copyright & Legal */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-400">
           <div>
-            &copy; {new Date().getFullYear()} RIZMEC Inc. All technical rights
-            reserved. "Intelligence. Engineered." is a registered mark.
+            &copy; {new Date().getFullYear()} RIZMEC. All rights
+            reserved. From Algorithms to Engineered Intelligence.
           </div>
           <div className="flex items-center gap-6">
             {legal.map((item) => (

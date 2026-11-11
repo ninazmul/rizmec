@@ -1,18 +1,28 @@
+export * from "./verifiedData";
+
 export const headerLinks = [
   {
-    label: "আমাদের সম্পর্কে",
+    label: "Capabilities",
+    route: "/services",
+  },
+  {
+    label: "Solutions",
+    route: "/products",
+  },
+  {
+    label: "Case Studies",
+    route: "/work",
+  },
+  {
+    label: "Leadership",
+    route: "/team",
+  },
+  {
+    label: "About",
     route: "/about",
   },
   {
-    label: "কোর্স সমূহ",
-    route: "/courses",
-  },
-  {
-    label: "নোটিশ",
-    route: "/notices",
-  },
-  {
-    label: "যোগাযোগ",
+    label: "Contact",
     route: "/contact",
   },
 ];

@@ -35,24 +35,24 @@ export interface ICompanySetting extends Document {
 const CompanySettingSchema = new Schema<ICompanySetting>(
   {
     companyName: { type: String, default: "RIZMEC" },
-    tagline: { type: String, default: "Intelligence. Engineered." },
+    tagline: { type: String, default: "From Algorithms to Engineered Intelligence" },
     positioning: {
       type: String,
-      default: "Global Technology Engineering & Mission-Critical Systems",
+      default: "Engineering digital infrastructure that helps businesses operate, automate, and scale.",
     },
     philosophy: {
       type: String,
-      default: "From algorithms to intelligent systems.",
+      default: "From Algorithms to Engineered Intelligence.",
     },
     contactEmail: { type: String, default: "hello@rizmec.com" },
-    contactPhone: { type: String, default: "+1 (888) 749-6320" },
-    address: { type: String, default: "100 Montgomery St, Suite 2400, San Francisco, CA 94104" },
+    contactPhone: { type: String, default: "" },
+    address: { type: String, default: "Gazipur 1750, Dhaka, Bangladesh" },
     globalLocations: {
       type: [String],
-      default: ["San Francisco, CA", "London, UK", "Singapore", "Tokyo, JP"],
+      default: ["Dhaka, Bangladesh"],
     },
     socialLinks: {
-      github: { type: String, default: "https://github.com/rizmec" },
+      github: { type: String, default: "https://github.com/ninazmul" },
       linkedin: { type: String, default: "https://linkedin.com/company/rizmec" },
       twitter: { type: String, default: "https://x.com/rizmec_tech" },
       youtube: { type: String, default: "" },
@@ -65,12 +65,12 @@ const CompanySettingSchema = new Schema<ICompanySetting>(
     },
     invoiceTerms: {
       type: String,
-      default: "Net 15 days. Late payments may incur a 1.5% monthly compound fee.",
+      default: "Net 15 days.",
     },
     paymentInstructions: {
       type: String,
       default:
-        "Bank Wire Transfer: Account Name: RIZMEC Engineering Inc. | SWIFT: RIZMUS33 | IBAN: US34RIZM000192837465",
+        "Bank Wire / International Transfer: Inquire with billing at hello@rizmec.com for verified account details.",
     },
     logoWhiteUrl: { type: String, default: "" },
     logoBlackUrl: { type: String, default: "" },

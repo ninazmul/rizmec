@@ -36,35 +36,43 @@ export default async function ProductsCatalogPage() {
       <div className="max-w-3xl space-y-6 relative">
         <span className="text-xs font-mono tracking-widest text-indigo-400 uppercase font-semibold flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-          // Product Ecosystem
+          // Solution Blueprints &amp; Platforms
         </span>
         <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white text-chrome">
-          Engineered platforms built from our own hard problems.
+          Engineered platforms &amp; solution blueprints.
         </h1>
-        <p className="text-lg sm:text-xl text-neutral-400 font-light leading-relaxed">
-          Proprietary neural gateways, multi-cloud Kubernetes orchestrators, and
-          high-performance API event meshes developed by RIZMEC and deployed into
-          production worldwide.
+        <p className="text-lg sm:text-xl text-neutral-400 font-light leading-relaxed font-sans">
+          Rizmec engineers repeatable software architectures, internal platforms, and functional prototypes that accelerate our custom engineering engagements. The solutions below represent our internal tools, proprietary architectures, and engineering prototypes.
         </p>
       </div>
 
       {/* Products Grid with 3D Tilt */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 relative">
-        {products.map((product: any) => (
-          <TiltCard key={product.slug} maxTilt={6} glareOpacity={0.16}>
-            <div className="p-8 sm:p-12 rounded-2xl border border-white/10 bg-neutral-900/50 backdrop-blur-xl hover:border-white/30 transition-all flex flex-col justify-between space-y-8 h-full">
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <span className="px-3.5 py-1 rounded-full text-[11px] font-mono tracking-wider uppercase border border-white/15 bg-white/5 text-neutral-200">
-                    {product.category}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="font-mono text-xs text-emerald-400 uppercase tracking-widest font-semibold">
-                      {product.status === "active" ? "PRODUCTION READY" : "BETA"}
+        {products.map((product: any) => {
+          const statusLabel =
+            product.status === "internal"
+              ? "INTERNAL PLATFORM"
+              : product.status === "prototype"
+              ? "ARCHITECTURE PROTOTYPE"
+              : product.status === "concept"
+              ? "CONCEPT BLUEPRINT"
+              : "PRODUCTION READY";
+
+          return (
+            <TiltCard key={product.slug} maxTilt={6} glareOpacity={0.16}>
+              <div className="p-8 sm:p-12 rounded-2xl border border-white/10 bg-neutral-900/50 backdrop-blur-xl hover:border-white/30 transition-all flex flex-col justify-between space-y-8 h-full">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <span className="px-3.5 py-1 rounded-full text-[11px] font-mono tracking-wider uppercase border border-white/15 bg-white/5 text-neutral-200">
+                      {product.category}
                     </span>
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="font-mono text-xs text-emerald-400 uppercase tracking-widest font-semibold">
+                        {statusLabel}
+                      </span>
+                    </div>
                   </div>
-                </div>
 
                 <div>
                   <h2 className="text-3xl font-bold text-white tracking-tight">
@@ -113,7 +121,8 @@ export default async function ProductsCatalogPage() {
               </div>
             </div>
           </TiltCard>
-        ))}
+        );
+      })}
       </div>
     </div>
   );

@@ -82,10 +82,29 @@ export async function getPublishedProjects(params?: {
     if (params?.limit) projectsQuery = projectsQuery.limit(params.limit);
 
     const projects = await projectsQuery.lean();
-    return { success: true, data: JSON.parse(JSON.stringify(projects)) };
+    const fictionalSlugs = [
+      "algo-trading-engine",
+      "biopharma-telemetry-platform",
+      "global-logistics-routing-engine",
+    ];
+    const verifiedProjects = (projects || []).filter(
+      (p: any) => !fictionalSlugs.includes(p.slug?.toLowerCase())
+    );
+
+    if (verifiedProjects.length === 0) {
+      const { VERIFIED_CASE_STUDIES } = await import("@/constants/verifiedData");
+      return { success: true, data: VERIFIED_CASE_STUDIES };
+    }
+
+    return { success: true, data: JSON.parse(JSON.stringify(verifiedProjects)) };
   } catch (error: any) {
     console.error("Error fetching published projects:", error);
-    return { success: false, error: error.message, data: [] };
+    try {
+      const { VERIFIED_CASE_STUDIES } = await import("@/constants/verifiedData");
+      return { success: true, data: VERIFIED_CASE_STUDIES };
+    } catch {
+      return { success: false, error: error.message, data: [] };
+    }
   }
 }
 
@@ -124,9 +143,19 @@ export async function getProjectBySlug(slug: string) {
 
 export async function getPublishedProjectBySlug(slug: string) {
   try {
+    const cleanSlug = slug.toLowerCase().trim();
+    const fictionalSlugs = [
+      "algo-trading-engine",
+      "biopharma-telemetry-platform",
+      "global-logistics-routing-engine",
+    ];
+    if (fictionalSlugs.includes(cleanSlug)) {
+      return { success: false, data: null };
+    }
+
     await connectToDatabase();
     const project = await Project.findOne({
-      slug: slug.toLowerCase(),
+      slug: cleanSlug,
       published: true,
     })
       .populate(
@@ -134,10 +163,21 @@ export async function getPublishedProjectBySlug(slug: string) {
         "name title avatar slug bio skills socialLinks",
       )
       .lean();
-    if (!project) return { success: false, data: null };
+
+    if (!project) {
+      const { VERIFIED_CASE_STUDIES } = await import("@/constants/verifiedData");
+      const fallback = VERIFIED_CASE_STUDIES.find((p) => p.slug === cleanSlug);
+      if (fallback) return { success: true, data: fallback };
+      return { success: false, data: null };
+    }
     return { success: true, data: JSON.parse(JSON.stringify(project)) };
   } catch (error: any) {
     console.error("Error fetching published project by slug:", error);
+    try {
+      const { VERIFIED_CASE_STUDIES } = await import("@/constants/verifiedData");
+      const fallback = VERIFIED_CASE_STUDIES.find((p) => p.slug === slug.toLowerCase().trim());
+      if (fallback) return { success: true, data: fallback };
+    } catch {}
     return { success: false, error: error.message, data: null };
   }
 }

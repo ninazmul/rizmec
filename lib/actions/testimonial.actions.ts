@@ -20,7 +20,18 @@ export async function getTestimonials(params?: {
     if (params?.limit) q = q.limit(params.limit);
 
     const testimonials = await q.lean();
-    return { success: true, data: JSON.parse(JSON.stringify(testimonials)) };
+    const fictionalNames = [
+      "alexander vance",
+      "evelyn wright",
+      "liam thorne",
+      "carlos mendez",
+      "beatrice dubois",
+      "david vance",
+    ];
+    const verified = (testimonials || []).filter(
+      (t: any) => !fictionalNames.includes(t.clientName?.toLowerCase())
+    );
+    return { success: true, data: JSON.parse(JSON.stringify(verified)) };
   } catch (error: any) {
     console.error("Error fetching testimonials:", error);
     return { success: false, error: error.message, data: [] };

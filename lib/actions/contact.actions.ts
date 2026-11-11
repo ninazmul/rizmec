@@ -13,72 +13,95 @@ export async function submitContactMessage(data: {
   company?: string;
   email: string;
   phone?: string;
+  website?: string;
+  country?: string;
   subject?: string;
   service?: string;
   budget?: string;
   timeline?: string;
   message: string;
+  hp?: string; // Anti-spam honeypot
 }) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return {
-        success: false,
-        error: "Authentication required. You must be signed in with Clerk to submit an inquiry.",
-      };
+    // Spam protection: honeypot field must remain empty
+    if (data.hp && data.hp.trim().length > 0) {
+      return { success: true };
     }
 
-    const clerkUser = await currentUser();
-    const verifiedEmail =
-      clerkUser?.emailAddresses?.find(
-        (e) => e.id === clerkUser.primaryEmailAddressId,
-      )?.emailAddress ||
-      clerkUser?.emailAddresses?.[0]?.emailAddress ||
-      data.email?.trim().toLowerCase();
+    const cleanName = data.name?.trim();
+    const cleanEmail = data.email?.trim().toLowerCase();
+    const cleanMessage = data.message?.trim();
 
-    if (!verifiedEmail) {
-      return {
-        success: false,
-        error: "Unable to verify email address. Please ensure your Clerk account has a valid email.",
-      };
+    if (!cleanName || cleanName.length < 2) {
+      return { success: false, error: "Please enter your full name." };
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!cleanEmail || !emailRegex.test(cleanEmail)) {
+      return { success: false, error: "Please provide a valid business email address." };
+    }
+
+    if (!cleanMessage || cleanMessage.length < 10) {
+      return { success: false, error: "Please provide a brief description of your project (minimum 10 characters)." };
+    }
+
+    // Optional Clerk session integration if user is logged in
+    let resolvedEmail = cleanEmail;
+    try {
+      const { userId } = await auth();
+      if (userId) {
+        const clerkUser = await currentUser();
+        const primary =
+          clerkUser?.emailAddresses?.find(
+            (e) => e.id === clerkUser.primaryEmailAddressId,
+          )?.emailAddress || clerkUser?.emailAddresses?.[0]?.emailAddress;
+        if (primary) resolvedEmail = primary.toLowerCase();
+      }
+    } catch {
+      // Unauthenticated submission is completely valid
     }
 
     await connectToDatabase();
 
-    if (!data.name || !data.message) {
-      return { success: false, error: "Please provide your name and project details." };
-    }
-
     const messagePayload = {
-      ...data,
-      email: verifiedEmail,
+      name: cleanName,
+      company: data.company?.trim() || "",
+      email: resolvedEmail,
+      phone: data.phone?.trim() || "",
+      website: data.website?.trim() || "",
+      country: data.country?.trim() || "",
+      service: data.service || "Custom Software Engineering",
+      budget: data.budget || "To be scoped",
+      timeline: data.timeline || "Flexible / Ongoing",
+      message: cleanMessage,
     };
 
     // 1. Create ContactMessage record
     const message = await ContactMessage.create(messagePayload);
 
-    // 2. Automatically create a high-priority Lead in the CRM!
+    // 2. Automatically create a Lead in the CRM
     await Lead.create({
-      name: data.name,
-      company: data.company || "",
-      email: verifiedEmail,
-      phone: data.phone || "",
+      name: cleanName,
+      company: data.company?.trim() || "",
+      email: resolvedEmail,
+      phone: data.phone?.trim() || "",
+      country: data.country?.trim() || "",
       source: "website",
-      serviceInterest: data.service || "Engineering Engagement",
-      budget: data.budget || "Not specified",
+      serviceInterest: data.service || "Custom Software Engineering",
+      budget: data.budget || "To be scoped",
       priority:
-        data.budget?.includes("250k") || data.budget?.includes("100k") || data.budget?.includes("50k")
+        data.budget?.includes("25k") || data.budget?.includes("10k")
           ? "high"
-          : data.budget?.includes("< $1k") || data.budget?.includes("$1k - $5k")
+          : data.budget?.includes("< $2,500")
           ? "low"
           : "medium",
       status: "new",
-      tags: ["Website Contact", data.service || "Digital Engineering"],
-      notes: `Project Timeline: ${data.timeline || "Flexible"}\nMessage: ${data.message}`,
+      tags: ["Website Contact", data.service || "Software Engineering"],
+      notes: `Country: ${data.country || "Not specified"}\nWebsite: ${data.website || "N/A"}\nTimeline: ${data.timeline || "Flexible"}\nBudget: ${data.budget || "N/A"}\nMessage: ${cleanMessage}`,
       timeline: [
         {
           date: new Date(),
-          note: `Initial inquiry submitted via RIZMEC contact portal. Budget: ${data.budget || "N/A"}`,
+          note: `Project inquiry received from website. Category: ${data.service || "General"}. Budget: ${data.budget || "N/A"}`,
           author: "Inquiry Webhook",
         },
       ],
@@ -109,7 +132,7 @@ export async function submitContactMessage(data: {
               <h2 style="color: #ffffff; margin-bottom: 16px;">New Enterprise Engagement Request</h2>
               <p><strong>Name:</strong> ${data.name}</p>
               <p><strong>Company:</strong> ${data.company || "N/A"}</p>
-              <p><strong>Email:</strong> ${verifiedEmail}</p>
+              <p><strong>Email:</strong> ${resolvedEmail}</p>
               <p><strong>Phone:</strong> ${data.phone || "N/A"}</p>
               <p><strong>Service Focus:</strong> ${data.service || "N/A"}</p>
               <p><strong>Estimated Budget:</strong> ${data.budget || "N/A"}</p>

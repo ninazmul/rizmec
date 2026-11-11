@@ -45,7 +45,7 @@ export default function PublicHeader() {
               <span className="text-neutral-600">|</span>
               <span className="text-[10px] text-neutral-400 flex items-center gap-1">
                 <Activity className="w-3 h-3 text-emerald-400" />
-                99.999%
+                ONLINE
               </span>
             </div>
           </div>

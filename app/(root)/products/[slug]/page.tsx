@@ -59,7 +59,13 @@ export default async function ProductDetailPage({ params }: Props) {
             {product.category}
           </span>
           <span className="font-mono text-xs text-neutral-400 uppercase tracking-widest">
-            {product.status === "active" ? "PRODUCTION GRADE" : "BETA"}
+            {product.status === "internal"
+              ? "INTERNAL PLATFORM"
+              : product.status === "prototype"
+              ? "ARCHITECTURE PROTOTYPE"
+              : product.status === "concept"
+              ? "CONCEPT BLUEPRINT"
+              : "PRODUCTION READY"}
           </span>
         </div>
 
@@ -75,7 +81,7 @@ export default async function ProductDetailPage({ params }: Props) {
             href="/contact"
             className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white text-black font-semibold text-xs tracking-widest uppercase hover:bg-neutral-200 transition-all"
           >
-            <span>Request Enterprise Access</span>
+            <span>Discuss Custom Deployment</span>
             <ArrowUpRight className="w-4 h-4" />
           </Link>
           {product.githubUrl && (
@@ -216,10 +222,10 @@ export default async function ProductDetailPage({ params }: Props) {
 
             <div className="pt-6 border-t border-white/10 space-y-4">
               <h4 className="text-xs font-mono text-neutral-400 uppercase tracking-wider">
-                Support & SLA
+                Support &amp; Maintenance
               </h4>
-              <p className="text-xs text-neutral-400 leading-relaxed">
-                Includes 24/7 dedicated SRE support channel, weekly security scans, and continuous telemetry monitoring.
+              <p className="text-xs text-neutral-400 leading-relaxed font-sans">
+                Includes direct architectural guidance, proactive health monitoring, regular security updates, and iterative feature enhancements.
               </p>
             </div>
 
@@ -228,7 +234,7 @@ export default async function ProductDetailPage({ params }: Props) {
                 href="/contact"
                 className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white text-black font-mono text-xs font-bold uppercase tracking-widest hover:bg-neutral-200 transition-all"
               >
-                <span>Deploy Platform</span>
+                <span>Discuss This Solution</span>
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
             </div>

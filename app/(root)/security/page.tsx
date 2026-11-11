@@ -4,7 +4,7 @@ import { ShieldCheck, Lock, Terminal, Cpu, FileCheck } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Security & Trust Architecture — RIZMEC",
-  description: "Enterprise security protocols, encryption benchmarks, and SOC2 readiness at RIZMEC.",
+  description: "Security-conscious engineering practices, encryption, and data protection at RIZMEC.",
 };
 
 export default function SecurityPage() {

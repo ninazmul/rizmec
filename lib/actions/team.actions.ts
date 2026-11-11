@@ -24,21 +24,58 @@ export async function getTeamMembers(params?: {
     if (params?.limit) q = q.limit(params.limit);
 
     const members = await q.lean();
-    return { success: true, data: JSON.parse(JSON.stringify(members)) };
+    const fictionalSlugs = ["elena-vance", "marcus-chen", "sophia-sterling"];
+    const verifiedMembers = (members || []).filter(
+      (m: any) => !fictionalSlugs.includes(m.slug?.toLowerCase())
+    );
+
+    if (verifiedMembers.length === 0) {
+      const { FOUNDER_INFO } = await import("@/constants/verifiedData");
+      return { success: true, data: [FOUNDER_INFO] };
+    }
+
+    return { success: true, data: JSON.parse(JSON.stringify(verifiedMembers)) };
   } catch (error: any) {
     console.error("Error fetching team members:", error);
-    return { success: false, error: error.message, data: [] };
+    try {
+      const { FOUNDER_INFO } = await import("@/constants/verifiedData");
+      return { success: true, data: [FOUNDER_INFO] };
+    } catch {
+      return { success: false, error: error.message, data: [] };
+    }
   }
 }
 
 export async function getTeamMemberBySlug(slug: string) {
   try {
+    const cleanSlug = slug.toLowerCase().trim();
+    const fictionalSlugs = ["elena-vance", "marcus-chen", "sophia-sterling"];
+    if (fictionalSlugs.includes(cleanSlug)) {
+      return { success: false, data: null };
+    }
+
     await connectToDatabase();
-    const member = await TeamMember.findOne({ slug: slug.toLowerCase() }).lean();
+    let member = await TeamMember.findOne({
+      slug: { $in: [cleanSlug, cleanSlug === "ninazmul" ? "nazmul-i" : "ninazmul"] },
+    }).lean();
+
+    if (!member && (cleanSlug === "ninazmul" || cleanSlug === "nazmul-i")) {
+      const { FOUNDER_INFO } = await import("@/constants/verifiedData");
+      return { success: true, data: FOUNDER_INFO };
+    }
+
     if (!member) return { success: false, data: null };
     return { success: true, data: JSON.parse(JSON.stringify(member)) };
   } catch (error: any) {
     console.error("Error fetching team member by slug:", error);
+    if (slug.toLowerCase() === "ninazmul" || slug.toLowerCase() === "nazmul-i") {
+      try {
+        const { FOUNDER_INFO } = await import("@/constants/verifiedData");
+        return { success: true, data: FOUNDER_INFO };
+      } catch {
+        return { success: false, error: error.message, data: null };
+      }
+    }
     return { success: false, error: error.message, data: null };
   }
 }

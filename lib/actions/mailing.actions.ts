@@ -114,7 +114,7 @@ export async function sendMailCampaign(campaignId: string) {
                   </div>
                   <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 12px; color: #71717a;">
                     You are receiving this message because you interacted with RIZMEC Engineering.<br/>
-                    RIZMEC • 100 Montgomery St, San Francisco, CA 94104<br/>
+                    RIZMEC • Gazipur 1750, Dhaka, Bangladesh<br/>
                     <a href="https://rizmec.com/unsubscribe?email=${encodeURIComponent(lead.email)}" style="color: #a1a1aa; text-decoration: underline;">Unsubscribe from engineering updates</a>
                   </div>
                 </div>

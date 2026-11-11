@@ -91,7 +91,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // Dynamic: Services
-  const services = await Service.find({ isActive: true })
+  const services = await Service.find({ published: true })
     .select("slug updatedAt")
     .lean<any[]>();
 
@@ -102,29 +102,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.75,
   }));
 
-  // Dynamic: Products
-  const products = await Product.find({ isActive: true })
+  // Dynamic: Products / Platforms
+  const fictionalProductSlugs = ["vectorflow-ai", "hyperedge", "synthetix", "omniledger"];
+  const products = await Product.find({ published: true })
     .select("slug updatedAt")
     .lean<any[]>();
 
-  const productUrls: MetadataRoute.Sitemap = products.map((p) => ({
-    url: `${baseUrl}/products/${p.slug}`,
-    lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
-    changeFrequency: "monthly",
-    priority: 0.75,
-  }));
+  const productUrls: MetadataRoute.Sitemap = products
+    .filter((p) => !fictionalProductSlugs.includes(p.slug?.toLowerCase()))
+    .map((p) => ({
+      url: `${baseUrl}/products/${p.slug}`,
+      lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
+      changeFrequency: "monthly",
+      priority: 0.75,
+    }));
 
-  // Dynamic: Team Members
-  const teamMembers = await TeamMember.find({ isActive: true })
+  // Dynamic: Team Members (Verified only)
+  const fictionalTeamSlugs = ["elena-vance", "marcus-chen", "sophia-sterling"];
+  const teamMembers = await TeamMember.find({ published: true })
     .select("slug updatedAt")
     .lean<any[]>();
 
-  const teamUrls: MetadataRoute.Sitemap = teamMembers.map((t) => ({
-    url: `${baseUrl}/p/${t.slug}`,
-    lastModified: t.updatedAt ? new Date(t.updatedAt) : new Date(),
-    changeFrequency: "monthly",
-    priority: 0.6,
-  }));
+  const teamUrls: MetadataRoute.Sitemap = teamMembers
+    .filter((t) => !fictionalTeamSlugs.includes(t.slug?.toLowerCase()))
+    .map((t) => ({
+      url: `${baseUrl}/p/${t.slug}`,
+      lastModified: t.updatedAt ? new Date(t.updatedAt) : new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    }));
 
   // Dynamic: CMS pages
   const pages = await PageModel.find({ status: "published" })

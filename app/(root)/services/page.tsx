@@ -63,12 +63,10 @@ export default async function ServicesCatalogPage() {
           // Capability Taxonomy
         </span>
         <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white text-chrome">
-          Engineering disciplines built for mission-critical scale.
+          Core engineering disciplines &amp; capabilities.
         </h1>
-        <p className="text-lg sm:text-xl text-neutral-400 font-light leading-relaxed">
-          From deterministic AI pipelines to multi-region cloud meshes, explore
-          the core technical disciplines RIZMEC deploys for international
-          enterprise partners.
+        <p className="text-lg sm:text-xl text-neutral-400 font-light leading-relaxed font-sans">
+          From custom business web applications to workflow automation and education technology, explore the core software capabilities Rizmec delivers for international business clients.
         </p>
       </div>
 
@@ -87,7 +85,7 @@ export default async function ServicesCatalogPage() {
                       {icon}
                     </div>
                     <span className="font-mono text-xs text-emerald-400 uppercase tracking-widest px-2.5 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 font-semibold">
-                      SLA 99.999%
+                      PRODUCTION READY
                     </span>
                   </div>
 

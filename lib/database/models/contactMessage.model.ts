@@ -6,6 +6,8 @@ export interface IContactMessage extends Document {
   company?: string;
   email: string;
   phone?: string;
+  website?: string;
+  country?: string;
   service?: string;
   budget?: string;
   timeline?: string;
@@ -21,7 +23,9 @@ const ContactMessageSchema = new Schema<IContactMessage>(
     company: { type: String, default: "" },
     email: { type: String, required: true, lowercase: true, trim: true, index: true },
     phone: { type: String, default: "" },
-    service: { type: String, default: "General Consultation" },
+    website: { type: String, default: "" },
+    country: { type: String, default: "" },
+    service: { type: String, default: "Custom Software Engineering" },
     budget: { type: String, default: "Not specified" },
     timeline: { type: String, default: "Flexible" },
     message: { type: String, required: true },

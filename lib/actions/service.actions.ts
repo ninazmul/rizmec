@@ -20,21 +20,41 @@ export async function getServices(params?: {
     if (params?.limit) q = q.limit(params.limit);
 
     const services = await q.lean();
+    if (!services || services.length === 0) {
+      const { CORE_CAPABILITIES } = await import("@/constants/verifiedData");
+      return { success: true, data: CORE_CAPABILITIES };
+    }
     return { success: true, data: JSON.parse(JSON.stringify(services)) };
   } catch (error: any) {
     console.error("Error fetching services:", error);
-    return { success: false, error: error.message, data: [] };
+    try {
+      const { CORE_CAPABILITIES } = await import("@/constants/verifiedData");
+      return { success: true, data: CORE_CAPABILITIES };
+    } catch {
+      return { success: false, error: error.message, data: [] };
+    }
   }
 }
 
 export async function getServiceBySlug(slug: string) {
   try {
+    const cleanSlug = slug.toLowerCase().trim();
     await connectToDatabase();
-    const service = await Service.findOne({ slug: slug.toLowerCase() }).lean();
-    if (!service) return { success: false, data: null };
+    const service = await Service.findOne({ slug: cleanSlug }).lean();
+    if (!service) {
+      const { CORE_CAPABILITIES } = await import("@/constants/verifiedData");
+      const fallback = CORE_CAPABILITIES.find((s) => s.slug === cleanSlug);
+      if (fallback) return { success: true, data: fallback };
+      return { success: false, data: null };
+    }
     return { success: true, data: JSON.parse(JSON.stringify(service)) };
   } catch (error: any) {
     console.error("Error fetching service by slug:", error);
+    try {
+      const { CORE_CAPABILITIES } = await import("@/constants/verifiedData");
+      const fallback = CORE_CAPABILITIES.find((s) => s.slug === slug.toLowerCase().trim());
+      if (fallback) return { success: true, data: fallback };
+    } catch {}
     return { success: false, error: error.message, data: null };
   }
 }
