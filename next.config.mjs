@@ -1,6 +1,4 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+const nextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
@@ -9,6 +7,9 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "ufs.sh", port: "" },
       { protocol: "https", hostname: "*.ufs.sh", port: "" },
     ],
+  },
+  experimental: {
+    useWasmBinary: true,
   },
 };
 
