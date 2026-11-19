@@ -8,9 +8,6 @@ const nextConfig = {
       { protocol: "https", hostname: "*.ufs.sh", port: "" },
     ],
   },
-  experimental: {
-    useWasmBinary: true,
-  },
 };
 
 export default nextConfig;
