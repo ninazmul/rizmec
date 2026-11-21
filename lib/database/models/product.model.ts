@@ -19,18 +19,20 @@ export interface IProduct extends Document {
   title: string;
   slug: string;
   tagline: string;
-  category: "SaaS Platform" | "AI Engine" | "Developer Tool" | "Mobile App" | "Enterprise Cloud";
+  category: string;
   summary: string;
   description: string;
   features: string[];
   techStack: string[];
+  image?: string;
+  url?: string;
   screenshots: IProductScreenshot[];
   videoUrl?: string;
   demoUrl?: string;
   documentationUrl?: string;
   githubUrl?: string;
   pricingTiers: IPricingTier[];
-  status: "active" | "beta" | "coming_soon";
+  status: string;
   order: number;
   featured: boolean;
   published: boolean;
@@ -65,7 +67,6 @@ const ProductSchema = new Schema<IProduct>(
     tagline: { type: String, default: "" },
     category: {
       type: String,
-      enum: ["SaaS Platform", "AI Engine", "Developer Tool", "Mobile App", "Enterprise Cloud"],
       default: "SaaS Platform",
       index: true,
     },
@@ -73,6 +74,8 @@ const ProductSchema = new Schema<IProduct>(
     description: { type: String, default: "" },
     features: { type: [String], default: [] },
     techStack: { type: [String], default: [] },
+    image: { type: String, default: "" },
+    url: { type: String, default: "" },
     screenshots: { type: [ProductScreenshotSchema], default: [] },
     videoUrl: { type: String, default: "" },
     demoUrl: { type: String, default: "" },
@@ -81,7 +84,6 @@ const ProductSchema = new Schema<IProduct>(
     pricingTiers: { type: [PricingTierSchema], default: [] },
     status: {
       type: String,
-      enum: ["active", "beta", "coming_soon"],
       default: "active",
       index: true,
     },

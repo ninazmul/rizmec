@@ -18,6 +18,7 @@ import {
   Sparkles,
   ShieldCheck,
   Compass,
+  Boxes,
 } from "lucide-react";
 import { HeroTerminalVisual } from "@/components/home/HeroTerminalVisual";
 import { TiltCard } from "@/components/ui/TiltCard";
@@ -26,6 +27,7 @@ import { getServices } from "@/lib/actions/service.actions";
 import { getPublishedProjects } from "@/lib/actions/project.actions";
 import { getTeamMembers } from "@/lib/actions/team.actions";
 import { getTestimonials } from "@/lib/actions/testimonial.actions";
+import { getProducts } from "@/lib/actions/product.actions";
 import { TestimonialsMarquee } from "@/components/home/TestimonialsMarquee";
 import {
   FOUNDER_INFO,
@@ -71,18 +73,20 @@ const iconMap: Record<string, React.ReactNode> = {
 };
 
 export default async function HomePage() {
-  const [servicesRes, projectsRes, teamRes, testimonialsRes] =
+  const [servicesRes, projectsRes, teamRes, testimonialsRes, productsRes] =
     await Promise.all([
       getServices({ published: true, limit: 6 }),
       getPublishedProjects({ featured: true, limit: 3 }),
       getTeamMembers({ published: true, featured: true, limit: 4 }),
       getTestimonials({ published: true, featured: true, limit: 12 }),
+      getProducts({ published: true, limit: 6 }),
     ]);
 
   const services = servicesRes.success ? servicesRes.data : [];
   const projects = projectsRes.success ? projectsRes.data : [];
   const teamMembers = teamRes.success ? teamRes.data : [FOUNDER_INFO];
   const testimonials = testimonialsRes.success ? testimonialsRes.data : [];
+  const products = productsRes.success ? productsRes.data : [];
 
   return (
     <div className="relative overflow-hidden bg-[#09090b]">
@@ -365,136 +369,130 @@ export default async function HomePage() {
       </section>
 
       {/* ========================================================
-          4. INDUSTRY SPECIALIZATION: Education Technology
+          4. OUR PRODUCTS & ENGINEERED PLATFORMS
       ======================================================== */}
-      <section className="py-24 border-t border-white/10 bg-neutral-950/80 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Left: Specialization Context */}
-            <div className="lg:col-span-7 space-y-6">
-              <span className="text-xs font-mono tracking-widest text-emerald-400 uppercase font-semibold flex items-center gap-2">
-                <GraduationCap className="w-4 h-4 text-emerald-400" />
-                // Initial Market Specialization
+      <section className="py-24 border-t border-white/10 bg-neutral-950/80 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 relative">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="space-y-4 max-w-3xl">
+              <span className="text-xs font-mono tracking-widest text-indigo-400 uppercase font-semibold flex items-center gap-2">
+                <Boxes className="w-4 h-4 text-indigo-400" />
+                // Engineered Products &amp; Platforms
               </span>
               <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight text-chrome">
-                Education Technology &amp; Partner Portals
+                Our Products &amp; Platform Engines
               </h2>
               <p className="text-neutral-400 text-base sm:text-lg leading-relaxed font-sans">
-                Rizmec specializes in building custom business platforms for international student recruitment agencies, education consultancies, and multi-tier agent networks.
+                Proprietary business systems, intelligent automation engines, and production-tested architectures developed by Rizmec.
               </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                <div className="p-4 rounded-xl border border-white/10 bg-white/[0.02] space-y-1">
-                  <div className="text-sm font-bold text-white flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                    Student Application Pipeline
-                  </div>
-                  <p className="text-xs text-neutral-400 font-sans">
-                    Stage-by-stage application tracking from initial lead intake to university offer and visa issuance.
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-xl border border-white/10 bg-white/[0.02] space-y-1">
-                  <div className="text-sm font-bold text-white flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                    Agent &amp; Sub-Agent Portals
-                  </div>
-                  <p className="text-xs text-neutral-400 font-sans">
-                    Hierarchical partner portals with role-based access, document uploads, and application visibility.
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-xl border border-white/10 bg-white/[0.02] space-y-1">
-                  <div className="text-sm font-bold text-white flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                    Document Verification
-                  </div>
-                  <p className="text-xs text-neutral-400 font-sans">
-                    Structured document checklists, intake validation, and status reminders to prevent enrollment delays.
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-xl border border-white/10 bg-white/[0.02] space-y-1">
-                  <div className="text-sm font-bold text-white flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                    Commission Reconciliation
-                  </div>
-                  <p className="text-xs text-neutral-400 font-sans">
-                    Automated partner commission calculations, payout tracking, and financial status reporting.
-                  </p>
-                </div>
-              </div>
-
-              <div className="pt-4 flex flex-wrap gap-4">
-                <Link
-                  href="/contact"
-                  className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-white text-black font-semibold text-xs tracking-widest uppercase btn-shimmer btn-glow group"
-                >
-                  <span>Discuss EdTech Requirements</span>
-                  <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </Link>
-                <Link
-                  href="/work/education-partner-management-platform"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full border border-white/20 text-white font-mono text-xs tracking-wider uppercase hover:bg-white/5 transition-colors"
-                >
-                  <span>View Case Study</span>
-                </Link>
-              </div>
             </div>
+            <Link
+              href="/products"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/15 bg-white/[0.02] text-xs font-mono text-neutral-300 uppercase tracking-wider hover:bg-white/5 transition-colors self-start md:self-auto"
+            >
+              <span>Explore All Products</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
 
-            {/* Right: Technical Diagram Card */}
-            <div className="lg:col-span-5">
-              <TiltCard maxTilt={6} glareOpacity={0.16}>
-                <div className="p-8 rounded-3xl border border-white/15 bg-neutral-900/60 backdrop-blur-2xl space-y-6 shadow-2xl">
-                  <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                    <div className="flex items-center gap-2 font-mono text-xs text-neutral-300">
-                      <GraduationCap className="w-4 h-4 text-emerald-400" />
-                      <span>EDTECH_PLATFORM_ARCHITECTURE</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {products.map((product: any) => {
+              const statusLabel =
+                product.status === "internal"
+                  ? "INTERNAL"
+                  : product.status === "prototype"
+                  ? "PROTOTYPE"
+                  : product.status === "concept"
+                  ? "CONCEPT"
+                  : "PRODUCTION";
+
+              return (
+                <TiltCard key={product.slug} maxTilt={6} glareOpacity={0.15}>
+                  <div className="p-6 sm:p-8 rounded-2xl border border-white/10 bg-neutral-900/50 backdrop-blur-xl hover:border-white/30 transition-all flex flex-col justify-between space-y-6 h-full group">
+                    <div className="space-y-5">
+                      {/* Product Image preview */}
+                      {product.image ? (
+                        <div className="w-full h-44 rounded-xl overflow-hidden border border-white/10 bg-neutral-950 relative">
+                          <img
+                            src={product.image}
+                            alt={product.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-full h-32 rounded-xl border border-white/5 bg-gradient-to-br from-white/[0.03] to-white/[0.01] flex flex-col items-center justify-center font-mono text-xs text-neutral-500 p-4 text-center">
+                          <Boxes className="w-8 h-8 text-neutral-600 mb-2" />
+                          <span className="text-[11px] text-neutral-500">Engineered Platform</span>
+                        </div>
+                      )}
+
+                      <div className="flex items-center justify-between">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono tracking-wider uppercase border border-white/15 bg-white/5 text-neutral-300">
+                          {product.category}
+                        </span>
+                        <div className="flex items-center gap-1.5 font-mono text-[11px] text-emerald-400">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          <span>{statusLabel}</span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h3 className="text-xl font-bold text-white tracking-tight group-hover:text-cyan-300 transition-colors">
+                          {product.title}
+                        </h3>
+                        {product.tagline && (
+                          <p className="text-xs font-mono text-neutral-400 mt-1 line-clamp-1">
+                            {product.tagline}
+                          </p>
+                        )}
+                      </div>
+
+                      <p className="text-xs text-neutral-400 leading-relaxed line-clamp-3">
+                        {product.summary}
+                      </p>
+
+                      {product.features && product.features.length > 0 && (
+                        <div className="space-y-1.5 pt-3 border-t border-white/5">
+                          {product.features.slice(0, 3).map((feat: string) => (
+                            <div key={feat} className="flex items-start gap-2 text-xs text-neutral-300">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                              <span className="line-clamp-1">{feat}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-                      MODULAR
-                    </span>
+
+                    <div className="pt-5 border-t border-white/10 flex items-center justify-between gap-3">
+                      {product.url ? (
+                        <a
+                          href={product.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 text-xs font-mono text-cyan-400 hover:text-cyan-300"
+                        >
+                          <Globe className="w-3.5 h-3.5" />
+                          <span>Live Site</span>
+                          <ArrowUpRight className="w-3 h-3" />
+                        </a>
+                      ) : (
+                        <span className="text-[11px] font-mono text-neutral-500">
+                          Proprietary Core
+                        </span>
+                      )}
+
+                      <Link
+                        href={`/products/${product.slug}`}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-black font-mono text-xs font-semibold uppercase tracking-wider hover:bg-neutral-200 transition-all"
+                      >
+                        <span>Details</span>
+                        <ArrowUpRight className="w-3 h-3" />
+                      </Link>
+                    </div>
                   </div>
-
-                  <div className="space-y-3 font-mono text-xs text-neutral-300">
-                    <div className="p-3 rounded-lg border border-white/10 bg-white/[0.02]">
-                      <div className="text-white font-semibold flex items-center justify-between">
-                        <span>Central Administration Portal</span>
-                        <span className="text-[10px] text-cyan-400">Master Level</span>
-                      </div>
-                      <div className="text-[11px] text-neutral-400 mt-1">
-                        Application overview, staff assignment, commission rules, and executive reports.
-                      </div>
-                    </div>
-
-                    <div className="p-3 rounded-lg border border-white/10 bg-white/[0.02]">
-                      <div className="text-white font-semibold flex items-center justify-between">
-                        <span>Partner &amp; Agent Network</span>
-                        <span className="text-[10px] text-emerald-400">Multi-Tier</span>
-                      </div>
-                      <div className="text-[11px] text-neutral-400 mt-1">
-                        Partner agent accounts, branch sub-agents, application submissions, and payout ledgers.
-                      </div>
-                    </div>
-
-                    <div className="p-3 rounded-lg border border-white/10 bg-white/[0.02]">
-                      <div className="text-white font-semibold flex items-center justify-between">
-                        <span>Student Admission Workflow</span>
-                        <span className="text-[10px] text-amber-400">Stage Engine</span>
-                      </div>
-                      <div className="text-[11px] text-neutral-400 mt-1">
-                        Document uploads, condition checks, university submission, and automated alerts.
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-2 text-[11px] font-mono text-neutral-500 flex items-center justify-between">
-                    <span>Tailored to Your Agency&apos;s Workflow</span>
-                    <span className="text-emerald-400">Production Tested</span>
-                  </div>
-                </div>
-              </TiltCard>
-            </div>
+                </TiltCard>
+              );
+            })}
           </div>
         </div>
       </section>

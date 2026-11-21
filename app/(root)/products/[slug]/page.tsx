@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { ArrowUpRight, Check, ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowUpRight, Check, ArrowLeft, ExternalLink, Globe } from "lucide-react";
 
 const GithubIcon = ({ className }: { className?: string }) => (
   <svg className={className} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -84,6 +84,18 @@ export default async function ProductDetailPage({ params }: Props) {
             <span>Discuss Custom Deployment</span>
             <ArrowUpRight className="w-4 h-4" />
           </Link>
+          {product.url && (
+            <a
+              href={product.url}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 font-mono text-xs tracking-wider uppercase hover:bg-cyan-500/20 transition-colors"
+            >
+              <Globe className="w-4 h-4 text-cyan-400" />
+              <span>Launch Live Platform</span>
+              <ExternalLink className="w-3.5 h-3.5 text-neutral-400" />
+            </a>
+          )}
           {product.githubUrl && (
             <a
               href={product.githubUrl}
@@ -101,6 +113,17 @@ export default async function ProductDetailPage({ params }: Props) {
       {/* Main Content & Screenshots */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-8 border-t border-white/10">
         <div className="lg:col-span-8 space-y-12">
+          {/* Featured Cover Image if present */}
+          {product.image && (
+            <div className="rounded-2xl overflow-hidden border border-white/15 bg-neutral-900 shadow-2xl">
+              <img
+                src={product.image}
+                alt={product.title}
+                className="w-full h-auto object-cover max-h-[500px]"
+              />
+            </div>
+          )}
+
           {/* Detailed Summary */}
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-white tracking-tight">System Specification</h2>

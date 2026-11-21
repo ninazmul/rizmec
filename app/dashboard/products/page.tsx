@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Boxes, Plus, Edit2, Trash2, ArrowUpRight } from "lucide-react";
+import { Boxes, Plus, Edit2, Trash2, ArrowUpRight, Globe, Image as ImageIcon } from "lucide-react";
 import { getProducts, createProduct, deleteProduct, updateProduct } from "@/lib/actions/product.actions";
+import ImageUploader from "@/components/shared/ImageUploader";
 import toast from "react-hot-toast";
 
 const DEFAULT_FORM = {
@@ -15,6 +16,8 @@ const DEFAULT_FORM = {
   features: "Dynamic Multi-Cloud Routing, Zero-Loss Recovery, Sub-15ms Latency",
   techStack: "Go, Kubernetes, Next.js, Rust",
   status: "active",
+  image: "",
+  url: "",
 };
 
 export default function ProductsCmsPage() {
@@ -56,6 +59,8 @@ export default function ProductsCmsPage() {
       features: (p.features || []).join(", "),
       techStack: (p.techStack || []).join(", "),
       status: p.status || "active",
+      image: p.image || (p.screenshots?.[0]?.url) || "",
+      url: p.url || p.demoUrl || "",
     });
     setIsModalOpen(true);
   };
@@ -88,6 +93,9 @@ export default function ProductsCmsPage() {
       features: featArray,
       techStack: stackArray,
       status: form.status as any,
+      image: form.image,
+      url: form.url,
+      demoUrl: form.url,
     } as any;
 
     const res = editingId
@@ -119,7 +127,7 @@ export default function ProductsCmsPage() {
             SOFTWARE AS A SERVICE
           </span>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white mt-1">
-            Dynamic Products & SaaS Engines
+            Dynamic Products &amp; SaaS Engines
           </h1>
         </div>
 
@@ -141,21 +149,44 @@ export default function ProductsCmsPage() {
           products.map((p) => (
             <div
               key={p._id}
-              className="p-6 rounded-2xl border border-white/10 bg-neutral-950 flex flex-col justify-between space-y-6"
+              className="p-6 rounded-2xl border border-white/10 bg-neutral-950 flex flex-col justify-between space-y-6 overflow-hidden"
             >
               <div className="space-y-3">
+                {p.image && (
+                  <div className="w-full h-36 rounded-xl overflow-hidden border border-white/10 bg-neutral-900 relative">
+                    <img
+                      src={p.image}
+                      alt={p.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
                   <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-white/10 text-white">
                     {p.category}
                   </span>
-                  <Link
-                    href={`/products/${p.slug}`}
-                    target="_blank"
-                    className="text-neutral-400 hover:text-white flex items-center gap-1 font-mono text-xs"
-                  >
-                    <span>Inspect</span>
-                    <ArrowUpRight className="w-3 h-3" />
-                  </Link>
+                  <div className="flex items-center gap-3">
+                    {p.url && (
+                      <a
+                        href={p.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-cyan-400 hover:text-cyan-300 flex items-center gap-1 font-mono text-xs"
+                        title={p.url}
+                      >
+                        <Globe className="w-3 h-3" />
+                        <span>Live</span>
+                      </a>
+                    )}
+                    <Link
+                      href={`/products/${p.slug}`}
+                      target="_blank"
+                      className="text-neutral-400 hover:text-white flex items-center gap-1 font-mono text-xs"
+                    >
+                      <span>Inspect</span>
+                      <ArrowUpRight className="w-3 h-3" />
+                    </Link>
+                  </div>
                 </div>
                 <h3 className="text-xl font-bold text-white tracking-tight">{p.title}</h3>
                 <p className="text-xs text-neutral-400 line-clamp-3 leading-relaxed">
@@ -226,8 +257,57 @@ export default function ProductsCmsPage() {
                   <option value="Developer Tool">Developer Tool</option>
                   <option value="Mobile App">Mobile App</option>
                   <option value="Enterprise Cloud">Enterprise Cloud</option>
+                  <option value="Internal Platform">Internal Platform</option>
+                  <option value="Architecture Blueprint">Architecture Blueprint</option>
+                  <option value="Engineering Prototype">Engineering Prototype</option>
                 </select>
               </div>
+
+              {/* Product Cover Image Upload & Direct Link */}
+              <div className="space-y-3 pt-1">
+                <ImageUploader
+                  label="Product Cover Image / Thumbnail"
+                  value={form.image}
+                  onChange={(url) => setForm({ ...form, image: url })}
+                  folder="Products"
+                  aspect="video"
+                  hint="Cover image or interface screenshot shown on product cards, public detail page, and homepage."
+                />
+                <div className="space-y-1">
+                  <label className="font-mono text-neutral-400 uppercase text-[11px] flex items-center gap-1.5">
+                    <ImageIcon className="w-3.5 h-3.5 text-neutral-400" />
+                    <span>Or Direct Image URL</span>
+                    <span className="normal-case text-neutral-500 font-sans font-light">(optional direct link)</span>
+                  </label>
+                  <input
+                    type="url"
+                    value={form.image}
+                    onChange={(e) => setForm({ ...form, image: e.target.value })}
+                    placeholder="https://... or /assets/images/..."
+                    className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white font-mono text-xs placeholder:text-neutral-600"
+                  />
+                </div>
+              </div>
+
+              {/* Product / Live URL */}
+              <div className="space-y-1">
+                <label className="font-mono text-neutral-400 uppercase flex items-center gap-1.5">
+                  <Globe className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Product URL / Live Website</span>
+                  <span className="normal-case text-neutral-500 font-sans font-light">(optional)</span>
+                </label>
+                <input
+                  type="url"
+                  value={form.url}
+                  onChange={(e) => setForm({ ...form, url: e.target.value })}
+                  placeholder="https://app.rizmec.com or https://example.com"
+                  className="w-full px-3 py-2 bg-neutral-900 border border-white/10 rounded-lg text-white font-mono text-xs placeholder:text-neutral-600"
+                />
+                <p className="text-[11px] text-neutral-500 font-light">
+                  If provided, a direct live link will appear on the product card and homepage.
+                </p>
+              </div>
+
               <div className="space-y-1">
                 <label className="font-mono text-neutral-400 uppercase">Summary *</label>
                 <textarea

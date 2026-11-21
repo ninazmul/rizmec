@@ -340,6 +340,8 @@ export const VERIFIED_PLATFORMS = [
     tagline: "Centralized client lifecycle, quotation, and invoice management system.",
     summary:
       "The internal business operating engine developed by Rizmec to manage customer inquiries, generate verifiable quotations with electronic sign-offs, and track invoice reconciliation.",
+    image: "/assets/images/rizmec-icon.png",
+    url: "/dashboard",
     features: [
       "Cryptographic public quotation access tokens",
       "Immutable acceptance snapshots",
@@ -358,6 +360,8 @@ export const VERIFIED_PLATFORMS = [
     tagline: "Modular student recruitment and agent network coordination portal.",
     summary:
       "A ready-to-deploy software architecture for education consultancies and agencies, featuring multi-tiered agent portals, student application tracking, document collection, and commission reconciliation.",
+    image: "/assets/images/placeholder.webp",
+    url: "",
     features: [
       "Agent and sub-agent management hierarchy",
       "Stage-by-stage student admission pipeline",
@@ -376,6 +380,8 @@ export const VERIFIED_PLATFORMS = [
     tagline: "Reusable connectors, document extraction pipelines, and process automation.",
     summary:
       "A modular integration fabric developed by Rizmec to accelerate custom automation projects, connecting databases, OCR extraction pipelines, and LLM task execution into reliable business workflows.",
+    image: "/assets/images/placeholder.webp",
+    url: "",
     features: [
       "Automated structured data extraction from invoices and documents",
       "Domain-constrained knowledge retrieval for customer support",
